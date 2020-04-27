@@ -1,9 +1,12 @@
 # Ranger-Go-IGE
 **Ranger-Go-IGE** (IGE) is a continuation of [RangerGO](https://github.com/wdevore/RangerGo).
 
-As was RangerGo so is IGE, a variation of the [Ranger Dart](https://github.com/wdevore/Ranger-Dart) game engine but written in [Go](https://golang.org/) but using [OpenGL](https://www.opengl.org/).
+As was RangerGo, so is IGE, a variation of the [Ranger Dart](https://github.com/wdevore/Ranger-Dart) game engine but written in [Go](https://golang.org/) but using [OpenGL](https://www.opengl.org/) and [GLFW](https://www.glfw.org/).
+
+This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
 # Current Tasks and Goals
+* **Working** OpenGL 4.x and perhaps (ES)
 * **Done** Node Dragging
 * **Done** Filters: transform and translate
 * **Done** Zoom Node
@@ -15,7 +18,6 @@ As was RangerGo so is IGE, a variation of the [Ranger Dart](https://github.com/w
 * **Done** Animation (tweening) -- Using tanema's library
 * **Done** Box2D physics (with space ship)
 * **Done** Zones combined with Zoom
-* **Working** OpenGL 4.x and perhaps (ES)
 * Audio (SFXR 8bit sound)
   * May build GUI using imGui
   * May use: https://github.com/faiface/beep
@@ -33,6 +35,12 @@ As was RangerGo so is IGE, a variation of the [Ranger Dart](https://github.com/w
 * Joysticks and Gamepads
 
 ## Notes
+The are two config files: one for the engine itself and the other for each game.
+
+## Articles
+* [tutorial-opengl-with-golang](https://kylewbanks.com/blog/tutorial-opengl-with-golang-part-1-hello-opengl)
+* [box2d iforce2d](https://www.iforce2d.net/b2dapps/)
+* https://github.com/go-gl/glfw
 
 # Tracking (Optional)
 Some **Nodes**/**Objects** may want to *Track* the properties of another **Node**.

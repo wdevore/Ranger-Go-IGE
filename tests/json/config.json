@@ -1,0 +1,23 @@
+{
+  "Window": {
+    "BitsPerPixel": 32,
+    "LockToVSync": true,
+    "ClearColor": {
+      "R": 1.0,
+      "G": 0.5,
+      "B": 0.0,
+      "A": 1.0
+    },
+    "VirtualRes": {
+      "Height": 600,
+      "Width": 1000
+    },
+    "FullScreen": false,
+    "Orientation": "Landscape",
+    "Position": {
+      "X": 200,
+      "Y": 200
+    },
+    "Title": "JsonTest"
+  }
+}

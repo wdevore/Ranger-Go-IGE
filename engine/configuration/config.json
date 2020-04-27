@@ -1,0 +1,54 @@
+{
+  "Engine": {
+    "Enabled": true,
+    "LoopFor": -1,
+    "ShowConfig": false,
+    "ShowGLInfo": false,
+    "ShowMonitorInfo": false,
+    "ShowTimingInfo": false,
+    "ShowJoystickInfo": false,
+    "GLMajorVersion": 3,
+    "GLMinorVersion": 3,
+    "FPSRefreshRate": 1.0
+  },
+  "Window": {
+    "BitsPerPixel": 32,
+    "LockToVSync": true,
+    "ClearColor": {
+      "R": 1.0,
+      "G": 0.5,
+      "B": 0.0,
+      "A": 1.0
+    },
+    "VirtualRes": {
+      "Height": 600,
+      "Width": 1000
+    },
+    "DeviceRes": {
+      "Height": 900,
+      "Width": 1500
+    },
+    "FullScreen": false,
+    "Orientation": "Landscape",
+    "Position": {
+      "X": 100,
+      "Y": 100
+    },
+    "Title": "Ranger"
+  },
+  "Camera": {
+    "Centered": true,
+    "View": {
+      "X": 0.0,
+      "Y": 0.0,
+      "Z": -1.0
+    }
+  },
+  "Font": {
+    "Path": "assets",
+    "Name": "/neuropol x rg.ttf",
+    "Size": 128,
+    "Scale": 0.10,
+    "CharsFromSet": 128
+  }
+}
