@@ -7,6 +7,13 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
+//    2x3          3x3            4x4         OpenGL Array Index      M(Cell/Row)
+// | a c e |    | a c e |      | a c 0 e |      |00 04 08 12|     |M00 M01 M02 M03|
+// | b d f |    | b d f |  =>  | b d 0 f | ==>  |01 05 09 13| ==> |M10 M11 M12 M13|
+// 	            | 0 0 1 |      | 0 0 1 0 |      |02 06 10 14|     |M20 M21 M22 M23|
+// 	                           | 0 0 0 1 |      |03 07 11 15|     |M30 M31 M32 M33|
+
+// Array indices
 const (
 	// M00 XX: Typically the unrotated X component for scaling, also the cosine of the
 	// angle when rotated on the Y and/or Z axis. On
@@ -72,14 +79,11 @@ const (
 // matrix4 represents a column major opengl array.
 type matrix4 struct {
 	e [16]float32
-
-	// Rotation is in radians
-	Rotation float32
-	Scale    vector3
 }
 
 // A temporary matrix for multiplication
-var temp = NewMatrix4()
+var tempM0 = NewMatrix4()
+var mulM = NewMatrix4()
 
 // NewMatrix4 creates a Matrix4 initialized to an identity matrix
 func NewMatrix4() api.IMatrix4 {
@@ -89,8 +93,8 @@ func NewMatrix4() api.IMatrix4 {
 }
 
 // E returns the internal 4x4 matrix
-func (m *matrix4) E() [16]float32 {
-	return m.e
+func (m *matrix4) Matrix() *([16]float32) {
+	return &m.e
 }
 
 // --------------------------------------------------------------------------
@@ -99,25 +103,38 @@ func (m *matrix4) E() [16]float32 {
 
 // TranslateBy adds a translational component to the matrix in the 4th column.
 // The other columns are unmodified.
-func (m *matrix4) TranslateBy(v api.IVector3) {
-	m.e[M03] += v.X()
-	m.e[M13] += v.Y()
-	m.e[M23] += v.Z()
-}
-
-// TranslateBy3Comps adds a translational component to the matrix in the 4th column.
-// The other columns are unmodified.
-func (m *matrix4) TranslateBy3Comps(x, y, z float32) {
-	m.e[M03] += x
-	m.e[M13] += y
-	m.e[M23] += z
+func (m *matrix4) Translate(v api.IVector3) {
+	m.TranslateBy3Comps(v.X(), v.Y(), v.Z())
 }
 
 // TranslateBy2Comps adds a translational component to the matrix in the 4th column.
 // Z is unmodified. The other columns are unmodified.
 func (m *matrix4) TranslateBy2Comps(x, y float32) {
-	m.e[M03] += x
-	m.e[M13] += y
+	m.TranslateBy3Comps(x, y, 0.0)
+}
+
+// TranslateBy3Comps adds a translational component to the matrix in the 4th column.
+// The other columns are unmodified.
+func (m *matrix4) TranslateBy3Comps(x, y, z float32) {
+	e := tempM0.Matrix()
+	e[M00] = 1.0
+	e[M01] = 0.0
+	e[M02] = 0.0
+	e[M03] = x
+	e[M10] = 0.0
+	e[M11] = 1.0
+	e[M12] = 0.0
+	e[M13] = y
+	e[M20] = 0.0
+	e[M21] = 0.0
+	e[M22] = 1.0
+	e[M23] = z
+	e[M30] = 0.0
+	e[M31] = 0.0
+	e[M32] = 0.0
+	e[M33] = 1.0
+
+	m.PreMultiply(tempM0)
 }
 
 // SetTranslateByVector sets the translational component to the matrix in the 4th column.
@@ -155,18 +172,16 @@ func (m *matrix4) GetTranslation(out api.IVector3) {
 //      [  M10  M11   _    _   ]
 //      [   _    _    _    _   ]
 //      [   _    _    _    _   ]
-func (m *matrix4) SetRotation(angle float32) {
-	m.ToIdentity()
-
+func (m *matrix4) SetRotation(angle float64) {
 	if angle == 0 {
 		return
 	}
 
-	m.Rotation = angle
+	m.ToIdentity()
 
 	// Column major
-	c := float32(math.Cos(float64(angle)))
-	s := float32(math.Sin(float64(angle)))
+	c := float32(math.Cos(angle))
+	s := float32(math.Sin(angle))
 
 	m.e[M00] = c
 	m.e[M01] = -s
@@ -174,20 +189,22 @@ func (m *matrix4) SetRotation(angle float32) {
 	m.e[M11] = c
 }
 
-// RotateBy postmultiplies this matrix with a (counter-clockwise) rotation matrix whose
+// Rotate postmultiplies this matrix with a (counter-clockwise) rotation matrix whose
 // angle is specified in radians.
-func (m *matrix4) RotateBy(angle float32) {
+// |M00 M01 M02 M03|
+// |M10 M11 M12 M13|
+// |M20 M21 M22 M23|
+// |M30 M31 M32 M33|
+func (m *matrix4) Rotate(angle float64) {
 	if angle == 0.0 {
 		return
 	}
 
-	m.Rotation += angle
-
 	// Column major
-	c := float32(math.Cos(float64(angle)))
-	s := float32(math.Sin(float64(angle)))
+	c := float32(math.Cos(angle))
+	s := float32(math.Sin(angle))
 
-	e := temp.E()
+	e := tempM0.Matrix()
 	e[M00] = c
 	e[M01] = -s
 	e[M02] = 0.0
@@ -205,27 +222,16 @@ func (m *matrix4) RotateBy(angle float32) {
 	e[M32] = 0.0
 	e[M33] = 1.0
 
-	m.PostMultiply(temp)
+	m.PreMultiply(tempM0)
 }
 
 // --------------------------------------------------------------------------
 // Scale
 // --------------------------------------------------------------------------
 
-// ScaleBy scales the scale components.
-func (m *matrix4) ScaleBy(v api.IVector3) {
-	m.Scale.Set(v)
-
-	m.e[M00] *= v.X()
-	m.e[M11] *= v.Y()
-	m.e[M22] *= v.Z()
-}
-
 // SetScale sets the scale components of an identity matrix and captures
 // scale values into Scale property.
 func (m *matrix4) SetScale(v api.IVector3) {
-	m.Scale.Set(v)
-
 	m.ToIdentity()
 
 	m.e[M00] = v.X()
@@ -236,8 +242,6 @@ func (m *matrix4) SetScale(v api.IVector3) {
 // SetScale3Comp sets the scale components of an identity matrix and captures
 // scale values into Scale property.
 func (m *matrix4) SetScale3Comp(sx, sy, sz float32) {
-	m.Scale.Set3Components(sx, sy, sz)
-
 	m.ToIdentity()
 
 	m.e[M00] = sx
@@ -248,8 +252,6 @@ func (m *matrix4) SetScale3Comp(sx, sy, sz float32) {
 // SetScale2Comp sets the scale components of an identity matrix and captures
 // scale values into Scale property where Z component = 1.0.
 func (m *matrix4) SetScale2Comp(sx, sy float32) {
-	m.Scale.Set3Components(sx, sy, 1.0)
-
 	m.ToIdentity()
 
 	m.e[M00] = sx
@@ -257,14 +259,33 @@ func (m *matrix4) SetScale2Comp(sx, sy float32) {
 	m.e[M22] = 1.0
 }
 
-// GetScale returns the scale in 'out' field.
-func (m *matrix4) GetScale(out api.IVector3) {
-	out.Set(&m.Scale)
+// Scale scales the scale components.
+func (m *matrix4) Scale(v api.IVector3) {
+	e := tempM0.Matrix()
+
+	e[M00] = v.X()
+	e[M01] = 0
+	e[M02] = 0
+	e[M03] = 0
+	e[M10] = 0
+	e[M11] = v.Y()
+	e[M12] = 0
+	e[M13] = 0
+	e[M20] = 0
+	e[M21] = 0
+	e[M22] = v.Z()
+	e[M23] = 0
+	e[M30] = 0
+	e[M31] = 0
+	e[M32] = 0
+	e[M33] = 1
+
+	m.PreMultiply(tempM0)
 }
 
-// PostScale postmultiplies this matrix with a scale matrix.
-func (m *matrix4) PostScale(sx, sy, sz float32) {
-	e := temp.E()
+// ScaleByComp scales the scale components.
+func (m *matrix4) ScaleByComp(sx, sy, sz float32) {
+	e := tempM0.Matrix()
 
 	e[M00] = sx
 	e[M01] = 0
@@ -283,7 +304,11 @@ func (m *matrix4) PostScale(sx, sy, sz float32) {
 	e[M32] = 0
 	e[M33] = 1
 
-	m.PostMultiply(temp)
+	m.PreMultiply(tempM0)
+}
+
+func (m *matrix4) GetPsuedoScale() float32 {
+	return m.e[M00]
 }
 
 // --------------------------------------------------------------------------
@@ -293,183 +318,98 @@ func (m *matrix4) PostScale(sx, sy, sz float32) {
 // --------------------------------------------------------------------------
 // Matrix methods
 // --------------------------------------------------------------------------
-
-// Multiply multiplies a * b and places result into 'out', (i.e. out = a * b)
-func Multiply(a, b, out api.IMatrix4) {
-	oe := out.E()
-	ae := a.E()
-	be := b.E()
-
-	oe[M00] = ae[M00]*be[M00] + ae[M01]*be[M10] + ae[M02]*be[M20] + ae[M03]*be[M30]
-	oe[M01] = ae[M00]*be[M01] + ae[M01]*be[M11] + ae[M02]*be[M21] + ae[M03]*be[M31]
-	oe[M02] = ae[M00]*be[M02] + ae[M01]*be[M12] + ae[M02]*be[M22] + ae[M03]*be[M32]
-	oe[M03] = ae[M00]*be[M03] + ae[M01]*be[M13] + ae[M02]*be[M23] + ae[M03]*be[M33]
-	oe[M10] = ae[M10]*be[M00] + ae[M11]*be[M10] + ae[M12]*be[M20] + ae[M13]*be[M30]
-	oe[M11] = ae[M10]*be[M01] + ae[M11]*be[M11] + ae[M12]*be[M21] + ae[M13]*be[M31]
-	oe[M12] = ae[M10]*be[M02] + ae[M11]*be[M12] + ae[M12]*be[M22] + ae[M13]*be[M32]
-	oe[M13] = ae[M10]*be[M03] + ae[M11]*be[M13] + ae[M12]*be[M23] + ae[M13]*be[M33]
-	oe[M20] = ae[M20]*be[M00] + ae[M21]*be[M10] + ae[M22]*be[M20] + ae[M23]*be[M30]
-	oe[M21] = ae[M20]*be[M01] + ae[M21]*be[M11] + ae[M22]*be[M21] + ae[M23]*be[M31]
-	oe[M22] = ae[M20]*be[M02] + ae[M21]*be[M12] + ae[M22]*be[M22] + ae[M23]*be[M32]
-	oe[M23] = ae[M20]*be[M03] + ae[M21]*be[M13] + ae[M22]*be[M23] + ae[M23]*be[M33]
-	oe[M30] = ae[M30]*be[M00] + ae[M31]*be[M10] + ae[M32]*be[M20] + ae[M33]*be[M30]
-	oe[M31] = ae[M30]*be[M01] + ae[M31]*be[M11] + ae[M32]*be[M21] + ae[M33]*be[M31]
-	oe[M32] = ae[M30]*be[M02] + ae[M31]*be[M12] + ae[M32]*be[M22] + ae[M33]*be[M32]
-	oe[M33] = ae[M30]*be[M03] + ae[M31]*be[M13] + ae[M32]*be[M23] + ae[M33]*be[M33]
+func (m *matrix4) SetFromAffine(src api.IAffineTransform) {
+	s := src.Matrix()
+	m.e[0] = s[0]
+	m.e[1] = s[1]
+	m.e[2] = s[2]
+	m.e[3] = s[3]
+	m.e[4] = s[4]
+	m.e[5] = s[5]
+	m.e[6] = s[6]
+	m.e[7] = s[7]
+	m.e[8] = s[8]
+	m.e[9] = s[9]
+	m.e[10] = s[10]
+	m.e[11] = s[11]
+	m.e[12] = s[12]
+	m.e[13] = s[13]
+	m.e[14] = s[14]
+	m.e[15] = s[15]
 }
 
-// Multiply multiplies a * b and places result into this matrix, (i.e. this = a * b)
+func multiply4(a, b, out *([16]float32)) {
+	out[M00] = a[M00]*b[M00] + a[M01]*b[M10] + a[M02]*b[M20] + a[M03]*b[M30]
+	out[M01] = a[M00]*b[M01] + a[M01]*b[M11] + a[M02]*b[M21] + a[M03]*b[M31]
+	out[M02] = a[M00]*b[M02] + a[M01]*b[M12] + a[M02]*b[M22] + a[M03]*b[M32]
+	out[M03] = a[M00]*b[M03] + a[M01]*b[M13] + a[M02]*b[M23] + a[M03]*b[M33]
+	out[M10] = a[M10]*b[M00] + a[M11]*b[M10] + a[M12]*b[M20] + a[M13]*b[M30]
+	out[M11] = a[M10]*b[M01] + a[M11]*b[M11] + a[M12]*b[M21] + a[M13]*b[M31]
+	out[M12] = a[M10]*b[M02] + a[M11]*b[M12] + a[M12]*b[M22] + a[M13]*b[M32]
+	out[M13] = a[M10]*b[M03] + a[M11]*b[M13] + a[M12]*b[M23] + a[M13]*b[M33]
+	out[M20] = a[M20]*b[M00] + a[M21]*b[M10] + a[M22]*b[M20] + a[M23]*b[M30]
+	out[M21] = a[M20]*b[M01] + a[M21]*b[M11] + a[M22]*b[M21] + a[M23]*b[M31]
+	out[M22] = a[M20]*b[M02] + a[M21]*b[M12] + a[M22]*b[M22] + a[M23]*b[M32]
+	out[M23] = a[M20]*b[M03] + a[M21]*b[M13] + a[M22]*b[M23] + a[M23]*b[M33]
+	out[M30] = a[M30]*b[M00] + a[M31]*b[M10] + a[M32]*b[M20] + a[M33]*b[M30]
+	out[M31] = a[M30]*b[M01] + a[M31]*b[M11] + a[M32]*b[M21] + a[M33]*b[M31]
+	out[M32] = a[M30]*b[M02] + a[M31]*b[M12] + a[M32]*b[M22] + a[M33]*b[M32]
+	out[M33] = a[M30]*b[M03] + a[M31]*b[M13] + a[M32]*b[M23] + a[M33]*b[M33]
+}
+
+// Multiply4 multiplies a * b and places result into 'out', (i.e. out = a * b)
+func Multiply4(a, b, out api.IMatrix4) {
+	oe := out.Matrix()
+	ae := a.Matrix()
+	be := b.Matrix()
+	multiply4(ae, be, oe)
+}
+
+// MultiplyAffineM4 multiplies: affine x 4x4.
+func MultiplyAffineM4(a api.IAffineTransform, b, out api.IMatrix4) {
+	oe := out.Matrix()
+	ae := a.Matrix()
+	be := b.Matrix()
+	multiply4(ae, be, oe)
+}
+
+// MultiplyM4Affine multiplies: 4x4 x affine
+func MultiplyM4Affine(a api.IMatrix4, b api.IAffineTransform, out api.IMatrix4) {
+	oe := out.Matrix()
+	ae := a.Matrix()
+	be := b.Matrix()
+	multiply4(ae, be, oe)
+}
+
+// Multiply multiplies a * b and places result into this matrix, (i.e. m = a * b)
 func (m *matrix4) Multiply(a, b api.IMatrix4) {
-	ae := a.E()
-	be := b.E()
-
-	m.e[M00] = ae[M00]*be[M00] + ae[M01]*be[M10] + ae[M02]*be[M20] + ae[M03]*be[M30]
-	m.e[M01] = ae[M00]*be[M01] + ae[M01]*be[M11] + ae[M02]*be[M21] + ae[M03]*be[M31]
-	m.e[M02] = ae[M00]*be[M02] + ae[M01]*be[M12] + ae[M02]*be[M22] + ae[M03]*be[M32]
-	m.e[M03] = ae[M00]*be[M03] + ae[M01]*be[M13] + ae[M02]*be[M23] + ae[M03]*be[M33]
-	m.e[M10] = ae[M10]*be[M00] + ae[M11]*be[M10] + ae[M12]*be[M20] + ae[M13]*be[M30]
-	m.e[M11] = ae[M10]*be[M01] + ae[M11]*be[M11] + ae[M12]*be[M21] + ae[M13]*be[M31]
-	m.e[M12] = ae[M10]*be[M02] + ae[M11]*be[M12] + ae[M12]*be[M22] + ae[M13]*be[M32]
-	m.e[M13] = ae[M10]*be[M03] + ae[M11]*be[M13] + ae[M12]*be[M23] + ae[M13]*be[M33]
-	m.e[M20] = ae[M20]*be[M00] + ae[M21]*be[M10] + ae[M22]*be[M20] + ae[M23]*be[M30]
-	m.e[M21] = ae[M20]*be[M01] + ae[M21]*be[M11] + ae[M22]*be[M21] + ae[M23]*be[M31]
-	m.e[M22] = ae[M20]*be[M02] + ae[M21]*be[M12] + ae[M22]*be[M22] + ae[M23]*be[M32]
-	m.e[M23] = ae[M20]*be[M03] + ae[M21]*be[M13] + ae[M22]*be[M23] + ae[M23]*be[M33]
-	m.e[M30] = ae[M30]*be[M00] + ae[M31]*be[M10] + ae[M32]*be[M20] + ae[M33]*be[M30]
-	m.e[M31] = ae[M30]*be[M01] + ae[M31]*be[M11] + ae[M32]*be[M21] + ae[M33]*be[M31]
-	m.e[M32] = ae[M30]*be[M02] + ae[M31]*be[M12] + ae[M32]*be[M22] + ae[M33]*be[M32]
-	m.e[M33] = ae[M30]*be[M03] + ae[M31]*be[M13] + ae[M32]*be[M23] + ae[M33]*be[M33]
+	Multiply4(a, b, m)
 }
 
-// PreMultiply premultiplies 'b' matrix with 'this' and places the result into 'this' matrix.
-// (i.e. this = b * this)
+// PreMultiply pre-multiplies 'b' matrix with 'm' and places the result into 'm' matrix.
+// (i.e. m = m * b)
 func (m *matrix4) PreMultiply(b api.IMatrix4) {
-	te := temp.E()
-	be := b.E()
-
-	te[M00] = be[M00]*m.e[M00] + be[M01]*m.e[M10] + be[M02]*m.e[M20] + be[M03]*m.e[M30]
-	te[M01] = be[M00]*m.e[M01] + be[M01]*m.e[M11] + be[M02]*m.e[M21] + be[M03]*m.e[M31]
-	te[M02] = be[M00]*m.e[M02] + be[M01]*m.e[M12] + be[M02]*m.e[M22] + be[M03]*m.e[M32]
-	te[M03] = be[M00]*m.e[M03] + be[M01]*m.e[M13] + be[M02]*m.e[M23] + be[M03]*m.e[M33]
-	te[M10] = be[M10]*m.e[M00] + be[M11]*m.e[M10] + be[M12]*m.e[M20] + be[M13]*m.e[M30]
-	te[M11] = be[M10]*m.e[M01] + be[M11]*m.e[M11] + be[M12]*m.e[M21] + be[M13]*m.e[M31]
-	te[M12] = be[M10]*m.e[M02] + be[M11]*m.e[M12] + be[M12]*m.e[M22] + be[M13]*m.e[M32]
-	te[M13] = be[M10]*m.e[M03] + be[M11]*m.e[M13] + be[M12]*m.e[M23] + be[M13]*m.e[M33]
-	te[M20] = be[M20]*m.e[M00] + be[M21]*m.e[M10] + be[M22]*m.e[M20] + be[M23]*m.e[M30]
-	te[M21] = be[M20]*m.e[M01] + be[M21]*m.e[M11] + be[M22]*m.e[M21] + be[M23]*m.e[M31]
-	te[M22] = be[M20]*m.e[M02] + be[M21]*m.e[M12] + be[M22]*m.e[M22] + be[M23]*m.e[M32]
-	te[M23] = be[M20]*m.e[M03] + be[M21]*m.e[M13] + be[M22]*m.e[M23] + be[M23]*m.e[M33]
-	te[M30] = be[M30]*m.e[M00] + be[M31]*m.e[M10] + be[M32]*m.e[M20] + be[M33]*m.e[M30]
-	te[M31] = be[M30]*m.e[M01] + be[M31]*m.e[M11] + be[M32]*m.e[M21] + be[M33]*m.e[M31]
-	te[M32] = be[M30]*m.e[M02] + be[M31]*m.e[M12] + be[M32]*m.e[M22] + be[M33]*m.e[M32]
-	te[M33] = be[M30]*m.e[M03] + be[M31]*m.e[M13] + be[M32]*m.e[M23] + be[M33]*m.e[M33]
-
-	// Place results in "this"
-	m.e[M00] = te[M00]
-	m.e[M01] = te[M01]
-	m.e[M02] = te[M02]
-	m.e[M03] = te[M03]
-	m.e[M10] = te[M10]
-	m.e[M11] = te[M11]
-	m.e[M12] = te[M12]
-	m.e[M13] = te[M13]
-	m.e[M20] = te[M20]
-	m.e[M21] = te[M21]
-	m.e[M22] = te[M22]
-	m.e[M23] = te[M23]
-	m.e[M30] = te[M30]
-	m.e[M31] = te[M31]
-	m.e[M32] = te[M32]
-	m.e[M33] = te[M33]
+	Multiply4(m, b, mulM)
+	m.Set(mulM)
 }
 
-// PostMultiply postmultiplies 'b' matrix with 'this' and places the result into 'this' matrix.
-// (i.e. this = this * b)
+// PostMultiply post-multiplies 'm' matrix with 'b' and places the result into 'm' matrix.
+// (i.e. m = b * m)
 func (m *matrix4) PostMultiply(b api.IMatrix4) {
-	te := temp.E()
-	be := b.E()
-
-	te[M00] = be[M00]*m.e[M00] + be[M01]*m.e[M10] + be[M02]*m.e[M20] + be[M03]*m.e[M30]
-	te[M01] = be[M00]*m.e[M01] + be[M01]*m.e[M11] + be[M02]*m.e[M21] + be[M03]*m.e[M31]
-	te[M02] = be[M00]*m.e[M02] + be[M01]*m.e[M12] + be[M02]*m.e[M22] + be[M03]*m.e[M32]
-	te[M03] = be[M00]*m.e[M03] + be[M01]*m.e[M13] + be[M02]*m.e[M23] + be[M03]*m.e[M33]
-	te[M10] = be[M10]*m.e[M00] + be[M11]*m.e[M10] + be[M12]*m.e[M20] + be[M13]*m.e[M30]
-	te[M11] = be[M10]*m.e[M01] + be[M11]*m.e[M11] + be[M12]*m.e[M21] + be[M13]*m.e[M31]
-	te[M12] = be[M10]*m.e[M02] + be[M11]*m.e[M12] + be[M12]*m.e[M22] + be[M13]*m.e[M32]
-	te[M13] = be[M10]*m.e[M03] + be[M11]*m.e[M13] + be[M12]*m.e[M23] + be[M13]*m.e[M33]
-	te[M20] = be[M20]*m.e[M00] + be[M21]*m.e[M10] + be[M22]*m.e[M20] + be[M23]*m.e[M30]
-	te[M21] = be[M20]*m.e[M01] + be[M21]*m.e[M11] + be[M22]*m.e[M21] + be[M23]*m.e[M31]
-	te[M22] = be[M20]*m.e[M02] + be[M21]*m.e[M12] + be[M22]*m.e[M22] + be[M23]*m.e[M32]
-	te[M23] = be[M20]*m.e[M03] + be[M21]*m.e[M13] + be[M22]*m.e[M23] + be[M23]*m.e[M33]
-	te[M30] = be[M30]*m.e[M00] + be[M31]*m.e[M10] + be[M32]*m.e[M20] + be[M33]*m.e[M30]
-	te[M31] = be[M30]*m.e[M01] + be[M31]*m.e[M11] + be[M32]*m.e[M21] + be[M33]*m.e[M31]
-	te[M32] = be[M30]*m.e[M02] + be[M31]*m.e[M12] + be[M32]*m.e[M22] + be[M33]*m.e[M32]
-	te[M33] = be[M30]*m.e[M03] + be[M31]*m.e[M13] + be[M32]*m.e[M23] + be[M33]*m.e[M33]
-
-	// Place results in "this"
-	m.e[M00] = te[M00]
-	m.e[M01] = te[M01]
-	m.e[M02] = te[M02]
-	m.e[M03] = te[M03]
-	m.e[M10] = te[M10]
-	m.e[M11] = te[M11]
-	m.e[M12] = te[M12]
-	m.e[M13] = te[M13]
-	m.e[M20] = te[M20]
-	m.e[M21] = te[M21]
-	m.e[M22] = te[M22]
-	m.e[M23] = te[M23]
-	m.e[M30] = te[M30]
-	m.e[M31] = te[M31]
-	m.e[M32] = te[M32]
-	m.e[M33] = te[M33]
+	Multiply4(b, m, mulM)
+	m.Set(mulM)
 }
 
 // MultiplyIntoA multiplies a * b and places result into 'a', (i.e. a = a * b)
 func MultiplyIntoA(a, b api.IMatrix4) {
-	te := temp.E()
-	ae := a.E()
-	be := b.E()
-
-	te[M00] = ae[M00]*be[M00] + ae[M01]*be[M10] + ae[M02]*be[M20] + ae[M03]*be[M30]
-	te[M01] = ae[M00]*be[M01] + ae[M01]*be[M11] + ae[M02]*be[M21] + ae[M03]*be[M31]
-	te[M02] = ae[M00]*be[M02] + ae[M01]*be[M12] + ae[M02]*be[M22] + ae[M03]*be[M32]
-	te[M03] = ae[M00]*be[M03] + ae[M01]*be[M13] + ae[M02]*be[M23] + ae[M03]*be[M33]
-	te[M10] = ae[M10]*be[M00] + ae[M11]*be[M10] + ae[M12]*be[M20] + ae[M13]*be[M30]
-	te[M11] = ae[M10]*be[M01] + ae[M11]*be[M11] + ae[M12]*be[M21] + ae[M13]*be[M31]
-	te[M12] = ae[M10]*be[M02] + ae[M11]*be[M12] + ae[M12]*be[M22] + ae[M13]*be[M32]
-	te[M13] = ae[M10]*be[M03] + ae[M11]*be[M13] + ae[M12]*be[M23] + ae[M13]*be[M33]
-	te[M20] = ae[M20]*be[M00] + ae[M21]*be[M10] + ae[M22]*be[M20] + ae[M23]*be[M30]
-	te[M21] = ae[M20]*be[M01] + ae[M21]*be[M11] + ae[M22]*be[M21] + ae[M23]*be[M31]
-	te[M22] = ae[M20]*be[M02] + ae[M21]*be[M12] + ae[M22]*be[M22] + ae[M23]*be[M32]
-	te[M23] = ae[M20]*be[M03] + ae[M21]*be[M13] + ae[M22]*be[M23] + ae[M23]*be[M33]
-	te[M30] = ae[M30]*be[M00] + ae[M31]*be[M10] + ae[M32]*be[M20] + ae[M33]*be[M30]
-	te[M31] = ae[M30]*be[M01] + ae[M31]*be[M11] + ae[M32]*be[M21] + ae[M33]*be[M31]
-	te[M32] = ae[M30]*be[M02] + ae[M31]*be[M12] + ae[M32]*be[M22] + ae[M33]*be[M32]
-	te[M33] = ae[M30]*be[M03] + ae[M31]*be[M13] + ae[M32]*be[M23] + ae[M33]*be[M33]
-
-	ae[M00] = te[M00]
-	ae[M01] = te[M01]
-	ae[M02] = te[M02]
-	ae[M03] = te[M03]
-	ae[M10] = te[M10]
-	ae[M11] = te[M11]
-	ae[M12] = te[M12]
-	ae[M13] = te[M13]
-	ae[M20] = te[M20]
-	ae[M21] = te[M21]
-	ae[M22] = te[M22]
-	ae[M23] = te[M23]
-	ae[M30] = te[M30]
-	ae[M31] = te[M31]
-	ae[M32] = te[M32]
-	ae[M33] = te[M33]
+	Multiply4(a, b, mulM)
+	a.Set(mulM)
 }
 
 // PostTranslate postmultiplies this matrix by a translation matrix.
 // Postmultiplication is also used by OpenGL ES.
 func (m *matrix4) PostTranslate(tx, ty, tz float32) {
-	te := temp.E()
+	te := tempM0.Matrix()
 
 	te[M00] = 1.0
 	te[M01] = 0.0
@@ -488,8 +428,7 @@ func (m *matrix4) PostTranslate(tx, ty, tz float32) {
 	te[M32] = 0.0
 	te[M33] = 1.0
 
-	// this = this * temp;
-	m.PostMultiply(temp)
+	m.PostMultiply(tempM0)
 }
 
 // --------------------------------------------------------------------------
@@ -530,6 +469,34 @@ func (m *matrix4) SetToOrtho(left, right, bottom, top, near, far float32) {
 // Misc
 // --------------------------------------------------------------------------
 
+// Eq does an epsilon compare
+func (m *matrix4) Eq(other api.IMatrix4) bool {
+	eq := true
+	o := other.Matrix()
+
+	eq = eq && (m.e[M00] == o[M00])
+	eq = eq && (m.e[M01] == o[M01])
+	eq = eq && (m.e[M02] == o[M02])
+	eq = eq && (m.e[M03] == o[M03])
+
+	eq = eq && (m.e[M10] == o[M10])
+	eq = eq && (m.e[M11] == o[M11])
+	eq = eq && (m.e[M12] == o[M12])
+	eq = eq && (m.e[M13] == o[M13])
+
+	eq = eq && (m.e[M20] == o[M20])
+	eq = eq && (m.e[M21] == o[M21])
+	eq = eq && (m.e[M22] == o[M22])
+	eq = eq && (m.e[M23] == o[M23])
+
+	eq = eq && (m.e[M30] == o[M30])
+	eq = eq && (m.e[M31] == o[M31])
+	eq = eq && (m.e[M32] == o[M32])
+	eq = eq && (m.e[M33] == o[M33])
+
+	return eq
+}
+
 // C returns a cell value based on Mxx index
 func (m *matrix4) C(i int) float32 {
 	return m.e[i]
@@ -544,7 +511,7 @@ func (m *matrix4) Clone() api.IMatrix4 {
 
 // Set copies src into this matrix
 func (m *matrix4) Set(src api.IMatrix4) {
-	se := src.E()
+	se := src.Matrix()
 
 	m.e[M00] = se[M00]
 	m.e[M01] = se[M01]
@@ -591,9 +558,9 @@ func (m *matrix4) ToIdentity() {
 }
 
 func (m matrix4) String() string {
-	s := fmt.Sprintf("[%f, %f, %f, %f]\n", m.e[M00], m.e[M01], m.e[M02], m.e[M03])
-	s += fmt.Sprintf("[%f, %f, %f, %f]\n", m.e[M10], m.e[M11], m.e[M12], m.e[M13])
-	s += fmt.Sprintf("[%f, %f, %f, %f]\n", m.e[M20], m.e[M21], m.e[M22], m.e[M23])
-	s += fmt.Sprintf("[%f, %f, %f, %f]", m.e[M30], m.e[M31], m.e[M32], m.e[M33])
+	s := fmt.Sprintf("[%7.3f, %7.3f, %7.3f, %7.3f]\n", m.e[M00], m.e[M01], m.e[M02], m.e[M03])
+	s += fmt.Sprintf("[%7.3f, %7.3f, %7.3f, %7.3f]\n", m.e[M10], m.e[M11], m.e[M12], m.e[M13])
+	s += fmt.Sprintf("[%7.3f, %7.3f, %7.3f, %7.3f]\n", m.e[M20], m.e[M21], m.e[M22], m.e[M23])
+	s += fmt.Sprintf("[%7.3f, %7.3f, %7.3f, %7.3f]", m.e[M30], m.e[M31], m.e[M32], m.e[M33])
 	return s
 }

@@ -10,14 +10,15 @@ type engineJSON struct {
 	ShowJoystickInfo bool
 	GLMajorVersion   int
 	GLMinorVersion   int
-	FPSRefreshRate   float64
+	FPSRate          float64
+	UPSRate          float64
 }
 
 type colorJSON struct {
-	R float64
-	G float64
-	B float64
-	A float64
+	R float32
+	G float32
+	B float32
+	A float32
 }
 
 type dimensionJSON struct {

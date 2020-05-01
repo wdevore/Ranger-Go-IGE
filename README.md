@@ -36,7 +36,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
 ## Notes
 The are two config files: one for the engine itself and the other for each game.
-
+ 
 ## Articles
 * [tutorial-opengl-with-golang](https://kylewbanks.com/blog/tutorial-opengl-with-golang-part-1-hello-opengl)
 * [box2d iforce2d](https://www.iforce2d.net/b2dapps/)
@@ -52,7 +52,7 @@ For example, an AABB object may wan't to track **Mesh** changes on a node such t
 ```
 go get github.com/tanema/gween
 go get github.com/ByteArena/box2d
-go get github.com/go-gl/gl/v4.1-core/gl
-go get github.com/go-gl/glfw/v3.2/glfw
-go get -u github.com/go-gl/gl/v4.1-{core,compatibility}/gl
+go get github.com/go-gl/gl/v4.5-core/gl
+go get github.com/go-gl/glfw/v3.3/glfw
+go get -u github.com/go-gl/gl/v4.5-{core,compatibility}/gl
 ```

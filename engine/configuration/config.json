@@ -7,9 +7,10 @@
     "ShowMonitorInfo": false,
     "ShowTimingInfo": false,
     "ShowJoystickInfo": false,
-    "GLMajorVersion": 3,
-    "GLMinorVersion": 3,
-    "FPSRefreshRate": 1.0
+    "GLMajorVersion": 4,
+    "GLMinorVersion": 1,
+    "FPSRate": 60.0,
+    "UPSRate": 60.0
   },
   "Window": {
     "BitsPerPixel": 32,

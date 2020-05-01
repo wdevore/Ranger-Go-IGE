@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/go-gl/gl/v2.1/gl"
-	"github.com/go-gl/glfw/v3.2/glfw"
+	"github.com/go-gl/gl/v4.5-core/gl"
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
@@ -13,17 +13,22 @@ import (
 type GlfwDisplay struct {
 	window        *glfw.Window
 	quitTriggered bool
+
+	clearColor api.IPalette
+	clearMask  uint32
 }
 
 // New creates a new diplay
 func New() *GlfwDisplay {
 	o := new(GlfwDisplay)
+	o.clearMask = gl.COLOR_BUFFER_BIT
+
 	return o
 }
 
 // Closed checks the window's close status
 func (g *GlfwDisplay) Closed() bool {
-	return g.window.ShouldClose()
+	return g.window.ShouldClose() || g.quitTriggered
 }
 
 // Poll checks for quit or polls events
@@ -33,6 +38,21 @@ func (g *GlfwDisplay) Poll() {
 	} else {
 		glfw.PollEvents()
 	}
+}
+
+// Shutdown terminates GLFW
+func (g *GlfwDisplay) Shutdown() {
+	glfw.Terminate()
+}
+
+// SetClearColor set the background clear color
+func (g *GlfwDisplay) SetClearColor(rc, gc, bc, ac float32) {
+	gl.ClearColor(rc, gc, bc, ac)
+}
+
+// Pre performs pre rendering tasks
+func (g *GlfwDisplay) Pre() {
+	gl.Clear(g.clearMask)
 }
 
 // Swap is synced to the vertical which means it is waits based on the monitor refresh rate.
@@ -61,14 +81,16 @@ func (g *GlfwDisplay) Initialize(world api.IWorld) error {
 
 func (g *GlfwDisplay) initGLFW(world api.IWorld) error {
 	// Init will call glfw.Terminate if it fails.
-	println("Initializing GLFW...")
+	fmt.Println("Initializing GLFW...")
 	err := glfw.Init()
 	if err != nil {
 		return err
 	}
 
-	glfw.WindowHint(glfw.ContextVersionMajor, 4)
-	glfw.WindowHint(glfw.ContextVersionMinor, 1)
+	ep := world.Properties().Engine
+
+	glfw.WindowHint(glfw.ContextVersionMajor, ep.GLMajorVersion)
+	glfw.WindowHint(glfw.ContextVersionMinor, ep.GLMinorVersion)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.Resizable, glfw.False)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
@@ -93,7 +115,7 @@ func (g *GlfwDisplay) initGLFW(world api.IWorld) error {
 	g.window.MakeContextCurrent()
 
 	if world.Properties().Engine.ShowMonitorInfo {
-		println("---------------------------- Monitor Info ---------------------------------------")
+		fmt.Println("---------------------------- Monitor Info ---------------------------------------")
 		monitor := glfw.GetPrimaryMonitor()
 		mode := monitor.GetVideoMode()
 		fmt.Printf("Monitor refresh rate: %d Hz\n", mode.RefreshRate)
@@ -105,13 +127,13 @@ func (g *GlfwDisplay) initGLFW(world api.IWorld) error {
 
 		fbWidth, fbHeight := g.window.GetFramebufferSize()
 		fmt.Printf("Framebuffer size: %d x %d\n", fbWidth, fbHeight)
-		println("-------------------------------------------------------------------")
+		fmt.Println("-------------------------------------------------------------------")
 	}
 
 	g.window.SetKeyCallback(g.keyCallback)
 
 	if wp.LockToVSync {
-		println("Locking to VSync")
+		fmt.Println("Locking to VSync")
 		glfw.SwapInterval(1)
 	}
 
@@ -119,7 +141,7 @@ func (g *GlfwDisplay) initGLFW(world api.IWorld) error {
 }
 
 func (g *GlfwDisplay) initGL(world api.IWorld) error {
-	println("Initializing OpenGL...")
+	fmt.Println("Initializing OpenGL...")
 
 	err := gl.Init()
 
@@ -130,7 +152,7 @@ func (g *GlfwDisplay) initGL(world api.IWorld) error {
 	ep := world.Properties().Engine
 
 	if ep.ShowGLInfo {
-		println("---------------------------- GL Info ---------------------------------------")
+		fmt.Println("---------------------------- GL Info ---------------------------------------")
 		fmt.Printf("Requesting OpenGL minimum of: %d.%d\n", ep.GLMajorVersion, ep.GLMinorVersion)
 
 		version := gl.GoStr(gl.GetString(gl.VERSION))
@@ -148,15 +170,15 @@ func (g *GlfwDisplay) initGL(world api.IWorld) error {
 		var nrAttributes int32
 		gl.GetIntegerv(gl.MAX_VERTEX_ATTRIBS, &nrAttributes)
 		fmt.Printf("Max # of vertex attributes supported: %d\n", nrAttributes)
-		println("-------------------------------------------------------------------")
+		fmt.Println("-------------------------------------------------------------------")
 	}
 
 	return nil
 }
 
 func (g *GlfwDisplay) keyCallback(glfwW *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
-	// println("key pressed")
-	if key == glfw.KeyQ && action == glfw.Press {
+	// fmt.Println("key pressed")
+	if key == glfw.KeyEscape && action == glfw.Press {
 		g.quitTriggered = true
 	}
 }

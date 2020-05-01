@@ -11,4 +11,6 @@ func main() {
 	engine.World().PropertiesOverride("config.json")
 
 	engine.Start()
+
+	engine.End()
 }

@@ -234,7 +234,7 @@ func (v *vector3) Cross(o api.IVector3) {
 
 // Mul left-multiplies the vector by the given matrix, assuming the fourth (w) component of the vector is 1.
 func (v *vector3) Mul(m api.IMatrix4) {
-	me := m.E()
+	me := m.Matrix()
 	v.Set3Components(
 		v.x*me[M00]+v.y*me[M01]+v.z*me[M02]+me[M03],
 		v.x*me[M10]+v.y*me[M11]+v.z*me[M12]+me[M13],
