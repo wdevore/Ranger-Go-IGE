@@ -1,16 +1,39 @@
 package main
 
 import (
+	"log"
+
 	"github.com/wdevore/Ranger-Go-IGE/engine"
+	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
+	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 )
 
 func main() {
-	engine := engine.Construct("../../..")
+	engine, err := engine.Construct("../../..")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer engine.End()
+
+	world := engine.World()
 
 	// Override some of the world properties for this example
-	engine.World().PropertiesOverride("config.json")
+	world.PropertiesOverride("config.json")
 
-	engine.Start()
+	splash := newBasicSplashScene("Splash", nil)
+	err = splash.Build(world)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	engine.End()
+	// This example uses the super basic Boot scene that does absolutely nothing.
+	boot := custom.NewBasicBootScene("Boot", splash)
+
+	nodes.PrintTree(splash)
+
+	engine.PushStart(boot)
+
+	engine.Begin()
+
 }

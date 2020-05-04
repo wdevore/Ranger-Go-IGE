@@ -2,5 +2,5 @@ package api
 
 // IRender is the visual interface for drawing
 type IRender interface {
-	Draw()
+	Draw(IMatrix4)
 }

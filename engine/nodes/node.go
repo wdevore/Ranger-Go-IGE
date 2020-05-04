@@ -54,8 +54,9 @@ func (n *Node) Initialize(name string) {
 }
 
 // Build builds this nodes internal geometry
-func (n *Node) Build(world api.IWorld) {
+func (n *Node) Build(world api.IWorld) error {
 	n.world = world
+	return nil
 }
 
 // World returns cached world object
@@ -86,12 +87,12 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 
 	aft := node.CalcTransform()
 
-	transStack.Apply(aft)
+	current := transStack.ApplyAffine(aft)
 
 	nodeRender, isRenderType := node.(api.IRender)
 	if isRenderType {
-		// OpenGL stuff here...
-		nodeRender.Draw()
+
+		nodeRender.Draw(current)
 	} else {
 		log.Fatalf("Node: oops, %s doesn't implement IRender.Draw method", node)
 	}
@@ -168,7 +169,7 @@ func (n *Node) Update(msPerUpdate, secPerUpdate float64) {
 // Draw provides a default render--which is to draw nothing.
 // You should override this in your custom node if your node
 // needs to perform custom rendering.
-func (n *Node) Draw() {
+func (n *Node) Draw(m4 api.IMatrix4) {
 	// fmt.Println("Node: Draw ", n)
 }
 

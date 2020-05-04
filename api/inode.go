@@ -12,7 +12,7 @@ type INode interface {
 	// InitializeWithID configures default properties.
 	InitializeWithID(id int, name string)
 
-	Build(IWorld)
+	Build(IWorld) error
 	World() IWorld
 
 	HasParent() bool

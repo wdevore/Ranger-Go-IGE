@@ -11,24 +11,25 @@ import (
 // propagating to the children (default), but "passes" translations.
 type TranslateFilter struct {
 	nodes.Node
-	world api.IWorld
 
 	// This makes the node an IFilter type
 	Filter
 }
 
 // NewTranslateFilter constructs a Translate filter.
-func NewTranslateFilter(name string, parent api.INode) api.INode {
+func NewTranslateFilter(name string, world api.IWorld, parent api.INode) api.INode {
 	o := new(TranslateFilter)
 	o.Initialize(name)
 	o.SetParent(parent)
 	o.initializeFilter()
+	parent.AddChild(o)
+	o.Build(world)
 	return o
 }
 
 // Build configures the node
-func (t *TranslateFilter) Build(world api.IWorld) {
-	t.Node.Build(world)
+func (t *TranslateFilter) Build(world api.IWorld) error {
+	return t.Node.Build(world)
 }
 
 // Visit is special in that it they provide their own implementation.
@@ -50,14 +51,14 @@ func (t *TranslateFilter) Visit(transStack api.ITransformStack, interpolation fl
 			parent := t.Parent()
 
 			// This removes the immediate parent's transform effects
-			transStack.Apply(parent.InverseTransform())
+			transStack.ApplyAffine(parent.InverseTransform())
 
 			// Re-introduce only the parent's translation component by
 			// excluding Rotation and Scale
 			parent.CalcFilteredTransform(false, true, true, t.components)
 
 			// And update context to reflect the exclusion.
-			transStack.Apply(t.components)
+			transStack.ApplyAffine(t.components)
 		} else {
 			fmt.Println("TranslateFilter: node ", t, " has NO parent")
 			return

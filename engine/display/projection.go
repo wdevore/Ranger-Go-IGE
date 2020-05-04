@@ -5,8 +5,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 )
 
-// Camera provides an orthographic projection
-type Camera struct {
+// Projection provides an orthographic projection
+type Projection struct {
 	near, far                float32
 	left, right, bottom, top float32
 	Width, Height            float32
@@ -17,19 +17,19 @@ type Camera struct {
 }
 
 // NewCamera construct a Camera
-func NewCamera() *Camera {
-	c := new(Camera)
+func NewCamera() *Projection {
+	c := new(Projection)
 	c.matrix = maths.NewMatrix4()
 	return c
 }
 
 // Matrix returns internal 4x4 matrix
-func (c *Camera) Matrix() api.IMatrix4 {
+func (c *Projection) Matrix() api.IMatrix4 {
 	return c.matrix
 }
 
 // SetProjection sets orthographic frustum dimensions
-func (c *Camera) SetProjection(ratioCorrection, bottom, left, top, right float32) {
+func (c *Projection) SetProjection(ratioCorrection, bottom, left, top, right float32) {
 	c.ratioCorrection = ratioCorrection
 
 	c.bottom = bottom
@@ -43,7 +43,7 @@ func (c *Camera) SetProjection(ratioCorrection, bottom, left, top, right float32
 }
 
 // SetCenteredProjection centers the projection and adjusts for aspect ratio.
-func (c *Camera) SetCenteredProjection() {
+func (c *Projection) SetCenteredProjection() {
 	// Adjust for aspect ratio
 	left := -c.Width / 2.0 / c.ratioCorrection
 	right := c.Width / 2.0 / c.ratioCorrection

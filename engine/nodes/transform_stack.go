@@ -6,12 +6,12 @@ import (
 )
 
 type transformStackItem struct {
-	current api.IAffineTransform
+	current api.IMatrix4
 }
 
 func newTransformItem() *transformStackItem {
 	o := new(transformStackItem)
-	o.current = maths.NewTransform()
+	o.current = maths.NewMatrix4()
 	return o
 }
 
@@ -19,50 +19,61 @@ type transformStack struct {
 	stack    []*transformStackItem
 	stackTop int
 
-	current api.IAffineTransform
-	post    api.IAffineTransform // Pre allocated cache
+	current api.IMatrix4
+	post    api.IMatrix4 // Pre allocated cache
+
+	m4 api.IMatrix4
 }
 
 const transformStackDepth = 100
 
-func newTransformStack() *transformStack {
+func newTransformStack() api.ITransformStack {
 	o := new(transformStack)
 
-	o.current = maths.NewTransform()
-	o.post = maths.NewTransform()
+	o.current = maths.NewMatrix4()
+	o.post = maths.NewMatrix4()
+	o.m4 = maths.NewMatrix4()
 
 	return o
 }
 
-func (t *transformStack) Initialize() {
+func (t *transformStack) Initialize(viewProj api.IMatrix4) {
 	t.stack = make([]*transformStackItem, transformStackDepth)
 
 	for i := 0; i < transformStackDepth; i++ {
 		t.stack[i] = newTransformItem()
 	}
 
-	// Apply centered view-space matrix
-	// rc.Apply(rc.world.ViewSpace())
+	// The initial value ready for the top of the stack should be
+	// the VP (i.e. projection * view) matrix
+	t.current.Set(viewProj)
 }
 
-func (t *transformStack) Apply(aft api.IAffineTransform) {
+func (t *transformStack) Apply(aft api.IMatrix4) api.IMatrix4 {
 	// Concat this transform onto the current transform but don't push it.
 	// Use post multiply
-	maths.Multiply(aft, t.current, t.post)
-	t.current.SetByTransform(t.post)
+	maths.Multiply4(aft, t.current, t.post)
+	t.current.Set(t.post)
+	return t.current
+}
+
+func (t *transformStack) ApplyAffine(aft api.IAffineTransform) api.IMatrix4 {
+	// Concat this transform onto the current transform but don't push it.
+	// Use post multiply
+	t.m4.SetFromAffine(aft)
+	maths.Multiply4(t.m4, t.current, t.post)
+	t.current.Set(t.post)
+	return t.current
 }
 
 func (t *transformStack) Save() {
 	top := t.stack[t.stackTop]
-	top.current.SetByTransform(t.current)
-
+	top.current.Set(t.current)
 	t.stackTop++
 }
 
 func (t *transformStack) Restore() {
 	t.stackTop--
-
 	top := t.stack[t.stackTop]
-
-	t.current.SetByTransform(top.current)
+	t.current.Set(top.current)
 }

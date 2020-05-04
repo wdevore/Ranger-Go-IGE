@@ -9,11 +9,14 @@ import (
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/configuration"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 )
 
 // World is the main component of ranger
 type world struct {
 	properties *configuration.Properties
+
+	shader api.IShader
 }
 
 func newWorld(relativePath string) api.IWorld {
@@ -42,7 +45,54 @@ func newWorld(relativePath string) api.IWorld {
 		log.Fatalln("ERROR:", err)
 	}
 
+	shp := o.properties.Shaders
+
+	if shp.UseDefault {
+		shp := &o.properties.Shaders
+
+		vertexShaderFile, err := os.Open(dataPath + "/engine/assets/shaders/" + shp.VertexShaderSrc)
+		if err != nil {
+			log.Fatalln("ERROR:", err)
+		}
+
+		defer vertexShaderFile.Close()
+
+		bytes, err := ioutil.ReadAll(vertexShaderFile)
+		if err != nil {
+			log.Fatalln("ERROR:", err)
+		}
+		shp.VertexShaderCode = string(bytes)
+
+		fragmentShaderFile, err := os.Open(dataPath + "/engine/assets/shaders/" + shp.FragmentShaderSrc)
+		if err != nil {
+			log.Fatalln("ERROR:", err)
+		}
+
+		defer fragmentShaderFile.Close()
+
+		bytes, err = ioutil.ReadAll(fragmentShaderFile)
+		if err != nil {
+			log.Fatalln("ERROR:", err)
+		}
+
+		shp.FragmentShaderCode = string(bytes)
+	}
+
 	return o
+}
+
+func (w *world) Configure() error {
+	shp := w.properties.Shaders
+
+	w.shader = rendering.NewShaderFromCode(shp.VertexShaderCode, shp.FragmentShaderCode)
+
+	err := w.shader.Compile()
+
+	return err
+}
+
+func (w *world) Shader() api.IShader {
+	return w.shader
 }
 
 func (w *world) Properties() *configuration.Properties {

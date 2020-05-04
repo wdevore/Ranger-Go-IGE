@@ -33,6 +33,10 @@ const (
 	SoftOrange = uint64(0xFF851BFF)
 	// Yellow color
 	Yellow = uint64(0xFFDC00FF)
+	// YellowGreen color
+	YellowGreen = uint64(0x9ACD32FF)
+	// GoldYellow color
+	GoldYellow = uint64(0xFFC800FF)
 	// Peach color
 	Peach = uint64(0xF1C6A7FF)
 
@@ -42,6 +46,8 @@ const (
 
 	// SoftGreen color
 	SoftGreen = uint64(0x2ECC40FF)
+	// GreenYellow color
+	GreenYellow = uint64(0xADFF2FFF)
 	// Olive color
 	Olive = uint64(0x3D9970FF)
 	// Teal color
@@ -55,6 +61,10 @@ const (
 
 	// SoftBlue color
 	SoftBlue = uint64(0x0074D9FF)
+	// DarkBlue color
+	DarkBlue = uint64(0x6D9DEBFF)
+	// GreyBlue color
+	GreyBlue = uint64(0x4864B4FF)
 	// Navy color
 	Navy = uint64(0x001f3fFF)
 	// Aqua color
@@ -69,4 +79,8 @@ const (
 
 	// LightNavyBlue color
 	LightNavyBlue = uint64(0x85B3D1FF)
+	// PanSkin color
+	PanSkin = uint64(0xfcc89bff)
+	// PanPurple color
+	PanPurple = uint64(0x8031a7ff)
 )

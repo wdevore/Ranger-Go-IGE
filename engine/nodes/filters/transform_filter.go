@@ -12,7 +12,6 @@ import (
 // which is the most common use case.
 type TransformFilter struct {
 	nodes.Node
-	world api.IWorld
 
 	// This makes the node an IFilter type
 	Filter
@@ -32,8 +31,8 @@ func NewTransformFilter(name string, world api.IWorld, parent api.INode) api.INo
 }
 
 // Build configures the node
-func (t *TransformFilter) Build(world api.IWorld) {
-	t.Node.Build(world)
+func (t *TransformFilter) Build(world api.IWorld) error {
+	return t.Node.Build(world)
 }
 
 // Visit is special in that it they provide their own implementation
@@ -62,7 +61,7 @@ func (t *TransformFilter) Visit(transStack api.ITransformStack, interpolation fl
 			maths.Multiply(t.components, parent.InverseTransform(), t.AffineTransform())
 
 			// Merge them with the current context.
-			transStack.Apply(t.AffineTransform())
+			transStack.ApplyAffine(t.AffineTransform())
 		} else {
 			fmt.Println("TransformFilter: node ", t, " has NO parent")
 			return

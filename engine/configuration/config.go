@@ -62,10 +62,21 @@ type fontJSON struct {
 	CharsFromSet int
 }
 
+type shadersJSON struct {
+	UseDefault        bool
+	VertexShaderSrc   string
+	FragmentShaderSrc string
+
+	// These properties are populated dynamically
+	VertexShaderCode   string
+	FragmentShaderCode string
+}
+
 // Properties reflects config.json
 type Properties struct {
-	Engine engineJSON
-	Window windowJSON
-	Camera cameraJSON
-	Font   fontJSON
+	Engine  engineJSON
+	Window  windowJSON
+	Camera  cameraJSON
+	Font    fontJSON
+	Shaders shadersJSON
 }

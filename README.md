@@ -56,3 +56,29 @@ go get github.com/go-gl/gl/v4.5-core/gl
 go get github.com/go-gl/glfw/v3.3/glfw
 go get -u github.com/go-gl/gl/v4.5-{core,compatibility}/gl
 ```
+
+# VS Code setup:
+"window.zoomLevel": 1.9
+"editor.fontSize": 14
+"editor.fontLigatures": true
+"terminal.integrated.fontSize": 12
+"editor.fontFamily": "'Cascadia Code', 'Cascadia Mono', 'Courier New', monospace, Consolas"
+
+# Example and source
+https://github.com/go-gl/mathgl GLM
+https://github.com/go-gl/example/blob/master/gl41core-cube/cube.go
+https://github.com/cstegel/opengl-samples-golang
+https://github.com/crockeo/go-tuner
+https://github.com/pikkpoiss/ld33
+https://github.com/pikkpoiss/twodee
+https://github.com/esenti/godraw
+https://github.com/runningwild/glop
+https://github.com/btmura/blockcillin keys  
+https://github.com/manueldun/Game
+https://github.com/kurrik/opengl-benchmarks
+https://github.com/tbogdala/cubez physics engine
+https://github.com/Triangle345/GT
+https://github.com/yucchiy/toybox-opengl
+https://github.com/CubeLite/gltext-1
+https://github.com/cozely/cozely
+https://github.com/LonelyPale/go-opengl

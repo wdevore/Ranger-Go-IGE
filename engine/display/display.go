@@ -76,6 +76,9 @@ func (g *GlfwDisplay) Initialize(world api.IWorld) error {
 		return err
 	}
 
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
 	return nil
 }
 

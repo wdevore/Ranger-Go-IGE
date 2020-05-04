@@ -35,8 +35,6 @@ type engine struct {
 	// Display
 	// ---------------------------------------------------------------------
 	windowDisplay *display.GlfwDisplay
-	camera        *display.Camera
-	viewport      *display.Viewport
 
 	// -----------------------------------------
 	// Scene graph is a node manager
@@ -50,37 +48,42 @@ type engine struct {
 }
 
 // Construct creates a new Engine
-func Construct(relativePath string) api.IEngine {
+func Construct(relativePath string) (eng api.IEngine, err error) {
 	o := new(engine)
+
 	o.world = newWorld(relativePath)
+
+	if !o.world.Properties().Engine.Enabled {
+		return nil, errors.New("Engine is NOT enabled in config file")
+	}
 
 	o.sceneGraph = nodes.NewNodeManager(o.world)
 
-	return o
-}
-
-func (e *engine) Start() error {
-	if !e.world.Properties().Engine.Enabled {
-		return errors.New("engine is NOT enabled in config file")
-	}
-
-	e.windowDisplay = display.New()
-	err := e.windowDisplay.Initialize(e.world)
+	o.windowDisplay = display.New()
+	err = o.windowDisplay.Initialize(o.world)
 
 	if err != nil {
-		return err
+		return nil, errors.New("Engine.Construct Display error: " + err.Error())
 	}
 
-	wpc := e.world.Properties().Window.ClearColor
-	e.windowDisplay.SetClearColor(wpc.R, wpc.G, wpc.B, wpc.A)
+	wpc := o.world.Properties().Window.ClearColor
+	o.windowDisplay.SetClearColor(wpc.R, wpc.G, wpc.B, wpc.A)
 
-	e.configureProjections(e.world)
+	err = o.world.Configure()
+
+	if err != nil {
+		return nil, errors.New("Engine.Construct World Configure error: " + err.Error())
+	}
+
+	return o, nil
+}
+
+func (e *engine) Begin() {
+	e.sceneGraph.Configure()
 
 	e.running = true
 
 	e.loop()
-
-	return nil
 }
 
 func (e *engine) loop() {
@@ -137,12 +140,12 @@ func (e *engine) loop() {
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
 		// Render Scenegraph by visiting the nodes
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
+		display.Pre()
+		// **** Any rendering and timing must occur AFTER this point ****
+
 		renderT := time.Now()
 
 		e.sceneGraph.PreVisit()
-
-		// **** Any rendering must occur AFTER this point ****
-		display.Pre()
 
 		// Calc interpolation for nodes that need it.
 		interpolation := float64(lag) / float64(nsPerUpdate)
@@ -151,8 +154,9 @@ func (e *engine) loop() {
 		moreScenes := e.sceneGraph.Visit(interpolation)
 
 		if !moreScenes {
-			// e.running = false
-			// continue
+			fmt.Println("Engine: no more nodes to visit. Exiting...")
+			e.running = false
+			continue
 		}
 
 		if renderCnt >= renderMaxCnt {
@@ -183,7 +187,6 @@ func (e *engine) loop() {
 		// Finish rendering
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
 		// presentT := time.Now()
-		// SDL present's elapsed time is different if vsync is on or off.
 		e.sceneGraph.PostVisit()
 
 		fpsCnt++
@@ -191,6 +194,10 @@ func (e *engine) loop() {
 
 		display.Swap()
 	}
+}
+
+func (e *engine) PushStart(node api.INode) {
+	e.sceneGraph.PushNode(node)
 }
 
 func (e *engine) End() {
@@ -202,49 +209,7 @@ func (e *engine) World() api.IWorld {
 	return e.world
 }
 
-func (e *engine) configureProjections(world api.IWorld) {
-	wp := world.Properties().Window
-
-	e.viewport = display.NewViewport()
-
-	e.viewport.SetDimensions(0, 0, wp.DeviceRes.Width, wp.DeviceRes.Height)
-	e.viewport.Apply()
-
-	// Calc the aspect ratio between the physical (aka device) dimensions and the
-	// the virtual (aka user's design choice) dimensions.
-
-	deviceRatio := float64(wp.DeviceRes.Width) / float64(wp.DeviceRes.Height)
-	virtualRatio := float64(wp.VirtualRes.Width) / float64(wp.VirtualRes.Height)
-
-	xRatioCorrection := float64(wp.DeviceRes.Width) / float64(wp.VirtualRes.Width)
-	yRatioCorrection := float64(wp.DeviceRes.Height) / float64(wp.VirtualRes.Height)
-
-	var ratioCorrection float64
-
-	if virtualRatio < deviceRatio {
-		ratioCorrection = yRatioCorrection
-	} else {
-		ratioCorrection = xRatioCorrection
-	}
-
-	e.camera = display.NewCamera()
-
-	if world.Properties().Camera.Centered {
-		e.camera.SetCenteredProjection()
-	} else {
-		e.camera.SetProjection(
-			float32(ratioCorrection),
-			0.0, 0.0,
-			float32(wp.DeviceRes.Height), float32(wp.DeviceRes.Width))
-	}
-}
-
 func (e *engine) drawStats(fps, ups int, avgRend float64) {
 	fmt.Printf("fps (%2d), ups (%2d), rend (%2.4f)\n", fps, ups, avgRend)
 	// fmt.Printf("secCnt %d, fpsCnt %d, presC %d\n", secondCnt, fpsCnt, presentElapsedCnt)
 }
-
-// ---------------- Update BEGIN -----------------------------
-// e.currentUpdateTime = glfw.GetTime()
-// e.deltaUpdateTime = glfw.GetTime() - e.currentUpdateTime
-// ---------------- Update END -----------------------------
