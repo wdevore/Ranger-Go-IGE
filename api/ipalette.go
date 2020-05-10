@@ -4,6 +4,7 @@ package api
 type IPalette interface {
 	// Components return each component
 	Components() (r, g, b, a float32)
+	Array() []float32
 
 	// R is red component
 	R() float32

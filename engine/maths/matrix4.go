@@ -134,12 +134,13 @@ func (m *matrix4) TranslateBy3Comps(x, y, z float32) {
 	e[M32] = 0.0
 	e[M33] = 1.0
 
-	m.PreMultiply(tempM0)
+	Multiply4(m, tempM0, mulM)
+	m.Set(mulM)
 }
 
 // SetTranslateByVector sets the translational component to the matrix in the 4th column.
 // The other columns are unmodified.
-func (m *matrix4) SetTranslateByVector(v api.IVector3) {
+func (m *matrix4) SetTranslateUsingVector(v api.IVector3) {
 	m.ToIdentity()
 	m.e[M03] = v.X()
 	m.e[M13] = v.Y()
@@ -222,7 +223,8 @@ func (m *matrix4) Rotate(angle float64) {
 	e[M32] = 0.0
 	e[M33] = 1.0
 
-	m.PreMultiply(tempM0)
+	Multiply4(m, tempM0, mulM)
+	m.Set(mulM)
 }
 
 // --------------------------------------------------------------------------
@@ -280,7 +282,8 @@ func (m *matrix4) Scale(v api.IVector3) {
 	e[M32] = 0
 	e[M33] = 1
 
-	m.PreMultiply(tempM0)
+	Multiply4(m, tempM0, mulM)
+	m.Set(mulM)
 }
 
 // ScaleByComp scales the scale components.
@@ -304,7 +307,8 @@ func (m *matrix4) ScaleByComp(sx, sy, sz float32) {
 	e[M32] = 0
 	e[M33] = 1
 
-	m.PreMultiply(tempM0)
+	Multiply4(m, tempM0, mulM)
+	m.Set(mulM)
 }
 
 func (m *matrix4) GetPsuedoScale() float32 {
@@ -436,16 +440,20 @@ func (m *matrix4) PostTranslate(tx, ty, tz float32) {
 // --------------------------------------------------------------------------
 
 // SetToOrtho sets the matrix for a 2d ortho graphic projection
+//  |M00 M01 M02 M03|
+//  |M10 M11 M12 M13|
+//  |M20 M21 M22 M23|
+//  |M30 M31 M32 M33|
+//
+//  [M00,M10,M20,M30,M01,M11,M21,M31,M02,M12,M22,M32,M03,M13,M23,M33]
 func (m *matrix4) SetToOrtho(left, right, bottom, top, near, far float32) {
-	m.ToIdentity()
-
 	xorth := 2.0 / (right - left)
 	yorth := 2.0 / (top - bottom)
-	zorth := -2.0 / (far - near)
+	zorth := 2.0 / (near - far)
 
-	tx := -(right + left) / (right - left)
-	ty := -(top + bottom) / (top - bottom)
-	tz := -(far + near) / (far - near)
+	tx := (right + left) / (left - right)
+	ty := (top + bottom) / (bottom - top)
+	tz := (far + near) / (far - near)
 
 	m.e[M00] = xorth
 	m.e[M10] = 0.0
@@ -557,6 +565,135 @@ func (m *matrix4) ToIdentity() {
 	m.e[M33] = 1.0
 }
 
+func (m *matrix4) Invert() bool {
+	inv := tempM0.Matrix()
+
+	inv[0] = m.e[5]*m.e[10]*m.e[15] -
+		m.e[5]*m.e[11]*m.e[14] -
+		m.e[9]*m.e[6]*m.e[15] +
+		m.e[9]*m.e[7]*m.e[14] +
+		m.e[13]*m.e[6]*m.e[11] -
+		m.e[13]*m.e[7]*m.e[10]
+
+	inv[4] = -m.e[4]*m.e[10]*m.e[15] +
+		m.e[4]*m.e[11]*m.e[14] +
+		m.e[8]*m.e[6]*m.e[15] -
+		m.e[8]*m.e[7]*m.e[14] -
+		m.e[12]*m.e[6]*m.e[11] +
+		m.e[12]*m.e[7]*m.e[10]
+
+	inv[8] = m.e[4]*m.e[9]*m.e[15] -
+		m.e[4]*m.e[11]*m.e[13] -
+		m.e[8]*m.e[5]*m.e[15] +
+		m.e[8]*m.e[7]*m.e[13] +
+		m.e[12]*m.e[5]*m.e[11] -
+		m.e[12]*m.e[7]*m.e[9]
+
+	inv[12] = -m.e[4]*m.e[9]*m.e[14] +
+		m.e[4]*m.e[10]*m.e[13] +
+		m.e[8]*m.e[5]*m.e[14] -
+		m.e[8]*m.e[6]*m.e[13] -
+		m.e[12]*m.e[5]*m.e[10] +
+		m.e[12]*m.e[6]*m.e[9]
+
+	inv[1] = -m.e[1]*m.e[10]*m.e[15] +
+		m.e[1]*m.e[11]*m.e[14] +
+		m.e[9]*m.e[2]*m.e[15] -
+		m.e[9]*m.e[3]*m.e[14] -
+		m.e[13]*m.e[2]*m.e[11] +
+		m.e[13]*m.e[3]*m.e[10]
+
+	inv[5] = m.e[0]*m.e[10]*m.e[15] -
+		m.e[0]*m.e[11]*m.e[14] -
+		m.e[8]*m.e[2]*m.e[15] +
+		m.e[8]*m.e[3]*m.e[14] +
+		m.e[12]*m.e[2]*m.e[11] -
+		m.e[12]*m.e[3]*m.e[10]
+
+	inv[9] = -m.e[0]*m.e[9]*m.e[15] +
+		m.e[0]*m.e[11]*m.e[13] +
+		m.e[8]*m.e[1]*m.e[15] -
+		m.e[8]*m.e[3]*m.e[13] -
+		m.e[12]*m.e[1]*m.e[11] +
+		m.e[12]*m.e[3]*m.e[9]
+
+	inv[13] = m.e[0]*m.e[9]*m.e[14] -
+		m.e[0]*m.e[10]*m.e[13] -
+		m.e[8]*m.e[1]*m.e[14] +
+		m.e[8]*m.e[2]*m.e[13] +
+		m.e[12]*m.e[1]*m.e[10] -
+		m.e[12]*m.e[2]*m.e[9]
+
+	inv[2] = m.e[1]*m.e[6]*m.e[15] -
+		m.e[1]*m.e[7]*m.e[14] -
+		m.e[5]*m.e[2]*m.e[15] +
+		m.e[5]*m.e[3]*m.e[14] +
+		m.e[13]*m.e[2]*m.e[7] -
+		m.e[13]*m.e[3]*m.e[6]
+
+	inv[6] = -m.e[0]*m.e[6]*m.e[15] +
+		m.e[0]*m.e[7]*m.e[14] +
+		m.e[4]*m.e[2]*m.e[15] -
+		m.e[4]*m.e[3]*m.e[14] -
+		m.e[12]*m.e[2]*m.e[7] +
+		m.e[12]*m.e[3]*m.e[6]
+
+	inv[10] = m.e[0]*m.e[5]*m.e[15] -
+		m.e[0]*m.e[7]*m.e[13] -
+		m.e[4]*m.e[1]*m.e[15] +
+		m.e[4]*m.e[3]*m.e[13] +
+		m.e[12]*m.e[1]*m.e[7] -
+		m.e[12]*m.e[3]*m.e[5]
+
+	inv[14] = -m.e[0]*m.e[5]*m.e[14] +
+		m.e[0]*m.e[6]*m.e[13] +
+		m.e[4]*m.e[1]*m.e[14] -
+		m.e[4]*m.e[2]*m.e[13] -
+		m.e[12]*m.e[1]*m.e[6] +
+		m.e[12]*m.e[2]*m.e[5]
+
+	inv[3] = -m.e[1]*m.e[6]*m.e[11] +
+		m.e[1]*m.e[7]*m.e[10] +
+		m.e[5]*m.e[2]*m.e[11] -
+		m.e[5]*m.e[3]*m.e[10] -
+		m.e[9]*m.e[2]*m.e[7] +
+		m.e[9]*m.e[3]*m.e[6]
+
+	inv[7] = m.e[0]*m.e[6]*m.e[11] -
+		m.e[0]*m.e[7]*m.e[10] -
+		m.e[4]*m.e[2]*m.e[11] +
+		m.e[4]*m.e[3]*m.e[10] +
+		m.e[8]*m.e[2]*m.e[7] -
+		m.e[8]*m.e[3]*m.e[6]
+
+	inv[11] = -m.e[0]*m.e[5]*m.e[11] +
+		m.e[0]*m.e[7]*m.e[9] +
+		m.e[4]*m.e[1]*m.e[11] -
+		m.e[4]*m.e[3]*m.e[9] -
+		m.e[8]*m.e[1]*m.e[7] +
+		m.e[8]*m.e[3]*m.e[5]
+
+	inv[15] = m.e[0]*m.e[5]*m.e[10] -
+		m.e[0]*m.e[6]*m.e[9] -
+		m.e[4]*m.e[1]*m.e[10] +
+		m.e[4]*m.e[2]*m.e[9] +
+		m.e[8]*m.e[1]*m.e[6] -
+		m.e[8]*m.e[2]*m.e[5]
+
+	det := m.e[0]*inv[0] + m.e[1]*inv[4] + m.e[2]*inv[8] + m.e[3]*inv[12]
+
+	if det == 0 {
+		return false
+	}
+
+	det = 1.0 / det
+
+	for i := 0; i < 16; i++ {
+		m.e[i] = inv[i] * det
+	}
+
+	return true
+}
 func (m matrix4) String() string {
 	s := fmt.Sprintf("[%7.3f, %7.3f, %7.3f, %7.3f]\n", m.e[M00], m.e[M01], m.e[M02], m.e[M03])
 	s += fmt.Sprintf("[%7.3f, %7.3f, %7.3f, %7.3f]\n", m.e[M10], m.e[M11], m.e[M12], m.e[M13])

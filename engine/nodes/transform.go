@@ -59,9 +59,19 @@ func (t *Transform) SetScale(scale float32) {
 	t.scale.SetByComp(scale, scale)
 }
 
+// SetScaleComps sets the scale Non-uniformly for x and y
+func (t *Transform) SetScaleComps(sx, sy float32) {
+	t.scale.SetByComp(sx, sy)
+}
+
 // Scale returns the X scale component for uniform scales.
 func (t *Transform) Scale() float32 {
 	return t.scale.X()
+}
+
+// ScaleComps returns X and Y scale components for non-uniform scales.
+func (t *Transform) ScaleComps() (float32, float32) {
+	return t.scale.X(), t.scale.Y()
 }
 
 // CalcFilteredTransform performs a filter transform calculation.

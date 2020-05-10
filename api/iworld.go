@@ -12,4 +12,10 @@ type IWorld interface {
 	PropertiesOverride(configFiel string)
 
 	Shader() IShader
+	// Shader locations
+	ModelLoc() int32
+	ColorLoc() int32
+
+	Atlas() IAtlas
+	VecObj() IVectorObject
 }

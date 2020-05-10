@@ -6,7 +6,7 @@ type IMatrix4 interface {
 	TranslateBy3Comps(x, y, z float32)
 	TranslateBy2Comps(x, y float32)
 
-	SetTranslateByVector(v IVector3)
+	SetTranslateUsingVector(v IVector3)
 	SetTranslate3Comp(x, y, z float32)
 	PostTranslate(tx, ty, tz float32)
 	GetTranslation(out IVector3)
@@ -34,6 +34,7 @@ type IMatrix4 interface {
 	Clone() IMatrix4
 	Eq(IMatrix4) bool
 	ToIdentity()
+	Invert() bool
 
 	// Graphics
 	SetToOrtho(left, right, bottom, top, near, far float32)

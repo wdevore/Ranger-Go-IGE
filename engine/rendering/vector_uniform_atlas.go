@@ -12,7 +12,7 @@ func NewVectorUniformAtlas(isStatic bool) *VectorUniformAtlas {
 	return vua
 }
 
-// Add adds a vertex and auto generated index
+// Add adds a vertex
 func (vua *VectorUniformAtlas) Add(x, y, z float32, index int) {
 	vua.AddVertex(x, y, z)
 	vua.AddIndex(index)

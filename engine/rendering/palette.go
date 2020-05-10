@@ -51,6 +51,10 @@ func (p *palette) Components() (r, g, b, a float32) {
 	return r, g, b, a
 }
 
+func (p *palette) Array() []float32 {
+	return []float32{p.r, p.g, p.b, p.a}
+}
+
 func (p *palette) R() float32 {
 	return p.r
 }

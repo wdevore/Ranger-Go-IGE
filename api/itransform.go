@@ -20,7 +20,9 @@ type ITransform interface {
 	Rotation() float64
 
 	SetScale(scale float32)
+	SetScaleComps(sx, sy float32)
 	Scale() float32
+	ScaleComps() (float32, float32)
 
 	// Not really useful in this engine.
 	// SetNonUniformScale(sx, sy float64)

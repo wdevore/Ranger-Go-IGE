@@ -1,8 +1,9 @@
 package custom
 
 import (
+	"github.com/go-gl/gl/v4.5-core/gl"
+
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 )
@@ -11,9 +12,9 @@ import (
 type TriangleNode struct {
 	nodes.Node
 
-	color api.IPalette
+	color []float32
 
-	polygon api.IPolygon
+	shape api.IVectorShape
 }
 
 // NewTriangleNode constructs a triangle shaped node
@@ -30,43 +31,28 @@ func NewTriangleNode(name string, world api.IWorld, parent api.INode) *TriangleN
 func (t *TriangleNode) Build(world api.IWorld) error {
 	t.Node.Build(world)
 
-	t.polygon = geometry.NewPolygon()
-	t.polygon.AddVertex(-0.5, 0.5)
-	t.polygon.AddVertex(0.5, 0.5)
-	t.polygon.AddVertex(0.0, -0.314)
+	t.color = rendering.NewPaletteInt64(rendering.White).Array()
 
-	t.polygon.Build()
-
-	t.color = rendering.NewPaletteInt64(rendering.White)
+	t.shape = world.Atlas().Shape("CenteredTriangle")
 
 	return nil
 }
 
-// Polygon returns the internal polygon mesh
-func (t *TriangleNode) Polygon() api.IPolygon {
-	return t.polygon
-}
-
 // SetColor sets line color
 func (t *TriangleNode) SetColor(color api.IPalette) {
-	t.color = color
-}
-
-// SetPoints sets the edge points of the triangle
-func (t *TriangleNode) SetPoints(x1, y1, x2, y2, x3, y3 float32) {
-	t.polygon.SetVertex(x1, y1, 0)
-	t.polygon.SetVertex(x2, y2, 1)
-	t.polygon.SetVertex(x3, y3, 2)
+	t.color = color.Array()
 }
 
 // Draw renders shape
-func (t *TriangleNode) Draw(m4 api.IMatrix4) {
-	if t.IsDirty() {
-		// context.TransformPolygon(t.polygon)
+func (t *TriangleNode) Draw(model api.IMatrix4) {
+	// if t.IsDirty() {
+	// 	t.SetDirty(false)
+	// }
 
-		t.SetDirty(false)
-	}
+	w := t.World()
+	gl.UniformMatrix4fv(w.ModelLoc(), 1, false, &model.Matrix()[0])
 
-	// context.SetDrawColor(t.color)
-	// context.RenderPolygon(t.polygon, api.CLOSED)
+	gl.Uniform3fv(w.ColorLoc(), 1, &t.color[0])
+
+	w.VecObj().Render(t.shape)
 }

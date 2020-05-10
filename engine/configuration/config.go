@@ -49,9 +49,15 @@ type windowJSON struct {
 	Title        string
 }
 
+type depthJSON struct {
+	Near float32
+	Far  float32
+}
+
 type cameraJSON struct {
 	Centered bool
 	View     float3DCoordJSON
+	Depth    depthJSON
 }
 
 type fontJSON struct {

@@ -1,8 +1,10 @@
 package nodes
 
 import (
+	"errors"
 	"fmt"
 
+	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/display"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
@@ -25,8 +27,11 @@ type nodeManager struct {
 	projection *display.Projection
 	viewport   *display.Viewport
 
-	viewSpace    api.IAffineTransform
-	invViewSpace api.IAffineTransform
+	viewSpace    api.IMatrix4
+	invViewSpace api.IMatrix4
+
+	projLoc int32
+	viewLoc int32
 }
 
 // NewNodeManager constructs a manager for node.
@@ -43,8 +48,8 @@ func NewNodeManager(world api.IWorld) api.INodeManager {
 	o.nodStack = newNodeStack()
 	o.transStack = newTransformStack()
 
-	o.viewSpace = maths.NewTransform()
-	o.invViewSpace = maths.NewTransform()
+	o.viewSpace = maths.NewMatrix4()
+	o.invViewSpace = maths.NewMatrix4()
 
 	o.timingTargets = NewNodeList()
 	o.eventTargets = NewNodeList()
@@ -52,20 +57,36 @@ func NewNodeManager(world api.IWorld) api.INodeManager {
 	return o
 }
 
-func (n *nodeManager) Configure() {
+func (n *nodeManager) Configure() error {
 	// Setup view/projection matrix composition
 
 	n.configureProjections(n.world)
 
-	// Setup initial VP portion of MVP
-	m4 := maths.NewMatrix4()
-	m4.SetFromAffine(n.viewSpace)
-	// (i.e. m4 = projection * view)
-	m4.PostMultiply(n.projection.Matrix())
+	// Send static matrices to Shader
+	programID := n.world.Shader().Program()
+	n.projLoc = gl.GetUniformLocation(programID, gl.Str("projection\x00"))
+	if n.projLoc < 0 {
+		return errors.New("SplashScene: couldn't find 'projection' uniform variable")
+	}
 
-	// Initialize will make m4 the current matrix ready to be
+	n.viewLoc = gl.GetUniformLocation(programID, gl.Str("view\x00"))
+	if n.viewLoc < 0 {
+		return errors.New("SplashScene: couldn't find 'view' uniform variable")
+	}
+
+	pm := n.projection.Matrix().Matrix()
+	gl.UniformMatrix4fv(n.projLoc, 1, false, &pm[0])
+
+	vm := n.viewSpace.Matrix()
+	gl.UniformMatrix4fv(n.viewLoc, 1, false, &vm[0])
+
+	identity := maths.NewMatrix4()
+
+	// Initialize will make an Identity matrix the current matrix ready to be
 	// placed on the stack on the first save() call.
-	n.transStack.Initialize(m4)
+	n.transStack.Initialize(identity)
+
+	return nil
 }
 
 func (n *nodeManager) ClearEnabled(clear bool) {
@@ -255,44 +276,39 @@ func FindFirstElement(node api.INode, slice []api.INode) int {
 func (n *nodeManager) configureProjections(world api.IWorld) {
 	wp := world.Properties().Window
 
+	// ------------------------------------------------------------
+	// Viewport device-space
+	// ------------------------------------------------------------
 	n.viewport = display.NewViewport()
 
 	n.viewport.SetDimensions(0, 0, wp.DeviceRes.Width, wp.DeviceRes.Height)
 	n.viewport.Apply()
 
-	// Calc the aspect ratio between the physical (aka device) dimensions and the
-	// the virtual (aka user's design choice) dimensions.
-
-	deviceRatio := float64(wp.DeviceRes.Width) / float64(wp.DeviceRes.Height)
-	virtualRatio := float64(wp.VirtualRes.Width) / float64(wp.VirtualRes.Height)
-
-	xRatioCorrection := float64(wp.DeviceRes.Width) / float64(wp.VirtualRes.Width)
-	yRatioCorrection := float64(wp.DeviceRes.Height) / float64(wp.VirtualRes.Height)
-
-	var ratioCorrection float64
-
-	if virtualRatio < deviceRatio {
-		ratioCorrection = yRatioCorrection
-	} else {
-		ratioCorrection = xRatioCorrection
-	}
-
+	// ------------------------------------------------------------
+	// Projection space
+	// ------------------------------------------------------------
 	n.projection = display.NewCamera()
 
-	if world.Properties().Camera.Centered {
-		n.projection.SetCenteredProjection()
-	} else {
-		n.projection.SetProjection(
-			float32(ratioCorrection),
-			0.0, 0.0,
-			float32(wp.DeviceRes.Height), float32(wp.DeviceRes.Width))
+	camera := world.Properties().Camera
+	n.projection.SetProjection(
+		0.0, 0.0,
+		float32(wp.DeviceRes.Height), float32(wp.DeviceRes.Width),
+		camera.Depth.Near, camera.Depth.Far)
+
+	// ------------------------------------------------------------
+	// View-space
+	// ------------------------------------------------------------
+	offsetX := float32(0.0)
+	offsetY := float32(0.0)
+	if camera.Centered {
+		offsetX = float32(wp.DeviceRes.Width) / 2.0
+		offsetY = float32(wp.DeviceRes.Height) / 2.0
 	}
+	n.viewSpace.SetTranslate3Comp(offsetX, offsetY, 1.0)
+	// Rarely would you perform a Scale or Rotation on the view-space.
+	// But you could if you need to.
+	// view.ScaleByComp(2.0, 2.0, 1.0)
 
-	center := maths.NewTransform()
-	center.Scale(float32(xRatioCorrection), float32(yRatioCorrection))
-
-	n.viewSpace.SetByTransform(center)
-
-	n.invViewSpace.SetByTransform(center)
+	n.invViewSpace.Set(n.viewSpace)
 	n.invViewSpace.Invert()
 }

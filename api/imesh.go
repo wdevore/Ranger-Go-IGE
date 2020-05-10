@@ -2,17 +2,15 @@ package api
 
 // IMesh represents 2D polygon
 type IMesh interface {
-	// Vertices returns the original vertices
-	Vertices() []IPoint
+	Vertices() []float32
+	Indices() []uint32
 
-	// Bucket returns the bucket for transformations
-	Bucket() []IPoint
+	AddVertex(x, y, z float32)
 
-	// AddVertex appends the point to vertices
-	AddVertex(x, y float32)
+	SetVertex(x, y, z float32, index int)
 
-	SetVertex(x, y float32, index int)
+	AddIndex(index int)
 
-	// Build
-	Build()
+	GenBuffers()
+	Bind()
 }

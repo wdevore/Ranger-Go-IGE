@@ -65,6 +65,8 @@ go get -u github.com/go-gl/gl/v4.5-{core,compatibility}/gl
 "editor.fontFamily": "'Cascadia Code', 'Cascadia Mono', 'Courier New', monospace, Consolas"
 
 # Example and source
+https://learnopengl.com/Getting-started/Hello-Triangle
+
 https://github.com/go-gl/mathgl GLM
 https://github.com/go-gl/example/blob/master/gl41core-cube/cube.go
 https://github.com/cstegel/opengl-samples-golang
@@ -82,3 +84,11 @@ https://github.com/yucchiy/toybox-opengl
 https://github.com/CubeLite/gltext-1
 https://github.com/cozely/cozely
 https://github.com/LonelyPale/go-opengl
+http://quabr.com:8182/41789384/go-gl-rendering-vbo-not-displaying
+https://github.com/YagoCarballo/Go-GL-Assignment-2
+
+## Easing
+https://www.shadertoy.com/view/Xd2yRd Alternative easing functions
+
+## Knowledge
+https://learnopengl.com/Getting-started/Coordinate-Systems

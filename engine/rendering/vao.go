@@ -4,6 +4,7 @@ import (
 	"unsafe"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
+	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
 const xyzComponentCount int32 = 3
@@ -14,11 +15,11 @@ type VAO struct {
 	// Indicates if an Id has been generated
 	genBound bool
 	vaoID    uint32
-	mesh     *Mesh
+	mesh     api.IMesh
 }
 
 // NewVAO creates a new VAO
-func NewVAO(m *Mesh) *VAO {
+func NewVAO(m api.IMesh) *VAO {
 	v := new(VAO)
 	v.mesh = m
 	return v
@@ -42,6 +43,12 @@ func (v *VAO) Bind() {
 	arrayCount := xyzComponentCount * int32(unsafe.Sizeof(float32(0)))
 	gl.VertexAttribPointer(attributeIndex, int32(xyzComponentCount), gl.FLOAT, false, arrayCount, gl.PtrOffset(0))
 
+	// vertexInputAttrb := uint32(0) // aPos
+	// sizeOfInputAttrb := int32(3)  // 3 floats. The 4th is supplied by the shader
+	// stride := int32(0)            // All the vertices will tightly packed
+	// gl.VertexAttribPointer(vertexInputAttrb, sizeOfInputAttrb, gl.FLOAT, false, stride, nil)
+	// gl.EnableVertexAttribArray(vertexInputAttrb)
+
 	gl.EnableVertexAttribArray(0)
 
 	// Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound
@@ -55,7 +62,7 @@ func (v *VAO) Bind() {
 }
 
 // Render shape using VAO
-func (v *VAO) Render(vs *VectorShape) {
+func (v *VAO) Render(vs api.IVectorShape) {
 	// The signature of glDrawElements was defined back before there were buffer objects;
 	// originally you'd pass an actual pointer to data in a client-side vertex array.
 	// When device-side buffers were introduced, this function was extended to support them
@@ -67,7 +74,7 @@ func (v *VAO) Render(vs *VectorShape) {
 	// Rather than multiply repeatedly
 	//glDrawElements(_shape->primitiveType, _shape->count, GL_UNSIGNED_INT, (const GLvoid*)(_shape->offset * sizeof(unsigned int)));
 	// we use a pre computed version.
-	gl.DrawElements(vs.PrimitiveMode, vs.Count, uint32(gl.UNSIGNED_INT), gl.PtrOffset(vs.Offset()))
+	gl.DrawElements(vs.PrimitiveMode(), vs.Count(), uint32(gl.UNSIGNED_INT), gl.PtrOffset(vs.Offset()))
 }
 
 // Use bind vertex array to Id

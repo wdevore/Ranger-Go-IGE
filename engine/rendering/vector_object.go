@@ -1,21 +1,23 @@
 package rendering
 
+import "github.com/wdevore/Ranger-Go-IGE/api"
+
 // VectorObject associates an Atlas with a VAO
 type VectorObject struct {
-	UniAtlas *VectorUniformAtlas
-	vao      *VAO
+	uniformAtlas api.IVectorAtlas // VectorAtlas
+	vao          *VAO
 }
 
 // NewVectorObject creates a new vector object with an associated Mesh
-func NewVectorObject() *VectorObject {
+func NewVectorObject() api.IVectorObject {
 	vo := new(VectorObject)
 	return vo
 }
 
 // Construct configures a vector object
 func (vo *VectorObject) Construct() {
-	vo.UniAtlas = NewVectorUniformAtlas(true)
-	vo.vao = NewVAO(&vo.UniAtlas.mesh)
+	vo.uniformAtlas = NewVectorUniformAtlas(true)
+	vo.vao = NewVAO(vo.uniformAtlas.Mesh())
 }
 
 // Use activates the VAO
@@ -34,10 +36,11 @@ func (vo *VectorObject) Bind() {
 }
 
 // Render renders the given shape using the currently activated VAO
-func (vo *VectorObject) Render(vs *VectorShape) {
+func (vo *VectorObject) Render(vs api.IVectorShape) {
 	vo.vao.Render(vs)
 }
 
-func ConstructBasicShapes(vo *VectorObject) {
-
+// UniformAtlas returns atlas
+func (vo *VectorObject) UniformAtlas() api.IVectorAtlas {
+	return vo.uniformAtlas
 }

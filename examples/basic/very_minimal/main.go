@@ -24,7 +24,7 @@ func main() {
 	splash := newBasicSplashScene("Splash", nil)
 	err = splash.Build(world)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	// This example uses the super basic Boot scene that does absolutely nothing.

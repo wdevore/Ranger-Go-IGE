@@ -2,21 +2,29 @@ package engine
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 
+	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/configuration"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
 )
 
 // World is the main component of ranger
 type world struct {
 	properties *configuration.Properties
 
-	shader api.IShader
+	shader   api.IShader
+	modelLoc int32
+	colorLoc int32
+
+	vecObj api.IVectorObject
+	atlas  api.IAtlas
 }
 
 func newWorld(relativePath string) api.IWorld {
@@ -88,11 +96,54 @@ func (w *world) Configure() error {
 
 	err := w.shader.Compile()
 
+	if err != nil {
+		return err
+	}
+
+	// Construct and populate the vector shape atlas
+	w.vecObj = rendering.NewVectorObject()
+	w.vecObj.Construct()
+
+	w.atlas = atlas.NewAtlas()
+	w.atlas.Initialize(w.vecObj)
+
+	w.vecObj.Bind()
+
+	w.shader.Use()
+
+	programID := w.shader.Program()
+
+	w.modelLoc = gl.GetUniformLocation(programID, gl.Str("model\x00"))
+	if w.modelLoc < 0 {
+		return errors.New("World: couldn't find 'model' uniform variable")
+	}
+
+	w.colorLoc = gl.GetUniformLocation(programID, gl.Str("fragColor\x00"))
+	if w.colorLoc < 0 {
+		return errors.New("World: couldn't find 'fragColor' uniform variable")
+	}
+
 	return err
 }
 
 func (w *world) Shader() api.IShader {
 	return w.shader
+}
+
+func (w *world) ModelLoc() int32 {
+	return w.modelLoc
+}
+
+func (w *world) ColorLoc() int32 {
+	return w.colorLoc
+}
+
+func (w *world) Atlas() api.IAtlas {
+	return w.atlas
+}
+
+func (w *world) VecObj() api.IVectorObject {
+	return w.vecObj
 }
 
 func (w *world) Properties() *configuration.Properties {

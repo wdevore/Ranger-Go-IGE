@@ -2,7 +2,7 @@ package api
 
 // INodeManager manages node on a stack and forms a SceneGraph
 type INodeManager interface {
-	Configure()
+	Configure() error
 
 	ClearEnabled(bool)
 

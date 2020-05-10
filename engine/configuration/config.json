@@ -38,11 +38,15 @@
     "Title": "Ranger"
   },
   "Camera": {
-    "Centered": false,
+    "Centered": true,
     "View": {
       "X": 0.0,
       "Y": 0.0,
       "Z": -1.0
+    },
+    "Depth": {
+      "Near": 0.1,
+      "Far": 100.0
     }
   },
   "Font": {
@@ -54,7 +58,7 @@
   },
   "Shaders": {
     "UseDefault": true,
-    "VertexShaderSrc": "basic_mvp.vertex.glsl",
+    "VertexShaderSrc": "uniform_pvm_vertex.glsl",
     "FragmentShaderSrc": "basic.fragment.glsl"
   }
 }

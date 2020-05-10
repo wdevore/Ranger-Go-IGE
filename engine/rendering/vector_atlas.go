@@ -1,5 +1,7 @@
 package rendering
 
+import "github.com/wdevore/Ranger-Go-IGE/api"
+
 // VectorAtlas helps managing a Mesh. It is abstract and
 // should be embedded.
 type VectorAtlas struct {
@@ -15,7 +17,7 @@ type VectorAtlas struct {
 	Idx            int
 	prevIndexCount int
 
-	mesh Mesh
+	mesh api.IMesh
 }
 
 // No Allocator as this type is abstract and meant to
@@ -25,18 +27,20 @@ type VectorAtlas struct {
 func (va *VectorAtlas) Initialize(isStatic, hasColors bool) {
 	va.hasColors = hasColors
 	va.isStatic = isStatic
+	va.mesh = NewMesh()
 }
 
 // AddVertex adds a vertex to the mesh
 func (va *VectorAtlas) AddVertex(x, y, z float32) int {
-	va.mesh.Vertices = append(va.mesh.Vertices, x, y, z)
+	va.mesh.AddVertex(x, y, z)
+	idx := va.ComponentCount
 	va.ComponentCount++
-	return va.ComponentCount
+	return idx
 }
 
 // AddIndex adds an index to the mesh
 func (va *VectorAtlas) AddIndex(index int) {
-	va.mesh.Indices = append(va.mesh.Indices, uint32(index))
+	va.mesh.AddIndex(index)
 	va.Idx++
 }
 
@@ -50,4 +54,9 @@ func (va *VectorAtlas) Begin() int {
 // End closes sequence of vertices and indices
 func (va *VectorAtlas) End() int {
 	return va.Idx - va.prevIndexCount
+}
+
+// Mesh returns this vector atlas's mesh
+func (va *VectorAtlas) Mesh() api.IMesh {
+	return va.mesh
 }

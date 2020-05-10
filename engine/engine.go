@@ -140,7 +140,7 @@ func (e *engine) loop() {
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
 		// Render Scenegraph by visiting the nodes
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
-		display.Pre()
+		display.Pre() // Things like background clearing
 		// **** Any rendering and timing must occur AFTER this point ****
 
 		renderT := time.Now()
@@ -186,7 +186,6 @@ func (e *engine) loop() {
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
 		// Finish rendering
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
-		// presentT := time.Now()
 		e.sceneGraph.PostVisit()
 
 		fpsCnt++

@@ -13,6 +13,8 @@ import (
 type GlfwDisplay struct {
 	window        *glfw.Window
 	quitTriggered bool
+	polygonMode   bool
+	pointMode     bool
 
 	clearColor api.IPalette
 	clearMask  uint32
@@ -22,6 +24,7 @@ type GlfwDisplay struct {
 func New() *GlfwDisplay {
 	o := new(GlfwDisplay)
 	o.clearMask = gl.COLOR_BUFFER_BIT
+	o.polygonMode = false
 
 	return o
 }
@@ -180,9 +183,29 @@ func (g *GlfwDisplay) initGL(world api.IWorld) error {
 }
 
 func (g *GlfwDisplay) keyCallback(glfwW *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
-	// fmt.Println("key pressed")
-	if key == glfw.KeyEscape && action == glfw.Press {
-		g.quitTriggered = true
+	// fmt.Println("key pressed ", key)
+
+	if action == glfw.Press {
+		switch key {
+		case glfw.KeyEscape:
+			g.quitTriggered = true
+		case glfw.KeyM:
+			if !g.polygonMode {
+				gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
+			} else {
+				gl.PolygonMode(gl.FRONT_AND_BACK, gl.FILL)
+			}
+			g.polygonMode = !g.polygonMode
+		case glfw.KeyP:
+			if !g.pointMode {
+				gl.PointSize(5)
+				gl.PolygonMode(gl.FRONT_AND_BACK, gl.POINT)
+			} else {
+				gl.PointSize(1)
+				gl.PolygonMode(gl.FRONT_AND_BACK, gl.FILL)
+			}
+			g.pointMode = !g.pointMode
+		}
 	}
 }
 
