@@ -48,13 +48,18 @@ type engine struct {
 }
 
 // Construct creates a new Engine
-func Construct(relativePath string) (eng api.IEngine, err error) {
+func Construct(relativePath string, overrides string) (eng api.IEngine, err error) {
 	o := new(engine)
 
 	o.world = newWorld(relativePath)
 
 	if !o.world.Properties().Engine.Enabled {
 		return nil, errors.New("Engine is NOT enabled in config file")
+	}
+
+	// Apply overrides
+	if overrides != "" {
+		o.world.PropertiesOverride(overrides)
 	}
 
 	o.sceneGraph = nodes.NewNodeManager(o.world)

@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	engine, err := engine.Construct("../../..")
+	engine, err := engine.Construct("../../..", "config.json")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -17,9 +17,6 @@ func main() {
 	defer engine.End()
 
 	world := engine.World()
-
-	// Override some of the world properties for this example
-	world.PropertiesOverride("config.json")
 
 	splash := newBasicSplashScene("Splash", nil)
 	err = splash.Build(world)

@@ -114,7 +114,7 @@ func (g *GlfwDisplay) initGLFW(world api.IWorld) error {
 	}
 
 	g.window.SetSizeCallback(g.framebufferSizeCallback)
-	// w.window.SetUserPointer()
+	// g.window.SetUserPointer()
 
 	g.window.SetPos(wp.Position.X, wp.Position.Y)
 
