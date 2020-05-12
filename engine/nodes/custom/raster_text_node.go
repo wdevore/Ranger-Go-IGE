@@ -16,10 +16,11 @@ type RasterTextNode struct {
 	color []float32
 
 	text                 string
-	pixelSize            float64
+	pixelSize            float32
 	bottomJustified      bool
-	bottomVerticalOffset float64
+	bottomVerticalOffset float32
 	inverted             bool
+	whiteSpaceDistance   float32
 
 	shape api.IVectorShape
 
@@ -46,6 +47,7 @@ func (r *RasterTextNode) Build(world api.IWorld) error {
 	r.bottomJustified = true
 	r.bottomVerticalOffset = 6.0
 	r.inverted = false
+	r.whiteSpaceDistance = 2.0
 
 	r.shape = world.Atlas().Shape("Pixel")
 
@@ -62,9 +64,14 @@ func (r *RasterTextNode) SetText(text string) {
 	r.text = text
 }
 
+// SetInverted changes the style of rendering
+func (r *RasterTextNode) SetInverted(inverted bool) {
+	r.inverted = inverted
+}
+
 // SetPixelSize sets the size of the pixel not the spacing.
 // Use the node's scale property to "push" the pixels apart.
-func (r *RasterTextNode) SetPixelSize(size float64) {
+func (r *RasterTextNode) SetPixelSize(size float32) {
 	r.pixelSize = size
 }
 
@@ -75,11 +82,11 @@ func (r *RasterTextNode) SetBottomJustified(justified bool) {
 }
 
 // SetVerticalOffset sets the offset from the baseline if bottom justified.
-func (r *RasterTextNode) SetVerticalOffset(offset float64) {
+func (r *RasterTextNode) SetVerticalOffset(offset float32) {
 	r.bottomVerticalOffset = offset
 }
 
-var shifts = []int{0, 1, 2, 3, 4, 5, 6, 7}
+var pixelShifts = []int{0, 1, 2, 3, 4, 5, 6, 7}
 
 // Draw renders shape
 func (r *RasterTextNode) Draw(model api.IMatrix4) {
@@ -95,9 +102,9 @@ func (r *RasterTextNode) Draw(model api.IMatrix4) {
 	// Draw text
 	// -------------------------------------------
 	rasterFont := r.World().RasterFont()
-	cx := int32(0)
-	s := int32(r.pixelSize)
-	rowWidth := int32(rasterFont.GlyphWidth())
+	cx := float32(0.0)
+	s := r.pixelSize
+	rowWidth := float32(rasterFont.GlyphWidth())
 
 	// Is the text colored or the space around it (aka inverted)
 	bitInvert := uint8(1)
@@ -105,32 +112,32 @@ func (r *RasterTextNode) Draw(model api.IMatrix4) {
 		bitInvert = 0
 	}
 
-	gl.PointSize(float32(r.pixelSize))
+	gl.PointSize(s)
 	vo := w.VecObj()
 
 	for _, c := range r.text {
 		if c == ' ' {
-			cx += rowWidth * s // move to next column/char/glyph
+			cx += rowWidth * s / r.whiteSpaceDistance // move to next column/char/glyph
 			continue
 		}
 
-		var gy int32
+		var gy float32
 		// move y back to the "top/bottom" for each char
 		if r.bottomJustified {
-			gy = int32(float64(r.bottomVerticalOffset * r.pixelSize)) // bottom
+			gy = r.bottomVerticalOffset * s // bottom
 		} else {
-			gy = int32(0) // top
+			gy = float32(0) // top
 		}
 		glyph := rasterFont.Glyph(byte(c))
 
 		for _, g := range glyph {
 			gx := cx // set to current column
-			for _, shift := range shifts {
+			for _, shift := range pixelShifts {
 				bit := (g >> shift) & 1
 				if bit == bitInvert {
-					r.m4.Set(model) // Work on copy
+					r.m4.Set(model) // Reset for this pixel
 					// r.m4.ScaleByComp(1.0, -1.0, 1.0) // This is slower. Use "gy -= s" as below.
-					r.m4.TranslateBy2Comps(float32(gx), float32(gy))
+					r.m4.TranslateBy2Comps(gx, gy)
 					gl.UniformMatrix4fv(w.ModelLoc(), 1, false, &r.m4.Matrix()[0])
 					vo.Render(r.shape)
 				}
