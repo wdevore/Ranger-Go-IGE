@@ -27,8 +27,12 @@ const (
 	// Yellow hues
 	// ----------------------------------------------------
 
+	// DarkOrange color
+	DarkOrange = uint64(0xff7f00ff)
 	// Orange color
-	Orange = uint64(0xff7f00ff)
+	Orange = uint64(0xff8000ff)
+	// LightOrange color
+	LightOrange = uint64(0xffa000ff)
 	// SoftOrange color
 	SoftOrange = uint64(0xFF851BFF)
 	// Yellow color
