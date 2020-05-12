@@ -20,4 +20,14 @@ type IWorld interface {
 	VecObj() IVectorObject
 
 	RasterFont() IRasterFont
+
+	// Debug Info
+	Fps() int
+	SetFps(int)
+
+	Ups() int
+	SetUps(int)
+
+	AvgRender() float64
+	SetAvgRender(float64)
 }

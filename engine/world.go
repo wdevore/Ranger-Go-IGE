@@ -29,6 +29,11 @@ type world struct {
 	atlas  api.IAtlas
 
 	rasterFont api.IRasterFont
+
+	// Debug Info
+	fps        int
+	ups        int
+	renderTime float64
 }
 
 func newWorld(relativePath string) api.IWorld {
@@ -181,4 +186,28 @@ func (w *world) PropertiesOverride(configFile string) {
 	if err != nil {
 		log.Fatalln("ERROR:", err)
 	}
+}
+
+func (w *world) Fps() int {
+	return w.fps
+}
+
+func (w *world) SetFps(v int) {
+	w.fps = v
+}
+
+func (w *world) Ups() int {
+	return w.ups
+}
+
+func (w *world) SetUps(v int) {
+	w.ups = v
+}
+
+func (w *world) AvgRender() float64 {
+	return w.renderTime
+}
+
+func (w *world) SetAvgRender(v float64) {
+	w.renderTime = v
 }
