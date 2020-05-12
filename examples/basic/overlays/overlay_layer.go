@@ -59,9 +59,10 @@ func (g *overlayLayer) Update(msPerUpdate, secPerUpdate float64) {
 	g.text.SetRotation(maths.DegreeToRadians * g.angle)
 	g.angle -= 0.25
 
-	if g.World().Properties().Engine.ShowTimingInfo {
+	w := g.World()
+	if w.Properties().Engine.ShowTimingInfo {
 		gt := g.timing.(*custom.RasterTextNode)
-		s := fmt.Sprintf("f:%d u:%d r:%2.3f", g.World().Fps(), g.World().Ups(), g.World().AvgRender())
+		s := fmt.Sprintf("f:%d u:%d r:%2.3f", w.Fps(), w.Ups(), w.AvgRender())
 		gt.SetText(s)
 	}
 
