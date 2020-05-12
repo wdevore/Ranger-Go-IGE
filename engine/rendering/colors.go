@@ -24,6 +24,19 @@ const (
 	Silver = uint64(0xddddddff)
 
 	// ----------------------------------------------------
+	// Red hues
+	// ----------------------------------------------------
+
+	// Pink color
+	Pink = uint64(0xFFC0CBff)
+	// LightPink color
+	LightPink = uint64(0xFFB6C1ff)
+	// HotPink color
+	HotPink = uint64(0xFF69B4ff)
+	// DeepPink color
+	DeepPink = uint64(0xFF1493ff)
+
+	// ----------------------------------------------------
 	// Yellow hues
 	// ----------------------------------------------------
 
