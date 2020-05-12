@@ -7,18 +7,18 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
 # Current Tasks and Goals
 * **Done** OpenGL 4.x
-* **Working** Vector Font
-* **Done** Node Dragging
-* **Done** Filters: transform and translate
-* **Done** Zoom Node
-* **Done** Interpolation
-* **Done** Simple motion animations
-* **Done** Circle, AABB
-* **Done** AnchorNode
-* **Done** Particles
-* **Done** Animation (tweening) -- Using tanema's library
-* **Done** Box2D physics (with space ship)
-* **Done** Zones combined with Zoom
+* **Done** Raster Font (Slow version)
+* **Working** Circle, AABB
+* Node Dragging
+* Filters: transform and translate
+* Zoom Node
+* Interpolation
+* Simple motion animations
+* AnchorNode
+* Particles
+* Animation (tweening) -- Using tanema's library
+* Box2D physics (with space ship)
+* Zones combined with Zoom
 * Audio (SFXR 8bit sound)
   * May build GUI using imGui
   * May use: https://github.com/faiface/beep
@@ -30,9 +30,8 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
   * Text
   * Dialog
   * Grouping (i.e. Radio buttons)
-* Sprite Textures ()
-* Finish lower case Vector font characters.
-* Enhance raster fonts to allow transforms
+* Sprite Textures
+* Vector Fonts via SVG import
 * Joysticks and Gamepads
 * OpenGL ES
 
@@ -60,11 +59,11 @@ go get -u github.com/go-gl/gl/v4.5-{core,compatibility}/gl
 ```
 
 # VS Code setup:
-"window.zoomLevel": 1.9
-"editor.fontSize": 14
-"editor.fontLigatures": true
-"terminal.integrated.fontSize": 12
-"editor.fontFamily": "'Cascadia Code', 'Cascadia Mono', 'Courier New', monospace, Consolas"
+* "window.zoomLevel": 1.9
+* "editor.fontSize": 14
+* "editor.fontLigatures": true
+* "terminal.integrated.fontSize": 12
+* "editor.fontFamily": "'Cascadia Code', 'Cascadia Mono', 'Courier New', monospace, Consolas"
 
 # Example and source
 https://learnopengl.com/Getting-started/Hello-Triangle
@@ -95,7 +94,7 @@ https://www.shadertoy.com/view/Xd2yRd Alternative easing functions
 ## Knowledge
 https://learnopengl.com/Getting-started/Coordinate-Systems
 
-##SVG
+## SVG
 
 https://github.com/JoshVarga/svgparser
 https://play.golang.org/p/kyfff6Kg1c
