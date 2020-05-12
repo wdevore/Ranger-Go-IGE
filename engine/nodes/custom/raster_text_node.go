@@ -6,7 +6,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
 // RasterTextNode is a basic raster pixel text node
@@ -42,7 +42,7 @@ func (r *RasterTextNode) Build(world api.IWorld) error {
 	r.Node.Build(world)
 	r.m4 = maths.NewMatrix4()
 
-	r.color = rendering.NewPaletteInt64(rendering.White).Array()
+	r.color = color.NewPaletteInt64(color.White).Array()
 	r.pixelSize = 5.0
 	r.bottomJustified = true
 	r.bottomVerticalOffset = 6.0

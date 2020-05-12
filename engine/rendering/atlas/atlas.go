@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 )
 
@@ -15,7 +14,16 @@ type Atlas struct {
 	shapes map[string]api.IVectorShape
 }
 
-// NewAtlas creates a new atlas
+// NewAtlas creates a new atlas. The Atlas is pre-populated by
+// objects that can be referenced by the following names:
+// - Pixel
+// - Line
+// - Cross
+// - Circle12Segments
+// - Square
+// - CenteredSquare
+// - CenteredTriangle
+// - CrowBar
 func NewAtlas() api.IAtlas {
 	o := new(Atlas)
 	o.shapes = make(map[string]api.IVectorShape)
@@ -30,6 +38,10 @@ func (a *Atlas) Initialize(vo api.IVectorObject) {
 	a.AddShape(buildSquare(uAtlas))
 	a.AddShape(buildCenteredSquare(uAtlas))
 	a.AddShape(buildCenteredTriangle(uAtlas))
+	a.AddShape(buildCircle(uAtlas))
+	a.AddShape(buildLine(uAtlas))
+	a.AddShape(buildCross(uAtlas))
+	a.AddShape(buildCrowBar(uAtlas))
 }
 
 // Shape returns a shape by name
@@ -58,6 +70,75 @@ func buildPixel(uAtlas api.IVectorAtlas) api.IVectorShape {
 	v0 := uAtlas.AddVertex(0.0, 0.0, 0.0)
 
 	uAtlas.AddIndex(v0)
+
+	s.SetCount(int32(uAtlas.End()))
+
+	return s
+}
+
+func buildLine(uAtlas api.IVectorAtlas) api.IVectorShape {
+	s := rendering.NewVectorShape()
+	s.SetName("Line")
+	s.SetPrimitiveMode(gl.LINES)
+
+	s.SetOffset(uAtlas.Begin())
+
+	// These vertices are specified in unit local-space
+	v0 := uAtlas.AddVertex(-0.5, 0.0, 0.0)
+	v1 := uAtlas.AddVertex(0.5, 0.0, 0.0)
+
+	uAtlas.AddIndex(v0)
+	uAtlas.AddIndex(v1)
+
+	s.SetCount(int32(uAtlas.End()))
+
+	return s
+}
+
+func buildCross(uAtlas api.IVectorAtlas) api.IVectorShape {
+	s := rendering.NewVectorShape()
+	s.SetName("Cross")
+	s.SetPrimitiveMode(gl.LINES)
+
+	s.SetOffset(uAtlas.Begin())
+
+	// These vertices are specified in unit local-space
+	v0 := uAtlas.AddVertex(-0.5, 0.0, 0.0)
+	v1 := uAtlas.AddVertex(0.5, 0.0, 0.0)
+	v2 := uAtlas.AddVertex(0.0, -0.5, 0.0)
+	v3 := uAtlas.AddVertex(0.0, 0.5, 0.0)
+
+	uAtlas.AddIndex(v0)
+	uAtlas.AddIndex(v1)
+	uAtlas.AddIndex(v2)
+	uAtlas.AddIndex(v3)
+
+	s.SetCount(int32(uAtlas.End()))
+
+	return s
+}
+
+func buildCircle(uAtlas api.IVectorAtlas) api.IVectorShape {
+	s := rendering.NewVectorShape()
+	s.SetName("Circle12Segments")
+	s.SetPrimitiveMode(gl.TRIANGLE_FAN)
+
+	s.SetOffset(uAtlas.Begin())
+
+	// These vertices are specified in unit local-space
+	v0 := uAtlas.AddVertex(0.0, 0.0, 0.0) // apex
+	uAtlas.AddIndex(v0)
+
+	segments := 12
+	radius := 0.5 // diameter of 1.0
+	step := math.Pi / float64(segments)
+
+	for i := 0.0; i < 2.0*math.Pi; i += step {
+		x := math.Cos(i) * radius
+		y := math.Sin(i) * radius
+		idx := uAtlas.AddVertex(float32(x), float32(y), 0.0)
+		uAtlas.AddIndex(idx)
+	}
 
 	s.SetCount(int32(uAtlas.End()))
 
@@ -123,21 +204,60 @@ func buildCenteredTriangle(uAtlas api.IVectorAtlas) api.IVectorShape {
 
 	s.SetOffset(uAtlas.Begin())
 
-	const l float32 = 0.25 // side length
-
-	// 30 degrees yields triangle sides of equal length but the bbox is
-	// rectangular not square.
-	// 0 degrees yields a square bbox with unequal triangle sides.
-	h := float32(0.5 * math.Cos(maths.DegreeToRadians*30.0))
-
 	// These vertices are specified in unit local-space
-	v0 := uAtlas.AddVertex(-l, -h, 0.0)
-	v1 := uAtlas.AddVertex(l, -h, 0.0)
-	v2 := uAtlas.AddVertex(0.0, h, 0.0)
+	v0 := uAtlas.AddVertex(-0.5, -0.5, 0.0)
+	v1 := uAtlas.AddVertex(0.5, -0.5, 0.0)
+	v2 := uAtlas.AddVertex(0.0, 0.314, 0.0)
 
 	uAtlas.AddIndex(v0)
 	uAtlas.AddIndex(v1)
 	uAtlas.AddIndex(v2)
+
+	s.SetCount(int32(uAtlas.End()))
+
+	return s
+}
+
+func buildCrowBar(uAtlas api.IVectorAtlas) api.IVectorShape {
+	s := rendering.NewVectorShape()
+	s.SetName("CrowBar")
+	s.SetPrimitiveMode(gl.TRIANGLES)
+
+	s.SetOffset(uAtlas.Begin())
+
+	// These vertices are specified in unit local-space
+	v0 := uAtlas.AddVertex(-0.1, -0.5, 0.0)
+	v1 := uAtlas.AddVertex(0.5, -0.5, 0.0)
+	v2 := uAtlas.AddVertex(0.5, -0.4, 0.0)
+	v3 := uAtlas.AddVertex(0.1, -0.4, 0.0)
+	v4 := uAtlas.AddVertex(0.1, 0.5, 0.0)
+	v5 := uAtlas.AddVertex(-0.5, 0.5, 0.0)
+	v6 := uAtlas.AddVertex(-0.5, 0.4, 0.0)
+	v7 := uAtlas.AddVertex(-0.1, 0.4, 0.0)
+
+	uAtlas.AddIndex(v0)
+	uAtlas.AddIndex(v1)
+	uAtlas.AddIndex(v2)
+
+	uAtlas.AddIndex(v2)
+	uAtlas.AddIndex(v3)
+	uAtlas.AddIndex(v0)
+
+	uAtlas.AddIndex(v0)
+	uAtlas.AddIndex(v3)
+	uAtlas.AddIndex(v4)
+
+	uAtlas.AddIndex(v0)
+	uAtlas.AddIndex(v4)
+	uAtlas.AddIndex(v7)
+
+	uAtlas.AddIndex(v6)
+	uAtlas.AddIndex(v7)
+	uAtlas.AddIndex(v4)
+
+	uAtlas.AddIndex(v6)
+	uAtlas.AddIndex(v4)
+	uAtlas.AddIndex(v5)
 
 	s.SetCount(int32(uAtlas.End()))
 

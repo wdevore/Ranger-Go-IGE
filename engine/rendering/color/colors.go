@@ -1,4 +1,4 @@
-package rendering
+package color
 
 const (
 	// White color

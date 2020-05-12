@@ -1,4 +1,4 @@
-package rendering
+package fonts
 
 import (
 	"bufio"

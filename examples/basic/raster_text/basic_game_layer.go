@@ -26,7 +26,7 @@ func newBasicGameLayer(name string, world api.IWorld, parent api.INode) api.INod
 func (g *gameLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
-	square := custom.NewRectangleNode("Square", world, g)
+	square := custom.NewStaticAtlasNode("Square", "CenteredSquare", world, g)
 	square.SetScale(25.0)
 	square.SetPosition(0.0, 0.0)
 

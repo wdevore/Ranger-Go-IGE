@@ -8,7 +8,8 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 # Current Tasks and Goals
 * **Done** OpenGL 4.x
 * **Done** Raster Font (Slow version)
-* **Working** Circle, AABB
+* **Done** Static shapes: Circle
+* **Working** Dynamic shapes: Line, AABB
 * Node Dragging
 * Filters: transform and translate
 * Zoom Node

@@ -14,6 +14,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/configuration"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/fonts"
 )
 
 // World is the main component of ranger
@@ -134,7 +135,7 @@ func (w *world) Configure() error {
 	}
 
 	fmt.Println("Loading Raster font...")
-	w.rasterFont = rendering.NewRasterFont()
+	w.rasterFont = fonts.NewRasterFont()
 	err = w.rasterFont.Initialize("raster_font.data", w.relativePath)
 
 	return err

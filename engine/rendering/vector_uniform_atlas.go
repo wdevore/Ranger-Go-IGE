@@ -2,7 +2,7 @@ package rendering
 
 // VectorUniformAtlas defines a uniform colored atlas
 type VectorUniformAtlas struct {
-	VectorAtlas
+	AtlasObject
 }
 
 // NewVectorUniformAtlas creates a new uniform atlas

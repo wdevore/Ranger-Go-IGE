@@ -1,4 +1,4 @@
-package rendering
+package color
 
 import (
 	"fmt"

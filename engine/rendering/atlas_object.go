@@ -2,9 +2,9 @@ package rendering
 
 import "github.com/wdevore/Ranger-Go-IGE/api"
 
-// VectorAtlas helps managing a Mesh. It is abstract and
+// AtlasObject helps managing a Mesh. It is abstract and
 // should be embedded.
-type VectorAtlas struct {
+type AtlasObject struct {
 	hasNormals bool
 	hasColors  bool
 	isStatic   bool
@@ -24,14 +24,14 @@ type VectorAtlas struct {
 // be embedded
 
 // Initialize sets defaults
-func (va *VectorAtlas) Initialize(isStatic, hasColors bool) {
+func (va *AtlasObject) Initialize(isStatic, hasColors bool) {
 	va.hasColors = hasColors
 	va.isStatic = isStatic
 	va.mesh = NewMesh()
 }
 
 // AddVertex adds a vertex to the mesh
-func (va *VectorAtlas) AddVertex(x, y, z float32) int {
+func (va *AtlasObject) AddVertex(x, y, z float32) int {
 	va.mesh.AddVertex(x, y, z)
 	idx := va.ComponentCount
 	va.ComponentCount++
@@ -39,24 +39,24 @@ func (va *VectorAtlas) AddVertex(x, y, z float32) int {
 }
 
 // AddIndex adds an index to the mesh
-func (va *VectorAtlas) AddIndex(index int) {
+func (va *AtlasObject) AddIndex(index int) {
 	va.mesh.AddIndex(index)
 	va.Idx++
 }
 
 // Begin configures for a new sequence of vertices and indices
-func (va *VectorAtlas) Begin() int {
+func (va *AtlasObject) Begin() int {
 	va.prevComponentCount = va.ComponentCount
 	va.prevIndexCount = va.Idx
 	return va.prevIndexCount
 }
 
 // End closes sequence of vertices and indices
-func (va *VectorAtlas) End() int {
+func (va *AtlasObject) End() int {
 	return va.Idx - va.prevIndexCount
 }
 
 // Mesh returns this vector atlas's mesh
-func (va *VectorAtlas) Mesh() api.IMesh {
+func (va *AtlasObject) Mesh() api.IMesh {
 	return va.mesh
 }
