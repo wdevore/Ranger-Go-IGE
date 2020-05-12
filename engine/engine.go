@@ -103,14 +103,12 @@ func (e *engine) loop() {
 	nsPerUpdate := int64(math.Round(updatePeriod))
 	msPerUpdate := float64(nsPerUpdate) / 1000000.0 // <-- milliseconds, Ex: 33.33333 or 16.6666666
 	upsCnt := 0
-	ups := 0
 	fpsCnt := 0
-	fps := 0
 	previousT := time.Now()
 	secondCnt := int64(0)
 	renderElapsedTime := int64(0)
 	renderCnt := int64(0)
-	avgRender := 0.0
+	// avgRender := 0.0
 
 	for !display.Closed() && e.running {
 		currentT := time.Now()
@@ -165,7 +163,7 @@ func (e *engine) loop() {
 		}
 
 		if renderCnt >= renderMaxCnt {
-			avgRender = float64(renderElapsedTime) / float64(renderMaxCnt) / 1000.0
+			e.world.SetAvgRender(float64(renderElapsedTime) / float64(renderMaxCnt) / 1000.0)
 			renderCnt = 0
 			renderElapsedTime = 0
 		} else {
@@ -175,12 +173,12 @@ func (e *engine) loop() {
 
 		secondCnt += elapsedNano
 		if secondCnt >= second {
-			if engProps.ShowTimingInfo {
-				e.drawStats(fps, ups, avgRender)
-			}
+			// if engProps.ShowTimingInfo {
+			// 	e.drawStats(e.world.Fps(), e.world.Ups(), e.world.AvgRender())
+			// }
 
-			fps = fpsCnt
-			ups = upsCnt
+			e.world.SetFps(fpsCnt)
+			e.world.SetUps(upsCnt)
 			upsCnt = 0
 			fpsCnt = 0
 			secondCnt = 0
