@@ -3,6 +3,7 @@ package engine
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,7 +18,8 @@ import (
 
 // World is the main component of ranger
 type world struct {
-	properties *configuration.Properties
+	properties   *configuration.Properties
+	relativePath string
 
 	shader   api.IShader
 	modelLoc int32
@@ -25,11 +27,14 @@ type world struct {
 
 	vecObj api.IVectorObject
 	atlas  api.IAtlas
+
+	rasterFont api.IRasterFont
 }
 
 func newWorld(relativePath string) api.IWorld {
 	o := new(world)
 	o.properties = &configuration.Properties{}
+	o.relativePath = relativePath
 
 	dataPath, err := filepath.Abs(relativePath)
 	if err != nil {
@@ -123,6 +128,10 @@ func (w *world) Configure() error {
 		return errors.New("World: couldn't find 'fragColor' uniform variable")
 	}
 
+	fmt.Println("Loading Raster font...")
+	w.rasterFont = rendering.NewRasterFont()
+	err = w.rasterFont.Initialize("raster_font.data", w.relativePath)
+
 	return err
 }
 
@@ -144,6 +153,10 @@ func (w *world) Atlas() api.IAtlas {
 
 func (w *world) VecObj() api.IVectorObject {
 	return w.vecObj
+}
+
+func (w *world) RasterFont() api.IRasterFont {
+	return w.rasterFont
 }
 
 func (w *world) Properties() *configuration.Properties {

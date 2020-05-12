@@ -6,7 +6,8 @@ As was RangerGo, so is IGE, a variation of the [Ranger Dart](https://github.com/
 This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
 # Current Tasks and Goals
-* **Working** OpenGL 4.x and perhaps (ES)
+* **Done** OpenGL 4.x
+* **Working** Vector Font
 * **Done** Node Dragging
 * **Done** Filters: transform and translate
 * **Done** Zoom Node
@@ -33,6 +34,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * Finish lower case Vector font characters.
 * Enhance raster fonts to allow transforms
 * Joysticks and Gamepads
+* OpenGL ES
 
 ## Notes
 The are two config files: one for the engine itself and the other for each game.
@@ -92,3 +94,10 @@ https://www.shadertoy.com/view/Xd2yRd Alternative easing functions
 
 ## Knowledge
 https://learnopengl.com/Getting-started/Coordinate-Systems
+
+##SVG
+
+https://github.com/JoshVarga/svgparser
+https://play.golang.org/p/kyfff6Kg1c
+https://github.com/rustyoz/svg
+https://golang.hotexamples.com/examples/github.com.catiepg.svg/-/Parse/golang-parse-function-examples.html

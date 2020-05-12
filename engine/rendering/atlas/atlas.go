@@ -26,6 +26,7 @@ func NewAtlas() api.IAtlas {
 func (a *Atlas) Initialize(vo api.IVectorObject) {
 	uAtlas := vo.UniformAtlas()
 
+	a.AddShape(buildPixel(uAtlas))
 	a.AddShape(buildSquare(uAtlas))
 	a.AddShape(buildCenteredSquare(uAtlas))
 	a.AddShape(buildCenteredTriangle(uAtlas))
@@ -44,6 +45,23 @@ func (a *Atlas) Shapes() map[string]api.IVectorShape {
 // AddShape adds a vector shape to the collection
 func (a *Atlas) AddShape(vs api.IVectorShape) {
 	a.shapes[vs.Name()] = vs
+}
+
+func buildPixel(uAtlas api.IVectorAtlas) api.IVectorShape {
+	s := rendering.NewVectorShape()
+	s.SetName("Pixel")
+	s.SetPrimitiveMode(gl.POINTS)
+
+	s.SetOffset(uAtlas.Begin())
+
+	// These vertices are specified in unit local-space
+	v0 := uAtlas.AddVertex(0.0, 0.0, 0.0)
+
+	uAtlas.AddIndex(v0)
+
+	s.SetCount(int32(uAtlas.End()))
+
+	return s
 }
 
 func buildSquare(uAtlas api.IVectorAtlas) api.IVectorShape {

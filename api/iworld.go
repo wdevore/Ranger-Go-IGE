@@ -18,4 +18,6 @@ type IWorld interface {
 
 	Atlas() IAtlas
 	VecObj() IVectorObject
+
+	RasterFont() IRasterFont
 }

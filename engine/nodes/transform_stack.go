@@ -51,7 +51,6 @@ func (t *transformStack) Initialize(mat api.IMatrix4) {
 func (t *transformStack) Apply(aft api.IMatrix4) api.IMatrix4 {
 	// Concat this transform onto the current transform but don't push it.
 	// Use post multiply
-	// maths.Multiply4(aft, t.current, t.post)
 	maths.Multiply4(t.current, aft, t.post) // Post-multiply
 	t.current.Set(t.post)
 	return t.current
@@ -61,7 +60,6 @@ func (t *transformStack) ApplyAffine(aft api.IAffineTransform) api.IMatrix4 {
 	// Concat this transform onto the current transform but don't push it.
 	// Use post multiply
 	t.m4.SetFromAffine(aft)
-	// maths.Multiply4(t.m4, t.current, t.post)
 	maths.Multiply4(t.current, t.m4, t.post) // Post-multiply
 	t.current.Set(t.post)
 	return t.current

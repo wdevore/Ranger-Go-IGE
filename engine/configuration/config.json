@@ -5,7 +5,7 @@
     "ShowConfig": false,
     "ShowGLInfo": false,
     "ShowMonitorInfo": false,
-    "ShowTimingInfo": false,
+    "ShowTimingInfo": true,
     "ShowJoystickInfo": false,
     "GLMajorVersion": 4,
     "GLMinorVersion": 1,
