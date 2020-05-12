@@ -42,7 +42,7 @@ func (r *RasterTextNode) Build(world api.IWorld) error {
 	r.Node.Build(world)
 	r.m4 = maths.NewMatrix4()
 
-	r.color = rendering.NewPaletteInt64(rendering.GoldYellow).Array()
+	r.color = rendering.NewPaletteInt64(rendering.White).Array()
 	r.pixelSize = 5.0
 	r.bottomJustified = true
 	r.bottomVerticalOffset = 6.0
