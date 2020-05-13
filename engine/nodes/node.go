@@ -6,7 +6,6 @@ import (
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
-	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 )
 
 var ids = 0
@@ -73,8 +72,6 @@ func (n *Node) InitializeWithID(id int, name string) {
 	n.dirty = true
 }
 
-var drawM4 = maths.NewMatrix4()
-
 // Visit traverses "down" the heirarchy while space-mappings traverses upward.
 func Visit(node api.INode, transStack api.ITransformStack, interpolation float64) {
 	// fmt.Println("Node: visiting ", node)
@@ -95,7 +92,6 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 	nodeRender, isRenderType := node.(api.IRender)
 	if isRenderType {
 		// Send a copy so the node can optionally modify it.
-		// drawM4.Set(current)
 		nodeRender.Draw(current)
 	} else {
 		log.Fatalf("Node: oops, %s doesn't implement IRender.Draw method", node)
