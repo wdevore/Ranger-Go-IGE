@@ -91,7 +91,6 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 
 	nodeRender, isRenderType := node.(api.IRender)
 	if isRenderType {
-		// Send a copy so the node can optionally modify it.
 		nodeRender.Draw(current)
 	} else {
 		log.Fatalf("Node: oops, %s doesn't implement IRender.Draw method", node)
