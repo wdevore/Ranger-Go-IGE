@@ -17,7 +17,7 @@ type VBO struct {
 	staticDraw bool
 }
 
-// NewVBO creates a empty VBO
+// NewVBO creates a empty VBO defaulting to STATIC_DRAW
 func NewVBO() *VBO {
 	o := new(VBO)
 	o.genBound = false
@@ -36,8 +36,11 @@ func (v *VBO) GenBuffer() {
 
 // SetDrawUsage changes buffer usage style between static or dynamic.
 // This MUST be called prior to Bind() call.
-func (v *VBO) SetDrawUsage(staticDraw bool) {
-	v.staticDraw = staticDraw
+func (v *VBO) SetDrawUsage(usage bool) {
+	if v.genBound {
+		panic("The VBO buffer has already been bound.")
+	}
+	v.staticDraw = usage
 }
 
 // Bind binds the buffer id against the mesh vertices
