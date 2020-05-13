@@ -21,7 +21,7 @@ func newBasicSplashScene(name string, replacement api.INode) api.INode {
 func (s *sceneSplash) Build(world api.IWorld) error {
 	s.Node.Build(world)
 
-	dvr := s.World().Properties().Window.DeviceRes
+	dvr := world.Properties().Window.DeviceRes
 
 	bg := newBackgroundNode("Background", world, s)
 	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
@@ -30,8 +30,8 @@ func (s *sceneSplash) Build(world api.IWorld) error {
 
 	newOverlayLayer("Overlay Layer", world, s)
 
-	s.World().Shader().Use()
-	s.World().VecObj().Use()
+	world.Shader().Use()
+	world.VecObj().Use()
 
 	return nil
 }
