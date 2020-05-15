@@ -101,6 +101,7 @@ func newWorld(relativePath string) api.IWorld {
 
 func (w *world) Configure() error {
 	w.renderRepo = make(map[int]api.IRenderGraphic)
+	w.renderIdx = api.GlobalRenderGraphic // Default
 
 	shp := w.properties.Shaders
 
@@ -142,6 +143,8 @@ func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 	if w.activeRenGID != graphicID {
 		// Deactivate current graphic
 		w.activeRenG.UnUse()
+
+		// Activate new graphic
 		w.activeRenGID = graphicID
 		w.activeRenG = w.renderRepo[graphicID]
 		w.activeRenG.Use()
