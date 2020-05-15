@@ -30,9 +30,6 @@ func (s *sceneSplash) Build(world api.IWorld) error {
 
 	newOverlayLayer("Overlay Layer", world, s)
 
-	s.World().Shader().Use()
-	s.World().VecObj().Use()
-
 	return nil
 }
 

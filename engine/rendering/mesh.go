@@ -37,25 +37,31 @@ func (m *Mesh) GenBuffers() {
 	m.ebo.GenBuffer()
 }
 
+// AddVertex adds a vertex
 func (m *Mesh) AddVertex(x, y, z float32) {
 	m.vertices = append(m.vertices, x, y, z)
 }
 
+// SetVertex sets an existing vertex components.
 func (m *Mesh) SetVertex(x, y, z float32, index int) {
-	m.vertices[index] = x
-	m.vertices[index+1] = y
-	m.vertices[index+2] = z
+	i := index * 3
+	m.vertices[i] = x
+	m.vertices[i+1] = y
+	m.vertices[i+2] = z
 }
 
+// AddIndex adds an index for EBOs
 func (m *Mesh) AddIndex(index int) {
 	m.indices = append(m.indices, uint32(index))
 }
 
+// Vertices returns the internal vertices
 func (m *Mesh) Vertices() []float32 {
 
 	return m.vertices
 }
 
+// Indices returns the internal indices
 func (m *Mesh) Indices() []uint32 {
 	return m.indices
 }

@@ -42,7 +42,5 @@ type INode interface {
 	// Children
 	IGroup
 
-	GetBucket() []IPoint
-
 	Update(msPerUpdate, secPerUpdate float64)
 }

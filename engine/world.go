@@ -2,14 +2,12 @@ package engine
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/configuration"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
@@ -22,14 +20,13 @@ type world struct {
 	properties   *configuration.Properties
 	relativePath string
 
-	shader   api.IShader
-	modelLoc int32
-	colorLoc int32
-
-	vecObj api.IVectorObject
-	atlas  api.IAtlas
+	atlas api.IAtlas
 
 	rasterFont api.IRasterFont
+
+	renderRepo       map[int]api.IRenderGraphic
+	graphicID        int
+	activeRdrGraphic rendering.RenderGraphic
 
 	// Debug Info
 	fps        int
@@ -101,64 +98,38 @@ func newWorld(relativePath string) api.IWorld {
 }
 
 func (w *world) Configure() error {
+	w.renderRepo = make(map[int]api.IRenderGraphic)
+
 	shp := w.properties.Shaders
 
-	w.shader = rendering.NewShaderFromCode(shp.VertexShaderCode, shp.FragmentShaderCode)
-
-	err := w.shader.Compile()
-
-	if err != nil {
-		return err
-	}
-
-	// Construct and populate the vector shape atlas
-	w.vecObj = rendering.NewVectorObject()
-	w.vecObj.Construct()
+	renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true)
+	w.AddRenderGraphic(renG)
 
 	w.atlas = atlas.NewAtlas()
-	w.atlas.Initialize(w.vecObj)
+	w.atlas.Initialize(renG.BufferObj())
 
-	w.vecObj.Bind()
-
-	w.shader.Use()
-
-	programID := w.shader.Program()
-
-	w.modelLoc = gl.GetUniformLocation(programID, gl.Str("model\x00"))
-	if w.modelLoc < 0 {
-		return errors.New("World: couldn't find 'model' uniform variable")
-	}
-
-	w.colorLoc = gl.GetUniformLocation(programID, gl.Str("fragColor\x00"))
-	if w.colorLoc < 0 {
-		return errors.New("World: couldn't find 'fragColor' uniform variable")
-	}
+	renG.BufferObj().Bind()
 
 	fmt.Println("Loading Raster font...")
 	w.rasterFont = fonts.NewRasterFont()
-	err = w.rasterFont.Initialize("raster_font.data", w.relativePath)
+	err := w.rasterFont.Initialize("raster_font.data", w.relativePath)
 
 	return err
 }
 
-func (w *world) Shader() api.IShader {
-	return w.shader
+func (w *world) AddRenderGraphic(graphic api.IRenderGraphic) int {
+	w.renderRepo[w.graphicID] = graphic
+	id := w.graphicID
+	w.graphicID++
+	return id
 }
 
-func (w *world) ModelLoc() int32 {
-	return w.modelLoc
-}
-
-func (w *world) ColorLoc() int32 {
-	return w.colorLoc
+func (w *world) GetRenderGraphic(graphicID int) api.IRenderGraphic {
+	return w.renderRepo[graphicID]
 }
 
 func (w *world) Atlas() api.IAtlas {
 	return w.atlas
-}
-
-func (w *world) VecObj() api.IVectorObject {
-	return w.vecObj
 }
 
 func (w *world) RasterFont() api.IRasterFont {

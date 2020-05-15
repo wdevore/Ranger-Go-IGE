@@ -28,9 +28,6 @@ func (s *sceneSplash) Build(world api.IWorld) error {
 
 	newBasicGameLayer("Game Layer", world, s)
 
-	s.World().Shader().Use()
-	s.World().VecObj().Use()
-
 	return nil
 }
 

@@ -87,11 +87,11 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 
 	aft := node.CalcTransform()
 
-	current := transStack.ApplyAffine(aft)
+	model := transStack.ApplyAffine(aft)
 
 	nodeRender, isRenderType := node.(api.IRender)
 	if isRenderType {
-		nodeRender.Draw(current)
+		nodeRender.Draw(model)
 	} else {
 		log.Fatalf("Node: oops, %s doesn't implement IRender.Draw method", node)
 	}
@@ -165,17 +165,20 @@ func (n *Node) RippleDirty(dirty bool) {
 func (n *Node) Update(msPerUpdate, secPerUpdate float64) {
 }
 
+// -----------------------------------------------------
+// IRender
+// -----------------------------------------------------
+
 // Draw provides a default render--which is to draw nothing.
 // You should override this in your custom node if your node
 // needs to perform custom rendering.
-func (n *Node) Draw(m4 api.IMatrix4) {
+func (n *Node) Draw(model api.IMatrix4) {
 	// fmt.Println("Node: Draw ", n)
 }
 
-// GetBucket returns a buffer for capturing transformed vertices
-func (n *Node) GetBucket() []api.IPoint {
-	return nil
-}
+// -----------------------------------------------------
+// Events
+// -----------------------------------------------------
 
 // Handle may handle an IO event
 func (n *Node) Handle(event api.IEvent) bool {

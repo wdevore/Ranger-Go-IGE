@@ -62,7 +62,7 @@ func (v *VAO) Bind() {
 }
 
 // Render shape using VAO
-func (v *VAO) Render(vs api.IVectorShape) {
+func (v *VAO) Render(vs api.IAtlasShape) {
 	// The signature of glDrawElements was defined back before there were buffer objects;
 	// originally you'd pass an actual pointer to data in a client-side vertex array.
 	// When device-side buffers were introduced, this function was extended to support them

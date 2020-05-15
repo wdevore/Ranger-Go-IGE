@@ -63,7 +63,10 @@ func (n *nodeManager) Configure() error {
 	n.configureProjections(n.world)
 
 	// Send static matrices to Shader
-	programID := n.world.Shader().Program()
+	renG := n.world.GetRenderGraphic(api.GlobalRenderGraphic)
+	// programID := n.world.Shader().Program()
+	programID := renG.Program()
+
 	n.projLoc = gl.GetUniformLocation(programID, gl.Str("projection\x00"))
 	if n.projLoc < 0 {
 		return errors.New("SplashScene: couldn't find 'projection' uniform variable")

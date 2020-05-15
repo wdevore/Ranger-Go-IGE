@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/go-gl/gl/v4.5-core/gl"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
@@ -11,7 +9,7 @@ import (
 type backgroundNode struct {
 	nodes.Node
 
-	background api.IVectorShape
+	background api.IAtlasShape
 
 	color []float32
 }
@@ -47,9 +45,8 @@ func (b *backgroundNode) Draw(model api.IMatrix4) {
 	// }
 
 	w := b.World()
-	gl.UniformMatrix4fv(w.ModelLoc(), 1, false, &model.Matrix()[0])
-
-	gl.Uniform3fv(w.ColorLoc(), 1, &b.color[0])
-
-	w.VecObj().Render(b.background)
+	renG := w.GetRenderGraphic(api.GlobalRenderGraphic)
+	renG.Use()
+	renG.SetColor(b.color)
+	renG.Render(b.background, model)
 }

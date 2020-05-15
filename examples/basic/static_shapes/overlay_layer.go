@@ -37,7 +37,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 		gt := g.timing.(*custom.RasterTextNode)
 		gt.SetText("-")
 		gt.SetPixelSize(2.0)
-		gt.SetColor(color.NewPaletteInt64(color.LightGray))
+		gt.SetColor(color.NewPaletteInt64(color.GreyBlue))
 	}
 
 	return nil

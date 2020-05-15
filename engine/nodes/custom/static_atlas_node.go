@@ -1,8 +1,6 @@
 package custom
 
 import (
-	"github.com/go-gl/gl/v4.5-core/gl"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
@@ -11,11 +9,12 @@ import (
 // StaticAtlasNode is a basic circle
 type StaticAtlasNode struct {
 	nodes.Node
+	renG api.IRenderGraphic
 
 	color []float32
 
 	atlasName string
-	shape     api.IVectorShape
+	shape     api.IAtlasShape
 }
 
 // NewStaticAtlasNode constructs a rectangle shaped node
@@ -37,6 +36,8 @@ func (r *StaticAtlasNode) Build(world api.IWorld) error {
 
 	r.shape = world.Atlas().Shape(r.atlasName)
 
+	r.renG = world.GetRenderGraphic(api.GlobalRenderGraphic)
+
 	return nil
 }
 
@@ -47,10 +48,7 @@ func (r *StaticAtlasNode) SetColor(color api.IPalette) {
 
 // Draw renders shape
 func (r *StaticAtlasNode) Draw(model api.IMatrix4) {
-	w := r.World()
-	gl.UniformMatrix4fv(w.ModelLoc(), 1, false, &model.Matrix()[0])
-
-	gl.Uniform3fv(w.ColorLoc(), 1, &r.color[0])
-
-	w.VecObj().Render(r.shape)
+	r.renG.Use()
+	r.renG.SetColor(r.color)
+	r.renG.Render(r.shape, model)
 }

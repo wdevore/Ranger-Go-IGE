@@ -11,7 +11,7 @@ import (
 
 // Atlas is a map-collection of vector shapes managed by a vector object
 type Atlas struct {
-	shapes map[string]api.IVectorShape
+	shapes map[string]api.IAtlasShape
 }
 
 // NewAtlas creates a new atlas. The Atlas is pre-populated by
@@ -26,12 +26,12 @@ type Atlas struct {
 // - CrowBar
 func NewAtlas() api.IAtlas {
 	o := new(Atlas)
-	o.shapes = make(map[string]api.IVectorShape)
+	o.shapes = make(map[string]api.IAtlasShape)
 	return o
 }
 
 // Initialize adds a few basic shapes to atlas
-func (a *Atlas) Initialize(vo api.IVectorObject) {
+func (a *Atlas) Initialize(vo api.IBufferObject) {
 	uAtlas := vo.UniformAtlas()
 
 	a.AddShape(buildPixel(uAtlas))
@@ -45,22 +45,22 @@ func (a *Atlas) Initialize(vo api.IVectorObject) {
 }
 
 // Shape returns a shape by name
-func (a *Atlas) Shape(name string) api.IVectorShape {
+func (a *Atlas) Shape(name string) api.IAtlasShape {
 	return a.shapes[name]
 }
 
 // Shapes returns all the shapes the atlas contains
-func (a *Atlas) Shapes() map[string]api.IVectorShape {
+func (a *Atlas) Shapes() map[string]api.IAtlasShape {
 	return a.shapes
 }
 
 // AddShape adds a vector shape to the collection
-func (a *Atlas) AddShape(vs api.IVectorShape) {
+func (a *Atlas) AddShape(vs api.IAtlasShape) {
 	a.shapes[vs.Name()] = vs
 }
 
-func buildPixel(uAtlas api.IVectorAtlas) api.IVectorShape {
-	s := rendering.NewVectorShape()
+func buildPixel(uAtlas api.IAtlasObject) api.IAtlasShape {
+	s := rendering.NewAtlasShape()
 	s.SetName("Pixel")
 	s.SetPrimitiveMode(gl.POINTS)
 
@@ -76,8 +76,8 @@ func buildPixel(uAtlas api.IVectorAtlas) api.IVectorShape {
 	return s
 }
 
-func buildLine(uAtlas api.IVectorAtlas) api.IVectorShape {
-	s := rendering.NewVectorShape()
+func buildLine(uAtlas api.IAtlasObject) api.IAtlasShape {
+	s := rendering.NewAtlasShape()
 	s.SetName("Line")
 	s.SetPrimitiveMode(gl.LINES)
 
@@ -95,8 +95,8 @@ func buildLine(uAtlas api.IVectorAtlas) api.IVectorShape {
 	return s
 }
 
-func buildCross(uAtlas api.IVectorAtlas) api.IVectorShape {
-	s := rendering.NewVectorShape()
+func buildCross(uAtlas api.IAtlasObject) api.IAtlasShape {
+	s := rendering.NewAtlasShape()
 	s.SetName("Cross")
 	s.SetPrimitiveMode(gl.LINES)
 
@@ -118,8 +118,8 @@ func buildCross(uAtlas api.IVectorAtlas) api.IVectorShape {
 	return s
 }
 
-func buildCircle(uAtlas api.IVectorAtlas) api.IVectorShape {
-	s := rendering.NewVectorShape()
+func buildCircle(uAtlas api.IAtlasObject) api.IAtlasShape {
+	s := rendering.NewAtlasShape()
 	s.SetName("Circle12Segments")
 	s.SetPrimitiveMode(gl.TRIANGLE_FAN)
 
@@ -145,8 +145,8 @@ func buildCircle(uAtlas api.IVectorAtlas) api.IVectorShape {
 	return s
 }
 
-func buildSquare(uAtlas api.IVectorAtlas) api.IVectorShape {
-	s := rendering.NewVectorShape()
+func buildSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
+	s := rendering.NewAtlasShape()
 	s.SetName("Square")
 	s.SetPrimitiveMode(gl.TRIANGLES)
 
@@ -170,8 +170,8 @@ func buildSquare(uAtlas api.IVectorAtlas) api.IVectorShape {
 	return s
 }
 
-func buildCenteredSquare(uAtlas api.IVectorAtlas) api.IVectorShape {
-	s := rendering.NewVectorShape()
+func buildCenteredSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
+	s := rendering.NewAtlasShape()
 	s.SetName("CenteredSquare")
 	s.SetPrimitiveMode(gl.TRIANGLES)
 
@@ -197,8 +197,8 @@ func buildCenteredSquare(uAtlas api.IVectorAtlas) api.IVectorShape {
 	return s
 }
 
-func buildCenteredTriangle(uAtlas api.IVectorAtlas) api.IVectorShape {
-	s := rendering.NewVectorShape()
+func buildCenteredTriangle(uAtlas api.IAtlasObject) api.IAtlasShape {
+	s := rendering.NewAtlasShape()
 	s.SetName("CenteredTriangle")
 	s.SetPrimitiveMode(gl.TRIANGLES)
 
@@ -218,8 +218,8 @@ func buildCenteredTriangle(uAtlas api.IVectorAtlas) api.IVectorShape {
 	return s
 }
 
-func buildCrowBar(uAtlas api.IVectorAtlas) api.IVectorShape {
-	s := rendering.NewVectorShape()
+func buildCrowBar(uAtlas api.IAtlasObject) api.IAtlasShape {
+	s := rendering.NewAtlasShape()
 	s.SetName("CrowBar")
 	s.SetPrimitiveMode(gl.TRIANGLES)
 

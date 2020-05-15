@@ -22,7 +22,7 @@ type RasterTextNode struct {
 	inverted             bool
 	whiteSpaceDistance   float32
 
-	shape api.IVectorShape
+	shape api.IAtlasShape
 
 	m4 api.IMatrix4
 }
@@ -95,8 +95,9 @@ func (r *RasterTextNode) Draw(model api.IMatrix4) {
 	// }
 
 	w := r.World()
+	renG := w.GetRenderGraphic(api.GlobalRenderGraphic)
 
-	gl.Uniform3fv(w.ColorLoc(), 1, &r.color[0])
+	renG.SetColor(r.color)
 
 	// -------------------------------------------
 	// Draw text
@@ -113,7 +114,6 @@ func (r *RasterTextNode) Draw(model api.IMatrix4) {
 	}
 
 	gl.PointSize(s)
-	vo := w.VecObj()
 
 	for _, c := range r.text {
 		if c == ' ' {
@@ -138,8 +138,7 @@ func (r *RasterTextNode) Draw(model api.IMatrix4) {
 					r.m4.Set(model) // Reset for this pixel
 					// r.m4.ScaleByComp(1.0, -1.0, 1.0) // This is slower. Use "gy -= s" as below.
 					r.m4.TranslateBy2Comps(gx, gy)
-					gl.UniformMatrix4fv(w.ModelLoc(), 1, false, &r.m4.Matrix()[0])
-					vo.Render(r.shape)
+					renG.Render(r.shape, r.m4)
 				}
 				gx += s
 			}

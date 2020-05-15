@@ -11,13 +11,10 @@ type IWorld interface {
 	Properties() *configuration.Properties
 	PropertiesOverride(configFiel string)
 
-	Shader() IShader
-	// Shader locations
-	ModelLoc() int32
-	ColorLoc() int32
+	AddRenderGraphic(graphic IRenderGraphic) int
+	GetRenderGraphic(graphicID int) IRenderGraphic
 
 	Atlas() IAtlas
-	VecObj() IVectorObject
 
 	RasterFont() IRasterFont
 

@@ -1,7 +1,7 @@
 package api
 
-// IVectorShape represents a vector shape
-type IVectorShape interface {
+// IAtlasShape represents a vector shape
+type IAtlasShape interface {
 	SetOffset(offset int)
 	Offset() int
 

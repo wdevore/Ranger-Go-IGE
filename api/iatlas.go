@@ -2,8 +2,8 @@ package api
 
 // IAtlas represents a collection of shapes
 type IAtlas interface {
-	Initialize(vo IVectorObject)
-	Shape(string) IVectorShape
-	Shapes() map[string]IVectorShape
-	AddShape(vs IVectorShape)
+	Initialize(vo IBufferObject)
+	Shape(string) IAtlasShape
+	Shapes() map[string]IAtlasShape
+	AddShape(vs IAtlasShape)
 }
