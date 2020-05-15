@@ -6,7 +6,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
-// StaticAtlasNode is a basic circle
+// StaticAtlasNode is a generic node
 type StaticAtlasNode struct {
 	nodes.Node
 	renG api.IRenderGraphic
