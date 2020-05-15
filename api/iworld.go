@@ -13,6 +13,7 @@ type IWorld interface {
 
 	AddRenderGraphic(graphic IRenderGraphic) int
 	GetRenderGraphic(graphicID int) IRenderGraphic
+	UseRenderGraphic(graphicID int) IRenderGraphic
 
 	Atlas() IAtlas
 

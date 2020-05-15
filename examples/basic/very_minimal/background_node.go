@@ -8,7 +8,6 @@ import (
 
 type backgroundNode struct {
 	nodes.Node
-	renG api.IRenderGraphic
 
 	background api.IAtlasShape
 
@@ -33,8 +32,6 @@ func (b *backgroundNode) Build(world api.IWorld) error {
 
 	b.background = world.Atlas().Shape("CenteredSquare")
 
-	b.renG = world.GetRenderGraphic(api.GlobalRenderGraphic)
-
 	return nil
 }
 
@@ -47,7 +44,7 @@ func (b *backgroundNode) Draw(model api.IMatrix4) {
 	// 	b.SetDirty(false)
 	// }
 
-	b.renG.Use()
-	b.renG.SetColor(b.color)
-	b.renG.Render(b.background, model)
+	renG := b.World().UseRenderGraphic(api.GlobalRenderGraphic)
+	renG.SetColor(b.color)
+	renG.Render(b.background, model)
 }

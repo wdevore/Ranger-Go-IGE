@@ -24,9 +24,11 @@ type world struct {
 
 	rasterFont api.IRasterFont
 
-	renderRepo       map[int]api.IRenderGraphic
-	graphicID        int
-	activeRdrGraphic rendering.RenderGraphic
+	renderIdx  int
+	renderRepo map[int]api.IRenderGraphic
+
+	activeRenGID int
+	activeRenG   api.IRenderGraphic
 
 	// Debug Info
 	fps        int
@@ -105,6 +107,8 @@ func (w *world) Configure() error {
 	renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true)
 	w.AddRenderGraphic(renG)
 
+	w.activeRenGID = -1
+
 	w.atlas = atlas.NewAtlas()
 	w.atlas.Initialize(renG.BufferObj())
 
@@ -118,14 +122,26 @@ func (w *world) Configure() error {
 }
 
 func (w *world) AddRenderGraphic(graphic api.IRenderGraphic) int {
-	w.renderRepo[w.graphicID] = graphic
-	id := w.graphicID
-	w.graphicID++
-	return id
+	w.activeRenG = graphic
+	w.renderRepo[w.renderIdx] = graphic
+	w.renderIdx++
+	return w.renderIdx
 }
 
 func (w *world) GetRenderGraphic(graphicID int) api.IRenderGraphic {
 	return w.renderRepo[graphicID]
+}
+
+func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
+	if w.activeRenGID != graphicID {
+		// Deactivate current graphic
+		w.activeRenG.UnUse()
+		w.activeRenGID = graphicID
+		w.activeRenG = w.renderRepo[graphicID]
+		w.activeRenG.Use()
+	}
+
+	return w.activeRenG
 }
 
 func (w *world) Atlas() api.IAtlas {

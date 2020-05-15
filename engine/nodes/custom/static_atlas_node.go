@@ -9,7 +9,6 @@ import (
 // StaticAtlasNode is a generic node
 type StaticAtlasNode struct {
 	nodes.Node
-	renG api.IRenderGraphic
 
 	color []float32
 
@@ -36,8 +35,6 @@ func (r *StaticAtlasNode) Build(world api.IWorld) error {
 
 	r.shape = world.Atlas().Shape(r.atlasName)
 
-	r.renG = world.GetRenderGraphic(api.GlobalRenderGraphic)
-
 	return nil
 }
 
@@ -48,7 +45,7 @@ func (r *StaticAtlasNode) SetColor(color api.IPalette) {
 
 // Draw renders shape
 func (r *StaticAtlasNode) Draw(model api.IMatrix4) {
-	r.renG.Use()
-	r.renG.SetColor(r.color)
-	r.renG.Render(r.shape, model)
+	renG := r.World().UseRenderGraphic(api.GlobalRenderGraphic)
+	renG.SetColor(r.color)
+	renG.Render(r.shape, model)
 }

@@ -12,7 +12,6 @@ import (
 // RasterTextNode is a basic raster pixel text node
 type RasterTextNode struct {
 	nodes.Node
-	renG api.IRenderGraphic
 
 	color []float32
 
@@ -51,8 +50,6 @@ func (r *RasterTextNode) Build(world api.IWorld) error {
 	r.whiteSpaceDistance = 2.0
 
 	r.shape = world.Atlas().Shape("Pixel")
-
-	r.renG = world.GetRenderGraphic(api.GlobalRenderGraphic)
 
 	return nil
 }
@@ -96,9 +93,9 @@ func (r *RasterTextNode) Draw(model api.IMatrix4) {
 	// if r.IsDirty() {
 	// 	r.SetDirty(false)
 	// }
-	r.renG.Use()
+	renG := r.World().UseRenderGraphic(api.GlobalRenderGraphic)
 
-	r.renG.SetColor(r.color)
+	renG.SetColor(r.color)
 
 	// -------------------------------------------
 	// Draw text
@@ -139,7 +136,7 @@ func (r *RasterTextNode) Draw(model api.IMatrix4) {
 					r.m4.Set(model) // Reset for this pixel
 					// r.m4.ScaleByComp(1.0, -1.0, 1.0) // This is slower. Use "gy -= s" as below.
 					r.m4.TranslateBy2Comps(gx, gy)
-					r.renG.Render(r.shape, r.m4)
+					renG.Render(r.shape, r.m4)
 				}
 				gx += s
 			}
