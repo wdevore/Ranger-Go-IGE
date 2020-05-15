@@ -11,6 +11,7 @@ type IWorld interface {
 	Properties() *configuration.Properties
 	PropertiesOverride(configFiel string)
 
+	GenGraphicID() int
 	AddRenderGraphic(graphic IRenderGraphic) int
 	GetRenderGraphic(graphicID int) IRenderGraphic
 	UseRenderGraphic(graphicID int) IRenderGraphic

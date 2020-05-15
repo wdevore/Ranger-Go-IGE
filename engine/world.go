@@ -121,10 +121,16 @@ func (w *world) Configure() error {
 	return err
 }
 
+func (w *world) GenGraphicID() int {
+	id := w.renderIdx
+	w.renderIdx++
+	return id
+}
+
 func (w *world) AddRenderGraphic(graphic api.IRenderGraphic) int {
 	w.activeRenG = graphic
+	w.renderIdx = w.GenGraphicID()
 	w.renderRepo[w.renderIdx] = graphic
-	w.renderIdx++
 	return w.renderIdx
 }
 
