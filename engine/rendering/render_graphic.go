@@ -122,6 +122,11 @@ func (r *RenderGraphic) BufferObj() api.IBufferObject {
 	return r.bufObj
 }
 
+// Atlas returns internal uniform atlas
+func (r *RenderGraphic) Atlas() api.IAtlas {
+	return r.bufObj.Atlas()
+}
+
 // Program returns the internal shader program
 func (r *RenderGraphic) Program() uint32 {
 	return r.programID

@@ -11,7 +11,6 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/configuration"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
-	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/fonts"
 )
 
@@ -20,7 +19,7 @@ type world struct {
 	properties   *configuration.Properties
 	relativePath string
 
-	staticAtlas  api.IAtlas
+	// staticAtlas  api.IAtlas
 	dynamicAtlas api.IAtlas
 
 	rasterFont api.IRasterFont
@@ -113,10 +112,10 @@ func (w *world) Configure() error {
 	// Force UseRenderGraphic to UnUse/Use for the first node visited
 	w.activeRenGID = -1
 
-	// Create an Atlas with default objects
-	w.staticAtlas = atlas.NewAtlas()
-	// The BO is where the data is stored.
-	w.staticAtlas.Initialize(renG.BufferObj()) // Performs a Bind before exiting.
+	// // Create an Atlas with default objects
+	// w.staticAtlas = atlas.NewAtlas()
+	// // The BO is where the data is stored.
+	// w.staticAtlas.Initialize(renG.BufferObj()) // Performs a Bind before exiting.
 
 	// Create a graphic that will store Dynamic shapes, for example, Line shape.
 	// renG = rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, false)
@@ -168,7 +167,7 @@ func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 }
 
 func (w *world) Atlas() api.IAtlas {
-	return w.staticAtlas
+	return w.activeRenG.Atlas()
 }
 
 func (w *world) RasterFont() api.IRasterFont {

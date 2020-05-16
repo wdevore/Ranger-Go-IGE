@@ -1,11 +1,14 @@
 package rendering
 
-import "github.com/wdevore/Ranger-Go-IGE/api"
+import (
+	"github.com/wdevore/Ranger-Go-IGE/api"
+)
 
 // BufferObject associates an Atlas with a VAO
 type BufferObject struct {
 	uniformAtlas api.IAtlasObject // VectorAtlas
 	vao          *VAO
+	atlas        api.IAtlas
 }
 
 // NewBufferObject creates a new vector object with an associated Mesh
@@ -14,33 +17,48 @@ func NewBufferObject() api.IBufferObject {
 	return vo
 }
 
-// Construct configures a vector object
-func (bo *BufferObject) Construct(isStatic bool) {
-	bo.uniformAtlas = NewUniformAtlas(isStatic)
-	bo.vao = NewVAO(bo.uniformAtlas.Mesh())
+// Construct configures a buffer object
+func (b *BufferObject) Construct(isStatic bool) {
+	b.vao = NewVAO()
+	b.vao.BindStart()
+
+	// The Atlas contains a Mesh and the Mesh contains
+	// VBOs and EBOs
+	b.uniformAtlas = NewUniformAtlas(isStatic)
+
+	b.atlas = NewAtlas()
+	// Populate atlas with default objects
+	b.atlas.Build(b)
+
+	b.uniformAtlas.BindAndBufferVBO()
+
+	// Now EBO
+	b.uniformAtlas.BindAndBufferEBO()
+
+	b.vao.BindComplete()
 }
 
 // Use activates the VAO
-func (bo *BufferObject) Use() {
-	bo.vao.Use()
+func (b *BufferObject) Use() {
+	b.vao.Use()
 }
 
 // UnUse deactivates the VAO
-func (bo *BufferObject) UnUse() {
-	bo.vao.UnUse()
-}
-
-// Bind binds the VAO
-func (bo *BufferObject) Bind() {
-	bo.vao.Bind()
+func (b *BufferObject) UnUse() {
+	b.vao.UnUse()
 }
 
 // Render renders the given shape using the currently activated VAO
-func (bo *BufferObject) Render(vs api.IAtlasShape) {
-	bo.vao.Render(vs)
+func (b *BufferObject) Render(vs api.IAtlasShape) {
+	b.vao.Render(vs)
 }
 
-// UniformAtlas returns atlas
-func (bo *BufferObject) UniformAtlas() api.IAtlasObject {
-	return bo.uniformAtlas
+// UniformAtlas returns a uniform atlasobject
+func (b *BufferObject) UniformAtlas() api.IAtlasObject {
+	return b.uniformAtlas
+}
+
+// Atlas returns the internal atlas
+func (b *BufferObject) Atlas() api.IAtlas {
+	return b.atlas
 }

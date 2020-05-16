@@ -4,8 +4,8 @@ package api
 type IBufferObject interface {
 	Construct(isStatic bool)
 	UniformAtlas() IAtlasObject
+	Atlas() IAtlas
 	Use()
 	UnUse()
-	Bind()
 	Render(vs IAtlasShape)
 }

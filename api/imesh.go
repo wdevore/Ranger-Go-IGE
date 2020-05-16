@@ -11,6 +11,6 @@ type IMesh interface {
 
 	AddIndex(index int)
 
-	GenBuffers()
-	Bind()
+	BindVBO()
+	BindEBO()
 }

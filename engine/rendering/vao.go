@@ -12,47 +12,31 @@ const attributeIndex uint32 = 0
 
 // VAO defines a Vertex Array Object
 type VAO struct {
-	// Indicates if an Id has been generated
-	genBound bool
-	vaoID    uint32
-	mesh     api.IMesh
+	vaoID uint32
 }
 
 // NewVAO creates a new VAO
-func NewVAO(m api.IMesh) *VAO {
-	v := new(VAO)
-	v.mesh = m
-	return v
+func NewVAO() *VAO {
+	o := new(VAO)
+	gl.GenVertexArrays(1, &o.vaoID)
+	return o
 }
 
-// Bind setups the VAO and Mesh
-func (v *VAO) Bind() {
-	if !v.genBound {
-		gl.GenVertexArrays(1, &v.vaoID)
-		v.genBound = true
-	}
-
-	v.mesh.GenBuffers()
-
+// BindStart setups the VAO and Mesh
+func (v *VAO) BindStart() {
 	// Bind the Vertex Array Object first, then bind and set vertex buffer(s)
 	// and attribute pointer(s).
 	gl.BindVertexArray(v.vaoID)
+}
 
-	v.mesh.Bind()
-
+// BindComplete setups vertex-array-ptr and disable vertex-array-attr
+func (v *VAO) BindComplete() {
 	arrayCount := xyzComponentCount * int32(unsafe.Sizeof(float32(0)))
 	gl.VertexAttribPointer(attributeIndex, int32(xyzComponentCount), gl.FLOAT, false, arrayCount, gl.PtrOffset(0))
 
 	gl.EnableVertexAttribArray(0)
 
-	// Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound
-	// vertex buffer object so afterwards we can safely unbind
-	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
-
-	// Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs),
-	// remember: do NOT unbind the EBO, keep it bound to this VAO
 	gl.BindVertexArray(0)
-
 }
 
 // Render shape using VAO
@@ -65,8 +49,6 @@ func (v *VAO) Render(vs api.IAtlasShape) {
 	// pointer to void.
 	// If we weren't using VBOs then we would use client-side addresses: &_mesh->indices[offset]
 
-	// Rather than multiply repeatedly
-	//glDrawElements(_shape->primitiveType, _shape->count, GL_UNSIGNED_INT, (const GLvoid*)(_shape->offset * sizeof(unsigned int)));
 	// we use a pre computed version.
 	gl.DrawElements(vs.PrimitiveMode(), vs.Count(), uint32(gl.UNSIGNED_INT), gl.PtrOffset(vs.Offset()))
 }

@@ -25,16 +25,14 @@ func NewMesh() api.IMesh {
 	return m
 }
 
-// Bind binds this Mesh to a VBO and EBO
-func (m *Mesh) Bind() {
+// BindVBO calls BindBuffer and BufferData
+func (m *Mesh) BindVBO() {
 	m.vbo.Bind(m)
-	m.ebo.Bind(m)
 }
 
-// GenBuffers generates buffers for VBO and EBO
-func (m *Mesh) GenBuffers() {
-	m.vbo.GenBuffer()
-	m.ebo.GenBuffer()
+// BindEBO calls BindBuffer and BufferData
+func (m *Mesh) BindEBO() {
+	m.ebo.Bind(m)
 }
 
 // AddVertex adds a vertex

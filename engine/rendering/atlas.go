@@ -1,12 +1,11 @@
 // Package atlas defines vector shape collections
-package atlas
+package rendering
 
 import (
 	"math"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 )
 
 // Atlas is a map-collection of vector shapes managed by a vector object
@@ -30,8 +29,8 @@ func NewAtlas() api.IAtlas {
 	return o
 }
 
-// Initialize adds a few basic shapes to atlas
-func (a *Atlas) Initialize(bo api.IBufferObject) {
+// Build adds a few basic shapes to atlas
+func (a *Atlas) Build(bo api.IBufferObject) {
 	uAtlas := bo.UniformAtlas()
 
 	a.AddShape(buildPixel(uAtlas))
@@ -43,7 +42,7 @@ func (a *Atlas) Initialize(bo api.IBufferObject) {
 	a.AddShape(buildCross(uAtlas))
 	a.AddShape(buildCrowBar(uAtlas))
 
-	bo.Bind()
+	// bo.Bind()
 }
 
 // Shape returns a shape by name
@@ -62,7 +61,7 @@ func (a *Atlas) AddShape(shape api.IAtlasShape) {
 }
 
 func buildPixel(uAtlas api.IAtlasObject) api.IAtlasShape {
-	s := rendering.NewAtlasShape()
+	s := NewAtlasShape()
 	s.SetName("Pixel")
 	s.SetPrimitiveMode(gl.POINTS)
 
@@ -79,7 +78,7 @@ func buildPixel(uAtlas api.IAtlasObject) api.IAtlasShape {
 }
 
 func buildLine(uAtlas api.IAtlasObject) api.IAtlasShape {
-	s := rendering.NewAtlasShape()
+	s := NewAtlasShape()
 	s.SetName("Line")
 	s.SetPrimitiveMode(gl.LINES)
 
@@ -98,7 +97,7 @@ func buildLine(uAtlas api.IAtlasObject) api.IAtlasShape {
 }
 
 func buildCross(uAtlas api.IAtlasObject) api.IAtlasShape {
-	s := rendering.NewAtlasShape()
+	s := NewAtlasShape()
 	s.SetName("Cross")
 	s.SetPrimitiveMode(gl.LINES)
 
@@ -121,7 +120,7 @@ func buildCross(uAtlas api.IAtlasObject) api.IAtlasShape {
 }
 
 func buildCircle(uAtlas api.IAtlasObject) api.IAtlasShape {
-	s := rendering.NewAtlasShape()
+	s := NewAtlasShape()
 	s.SetName("Circle12Segments")
 	s.SetPrimitiveMode(gl.TRIANGLE_FAN)
 
@@ -148,7 +147,7 @@ func buildCircle(uAtlas api.IAtlasObject) api.IAtlasShape {
 }
 
 func buildSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
-	s := rendering.NewAtlasShape()
+	s := NewAtlasShape()
 	s.SetName("Square")
 	s.SetPrimitiveMode(gl.TRIANGLES)
 
@@ -173,7 +172,7 @@ func buildSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
 }
 
 func buildCenteredSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
-	s := rendering.NewAtlasShape()
+	s := NewAtlasShape()
 	s.SetName("CenteredSquare")
 	s.SetPrimitiveMode(gl.TRIANGLES)
 
@@ -200,7 +199,7 @@ func buildCenteredSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
 }
 
 func buildCenteredTriangle(uAtlas api.IAtlasObject) api.IAtlasShape {
-	s := rendering.NewAtlasShape()
+	s := NewAtlasShape()
 	s.SetName("CenteredTriangle")
 	s.SetPrimitiveMode(gl.TRIANGLES)
 
@@ -221,7 +220,7 @@ func buildCenteredTriangle(uAtlas api.IAtlasObject) api.IAtlasShape {
 }
 
 func buildCrowBar(uAtlas api.IAtlasObject) api.IAtlasShape {
-	s := rendering.NewAtlasShape()
+	s := NewAtlasShape()
 	s.SetName("CrowBar")
 	s.SetPrimitiveMode(gl.TRIANGLES)
 

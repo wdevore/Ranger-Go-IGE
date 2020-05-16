@@ -9,9 +9,6 @@ import (
 
 // VBO represents a shader's VBO features.
 type VBO struct {
-	// Indicate if an Id has been generated yet.
-	genBound bool
-
 	vboID uint32 // GLuint
 
 	staticDraw  bool
@@ -22,37 +19,22 @@ type VBO struct {
 // NewVBO creates a empty VBO defaulting to STATIC_DRAW
 func NewVBO() *VBO {
 	o := new(VBO)
-	o.genBound = false
+
+	gl.GenBuffers(1, &o.vboID)
 	o.staticDraw = true
 	o.floatSize = int(unsafe.Sizeof(float32(0)))
 
 	return o
 }
 
-// GenBuffer generates a buffer id for buffer data -
-// Call this BEFORE you call Bind.
-func (v *VBO) GenBuffer() {
-	if !v.genBound {
-		gl.GenBuffers(1, &v.vboID)
-		v.genBound = true
-	}
-}
-
 // SetDrawUsage changes buffer usage style between static or dynamic.
 // This MUST be called prior to Bind() call.
 func (v *VBO) SetDrawUsage(usage bool) {
-	if v.genBound {
-		panic("The VBO buffer has already been bound.")
-	}
 	v.staticDraw = usage
 }
 
 // Bind binds the buffer id against the mesh vertices
 func (v *VBO) Bind(m *Mesh) {
-	if !v.genBound {
-		panic("A VBO buffer ID has not been generated. Call GenBuffer first.")
-	}
-
 	// the buffer type of a vertex buffer object is GL_ARRAY_BUFFER
 	// From this point on any buffer calls we make (on the GL_ARRAY_BUFFER target)
 	// will be used to configure the currently bound buffer, which is VBO
@@ -66,7 +48,6 @@ func (v *VBO) Bind(m *Mesh) {
 		v.bufferUsage = gl.DYNAMIC_DRAW
 	}
 	gl.BufferData(gl.ARRAY_BUFFER, len(m.Vertices())*v.floatSize, gl.Ptr(m.Vertices()), v.bufferUsage)
-	// gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
 
 // Update moves any modified vertices to the buffer.
