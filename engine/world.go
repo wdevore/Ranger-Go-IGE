@@ -20,7 +20,8 @@ type world struct {
 	properties   *configuration.Properties
 	relativePath string
 
-	atlas api.IAtlas
+	staticAtlas  api.IAtlas
+	dynamicAtlas api.IAtlas
 
 	rasterFont api.IRasterFont
 
@@ -105,15 +106,27 @@ func (w *world) Configure() error {
 
 	shp := w.properties.Shaders
 
+	// Create a graphic that will store Static shapes
 	renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true)
 	w.AddRenderGraphic(renG)
 
+	// Force UseRenderGraphic to UnUse/Use for the first node visited
 	w.activeRenGID = -1
 
-	w.atlas = atlas.NewAtlas()
-	w.atlas.Initialize(renG.BufferObj())
+	// Create an Atlas with default objects
+	w.staticAtlas = atlas.NewAtlas()
+	// The BO is where the data is stored.
+	w.staticAtlas.Initialize(renG.BufferObj()) // Performs a Bind before exiting.
 
-	renG.BufferObj().Bind()
+	// Create a graphic that will store Dynamic shapes, for example, Line shape.
+	// renG = rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, false)
+	// w.AddRenderGraphic(renG)
+	// // Create an Atlas with default objects
+	// w.dynamicAtlas = atlas.NewAtlas()
+	// // The BO is where the data is stored.
+	// w.dynamicAtlas.Initialize(renG.BufferObj())
+
+	// renG.BufferObj().Bind()
 
 	fmt.Println("Loading Raster font...")
 	w.rasterFont = fonts.NewRasterFont()
@@ -130,9 +143,9 @@ func (w *world) GenGraphicID() int {
 
 func (w *world) AddRenderGraphic(graphic api.IRenderGraphic) int {
 	w.activeRenG = graphic
-	w.renderIdx = w.GenGraphicID()
-	w.renderRepo[w.renderIdx] = graphic
-	return w.renderIdx
+	id := w.GenGraphicID()
+	w.renderRepo[id] = graphic
+	return id
 }
 
 func (w *world) GetRenderGraphic(graphicID int) api.IRenderGraphic {
@@ -145,6 +158,7 @@ func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 		w.activeRenG.UnUse()
 
 		// Activate new graphic
+		fmt.Println("graphicID: ", graphicID)
 		w.activeRenGID = graphicID
 		w.activeRenG = w.renderRepo[graphicID]
 		w.activeRenG.Use()
@@ -154,7 +168,7 @@ func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 }
 
 func (w *world) Atlas() api.IAtlas {
-	return w.atlas
+	return w.staticAtlas
 }
 
 func (w *world) RasterFont() api.IRasterFont {

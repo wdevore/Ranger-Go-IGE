@@ -14,7 +14,7 @@ type Atlas struct {
 	shapes map[string]api.IAtlasShape
 }
 
-// NewAtlas creates a new atlas. The Atlas is pre-populated by
+// NewAtlas creates a new dictionary of shapes. The Atlas is pre-populated by
 // objects that can be referenced by the following names:
 // - Pixel
 // - Line
@@ -31,8 +31,8 @@ func NewAtlas() api.IAtlas {
 }
 
 // Initialize adds a few basic shapes to atlas
-func (a *Atlas) Initialize(vo api.IBufferObject) {
-	uAtlas := vo.UniformAtlas()
+func (a *Atlas) Initialize(bo api.IBufferObject) {
+	uAtlas := bo.UniformAtlas()
 
 	a.AddShape(buildPixel(uAtlas))
 	a.AddShape(buildSquare(uAtlas))
@@ -42,6 +42,8 @@ func (a *Atlas) Initialize(vo api.IBufferObject) {
 	a.AddShape(buildLine(uAtlas))
 	a.AddShape(buildCross(uAtlas))
 	a.AddShape(buildCrowBar(uAtlas))
+
+	bo.Bind()
 }
 
 // Shape returns a shape by name
@@ -55,8 +57,8 @@ func (a *Atlas) Shapes() map[string]api.IAtlasShape {
 }
 
 // AddShape adds a vector shape to the collection
-func (a *Atlas) AddShape(vs api.IAtlasShape) {
-	a.shapes[vs.Name()] = vs
+func (a *Atlas) AddShape(shape api.IAtlasShape) {
+	a.shapes[shape.Name()] = shape
 }
 
 func buildPixel(uAtlas api.IAtlasObject) api.IAtlasShape {

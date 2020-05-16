@@ -68,6 +68,7 @@ go get -u github.com/go-gl/gl/v4.5-{core,compatibility}/gl
 
 # Example and source
 https://learnopengl.com/Getting-started/Hello-Triangle
+https://www.reddit.com/r/opengl/comments/3515bi/rendering_multiple_objects_from_multiple_vaos/
 
 https://github.com/go-gl/mathgl GLM
 https://github.com/go-gl/example/blob/master/gl41core-cube/cube.go

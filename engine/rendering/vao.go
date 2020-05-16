@@ -43,12 +43,6 @@ func (v *VAO) Bind() {
 	arrayCount := xyzComponentCount * int32(unsafe.Sizeof(float32(0)))
 	gl.VertexAttribPointer(attributeIndex, int32(xyzComponentCount), gl.FLOAT, false, arrayCount, gl.PtrOffset(0))
 
-	// vertexInputAttrb := uint32(0) // aPos
-	// sizeOfInputAttrb := int32(3)  // 3 floats. The 4th is supplied by the shader
-	// stride := int32(0)            // All the vertices will tightly packed
-	// gl.VertexAttribPointer(vertexInputAttrb, sizeOfInputAttrb, gl.FLOAT, false, stride, nil)
-	// gl.EnableVertexAttribArray(vertexInputAttrb)
-
 	gl.EnableVertexAttribArray(0)
 
 	// Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound

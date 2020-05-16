@@ -25,10 +25,12 @@ type RenderGraphic struct {
 func NewRenderGraphic(vertexShaderCode, fragmentShaderCode string, isStatic bool) api.IRenderGraphic {
 	o := new(RenderGraphic)
 
-	// Construct and populate the vector shape atlas
 	o.bufObj = NewBufferObject()
 	o.bufObj.Construct(isStatic)
 
+	// ---------------------------------------
+	// Compile shader
+	// ---------------------------------------
 	o.shader = NewShaderFromCode(vertexShaderCode, fragmentShaderCode)
 
 	err := o.shader.Compile()
@@ -38,10 +40,14 @@ func NewRenderGraphic(vertexShaderCode, fragmentShaderCode string, isStatic bool
 		panic(err)
 	}
 
+	// Activate shader so we can query it.
 	o.shader.Use()
 
 	o.programID = o.shader.Program()
 
+	// ---------------------------------------
+	// Query shader
+	// ---------------------------------------
 	o.modelLoc = gl.GetUniformLocation(o.programID, gl.Str("model\x00"))
 	if o.modelLoc < 0 {
 		panic("World: couldn't find 'model' uniform variable")
@@ -80,6 +86,7 @@ func (r *RenderGraphic) Use() {
 // UnUse deactivates this graphic
 func (r *RenderGraphic) UnUse() {
 	r.shaderInUse = false
+	r.bufObj.UnUse()
 	r.bufferObjInUse = false
 }
 

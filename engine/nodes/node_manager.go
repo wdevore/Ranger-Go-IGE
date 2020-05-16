@@ -64,7 +64,6 @@ func (n *nodeManager) Configure() error {
 
 	// Send static matrices to Shader
 	renG := n.world.GetRenderGraphic(api.GlobalRenderGraphic)
-	// programID := n.world.Shader().Program()
 	programID := renG.Program()
 
 	n.projLoc = gl.GetUniformLocation(programID, gl.Str("projection\x00"))
