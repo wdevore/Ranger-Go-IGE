@@ -22,11 +22,12 @@ type RenderGraphic struct {
 }
 
 // NewRenderGraphic creates a new graphic
-func NewRenderGraphic(vertexShaderCode, fragmentShaderCode string, isStatic bool) api.IRenderGraphic {
+func NewRenderGraphic(vertexShaderCode, fragmentShaderCode string, isStatic bool, populator api.FunctorAtlasPopulator) api.IRenderGraphic {
 	o := new(RenderGraphic)
 
 	o.bufObj = NewBufferObject()
-	o.bufObj.Construct(isStatic)
+	// pass functor for populating
+	o.bufObj.Construct(isStatic, populator)
 
 	// ---------------------------------------
 	// Compile shader

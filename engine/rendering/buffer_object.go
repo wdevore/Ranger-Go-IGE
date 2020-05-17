@@ -6,9 +6,9 @@ import (
 
 // BufferObject associates an Atlas with a VAO
 type BufferObject struct {
-	uniformAtlas api.IAtlasObject // VectorAtlas
-	vao          *VAO
-	atlas        api.IAtlas
+	atlasObject api.IAtlasObject // VectorAtlas
+	vao         *VAO
+	atlas       api.IAtlas
 }
 
 // NewBufferObject creates a new vector object with an associated Mesh
@@ -18,22 +18,24 @@ func NewBufferObject() api.IBufferObject {
 }
 
 // Construct configures a buffer object
-func (b *BufferObject) Construct(isStatic bool) {
+// The second arg is a functor that given an atlas-object
+// populate the atlas
+func (b *BufferObject) Construct(isStatic bool, populator api.FunctorAtlasPopulator) {
 	b.vao = NewVAO()
 	b.vao.BindStart()
 
 	// The Atlas contains a Mesh and the Mesh contains
 	// VBOs and EBOs
-	b.uniformAtlas = NewUniformAtlas(isStatic)
+	b.atlasObject = NewUniformAtlas(isStatic)
 
 	b.atlas = NewAtlas()
 	// Populate atlas with default objects
-	b.atlas.Build(b)
+	populator(b.atlas, b.atlasObject)
 
-	b.uniformAtlas.BindAndBufferVBO()
+	mesh := b.atlasObject.Mesh()
 
-	// Now EBO
-	b.uniformAtlas.BindAndBufferEBO()
+	mesh.BindVBO()
+	mesh.BindEBO()
 
 	b.vao.BindComplete()
 }
@@ -51,11 +53,6 @@ func (b *BufferObject) UnUse() {
 // Render renders the given shape using the currently activated VAO
 func (b *BufferObject) Render(vs api.IAtlasShape) {
 	b.vao.Render(vs)
-}
-
-// UniformAtlas returns a uniform atlasobject
-func (b *BufferObject) UniformAtlas() api.IAtlasObject {
-	return b.uniformAtlas
 }
 
 // Atlas returns the internal atlas

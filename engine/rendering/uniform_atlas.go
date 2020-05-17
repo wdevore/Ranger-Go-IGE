@@ -14,16 +14,6 @@ func NewUniformAtlas(isStatic bool) api.IAtlasObject {
 	return ua
 }
 
-// BindAndBufferVBO calls the atlas's mesh VBO bind
-func (ua *UniformAtlas) BindAndBufferVBO() {
-	ua.Mesh().BindVBO()
-}
-
-// BindAndBufferEBO calls the atlas's mesh EBO bind
-func (ua *UniformAtlas) BindAndBufferEBO() {
-	ua.Mesh().BindEBO()
-}
-
 // Add adds a vertex
 func (ua *UniformAtlas) Add(x, y, z float32, index int) {
 	ua.AddVertex(x, y, z)

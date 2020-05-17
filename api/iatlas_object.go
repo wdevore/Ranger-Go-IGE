@@ -3,8 +3,6 @@ package api
 // IAtlasObject represents a helper to meshes
 type IAtlasObject interface {
 	Initialize(isStatic bool)
-	BindAndBufferVBO()
-	BindAndBufferEBO()
 	AddVertex(x, y, z float32) int
 	SetVertex(x, y, z float32, index int)
 	AddIndex(index int)
@@ -12,3 +10,6 @@ type IAtlasObject interface {
 	End() int
 	Mesh() IMesh
 }
+
+// FunctorAtlasPopulator is a function for populating Atlases.
+type FunctorAtlasPopulator func(IAtlas, IAtlasObject)

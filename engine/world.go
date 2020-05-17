@@ -106,26 +106,15 @@ func (w *world) Configure() error {
 	shp := w.properties.Shaders
 
 	// Create a graphic that will store Static shapes
-	renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true)
+	// pass functor for populating
+	renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true, rendering.DefaultAtlasPopulator)
 	w.AddRenderGraphic(renG)
+
+	// renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true)
+	// w.AddRenderGraphic(renG)
 
 	// Force UseRenderGraphic to UnUse/Use for the first node visited
 	w.activeRenGID = -1
-
-	// // Create an Atlas with default objects
-	// w.staticAtlas = atlas.NewAtlas()
-	// // The BO is where the data is stored.
-	// w.staticAtlas.Initialize(renG.BufferObj()) // Performs a Bind before exiting.
-
-	// Create a graphic that will store Dynamic shapes, for example, Line shape.
-	// renG = rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, false)
-	// w.AddRenderGraphic(renG)
-	// // Create an Atlas with default objects
-	// w.dynamicAtlas = atlas.NewAtlas()
-	// // The BO is where the data is stored.
-	// w.dynamicAtlas.Initialize(renG.BufferObj())
-
-	// renG.BufferObj().Bind()
 
 	fmt.Println("Loading Raster font...")
 	w.rasterFont = fonts.NewRasterFont()

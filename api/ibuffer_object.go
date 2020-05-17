@@ -2,8 +2,7 @@ package api
 
 // IBufferObject represents a vector object
 type IBufferObject interface {
-	Construct(isStatic bool)
-	UniformAtlas() IAtlasObject
+	Construct(isStatic bool, populator FunctorAtlasPopulator)
 	Atlas() IAtlas
 	Use()
 	UnUse()

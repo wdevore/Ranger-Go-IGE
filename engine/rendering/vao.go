@@ -8,6 +8,8 @@ import (
 )
 
 const xyzComponentCount int32 = 3
+
+// We only have one attribute in this engine
 const attributeIndex uint32 = 0
 
 // VAO defines a Vertex Array Object
@@ -26,7 +28,7 @@ func NewVAO() *VAO {
 func (v *VAO) BindStart() {
 	// Bind the Vertex Array Object first, then bind and set vertex buffer(s)
 	// and attribute pointer(s).
-	gl.BindVertexArray(v.vaoID)
+	gl.BindVertexArray(v.vaoID) // Use
 }
 
 // BindComplete setups vertex-array-ptr and disable vertex-array-attr
@@ -36,7 +38,7 @@ func (v *VAO) BindComplete() {
 
 	gl.EnableVertexAttribArray(0)
 
-	gl.BindVertexArray(0)
+	gl.BindVertexArray(0) // UnUse
 }
 
 // Render shape using VAO
@@ -48,8 +50,6 @@ func (v *VAO) Render(vs api.IAtlasShape) {
 	// Because we are using VBOs we need to awkwardly cast the offset value into a
 	// pointer to void.
 	// If we weren't using VBOs then we would use client-side addresses: &_mesh->indices[offset]
-
-	// we use a pre computed version.
 	gl.DrawElements(vs.PrimitiveMode(), vs.Count(), uint32(gl.UNSIGNED_INT), gl.PtrOffset(vs.Offset()))
 }
 
