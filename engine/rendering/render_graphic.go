@@ -1,15 +1,12 @@
 package rendering
 
 import (
-	"fmt"
-
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
 // RenderGraphic a graphic state for rendering against
 type RenderGraphic struct {
-	shader    api.IShader
 	programID uint32
 
 	modelLoc int32
@@ -17,33 +14,17 @@ type RenderGraphic struct {
 
 	bufObj api.IBufferObject
 
-	shaderInUse    bool
 	bufferObjInUse bool
 }
 
 // NewRenderGraphic creates a new graphic
-func NewRenderGraphic(vertexShaderCode, fragmentShaderCode string, isStatic bool, atlas api.IAtlas) api.IRenderGraphic {
+func NewRenderGraphic(isStatic bool, atlas api.IAtlas, shader api.IShader) api.IRenderGraphic {
 	o := new(RenderGraphic)
 
 	o.bufObj = NewBufferObject()
 	o.bufObj.Construct(isStatic, atlas)
 
-	// ---------------------------------------
-	// Compile shader
-	// ---------------------------------------
-	o.shader = NewShaderFromCode(vertexShaderCode, fragmentShaderCode)
-
-	err := o.shader.Compile()
-
-	if err != nil {
-		fmt.Println("RenderGraphic error: ")
-		panic(err)
-	}
-
-	// Activate shader so we can query it.
-	o.shader.Use()
-
-	o.programID = o.shader.Program()
+	o.programID = shader.Program()
 
 	// ---------------------------------------
 	// Query shader
@@ -61,11 +42,6 @@ func NewRenderGraphic(vertexShaderCode, fragmentShaderCode string, isStatic bool
 	return o
 }
 
-// ShaderInUse indicates if the graphic's shader is activated
-func (r *RenderGraphic) ShaderInUse() bool {
-	return r.shaderInUse
-}
-
 // BufferObjInUse indicates if this graphic's buffer is activated
 func (r *RenderGraphic) BufferObjInUse() bool {
 	return r.bufferObjInUse
@@ -73,10 +49,6 @@ func (r *RenderGraphic) BufferObjInUse() bool {
 
 // Use activates this graphic
 func (r *RenderGraphic) Use() {
-	if !r.shaderInUse {
-		r.shader.Use()
-		r.shaderInUse = true
-	}
 	if !r.bufferObjInUse {
 		r.bufObj.Use()
 		r.bufferObjInUse = true
@@ -85,22 +57,8 @@ func (r *RenderGraphic) Use() {
 
 // UnUse deactivates this graphic
 func (r *RenderGraphic) UnUse() {
-	r.shaderInUse = false
 	r.bufObj.UnUse()
 	r.bufferObjInUse = false
-}
-
-// UseShader activates this graphic's shader
-func (r *RenderGraphic) UseShader() {
-	if !r.shaderInUse {
-		r.shader.Use()
-		r.shaderInUse = true
-	}
-}
-
-// UnUseShader deactivates current shader
-func (r *RenderGraphic) UnUseShader() {
-	r.shaderInUse = false
 }
 
 // UnUseBufferObj deactivates buffer

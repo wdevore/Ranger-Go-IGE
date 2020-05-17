@@ -19,6 +19,8 @@ type world struct {
 	properties   *configuration.Properties
 	relativePath string
 
+	shader api.IShader
+
 	staticAtlas  api.IAtlas
 	dynamicAtlas api.IAtlas
 
@@ -105,22 +107,37 @@ func (w *world) Configure() error {
 
 	shp := w.properties.Shaders
 
-	w.staticAtlas = rendering.NewStaticAtlas()
+	// ---------------------------------------
+	// Compile shader
+	// ---------------------------------------
+	w.shader = rendering.NewShaderFromCode(shp.VertexShaderCode, shp.FragmentShaderCode)
+
+	err := w.shader.Compile()
+
+	if err != nil {
+		fmt.Println("RenderGraphic error: ")
+		panic(err)
+	}
+
+	// Activate shader so we can query it.
+	w.shader.Use()
 
 	// Create a graphic that will store Static shapes
 	// pass functor for populating
-	renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true, w.staticAtlas)
+	w.staticAtlas = rendering.NewStaticAtlas()
+	renG := rendering.NewRenderGraphic(true, w.staticAtlas, w.shader)
 	w.AddRenderGraphic(renG)
 
-	// renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true)
-	// w.AddRenderGraphic(renG)
+	w.dynamicAtlas = rendering.NewDynamicAtlas()
+	renG = rendering.NewRenderGraphic(false, w.dynamicAtlas, w.shader)
+	w.AddRenderGraphic(renG)
 
 	// Force UseRenderGraphic to UnUse/Use for the first node visited
 	w.activeRenGID = -1
 
 	fmt.Println("Loading Raster font...")
 	w.rasterFont = fonts.NewRasterFont()
-	err := w.rasterFont.Initialize("raster_font.data", w.relativePath)
+	err = w.rasterFont.Initialize("raster_font.data", w.relativePath)
 
 	return err
 }

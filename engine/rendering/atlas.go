@@ -9,21 +9,6 @@ type Atlas struct {
 	shapes map[string]api.IAtlasShape
 }
 
-// NewAtlas creates a new dictionary of shapes. The Atlas is pre-populated by
-// objects that can be referenced by the following names:
-// - Pixel
-// - Line
-// - Cross
-// - Circle12Segments
-// - Square
-// - CenteredSquare
-// - CenteredTriangle
-// - CrowBar
-// func NewAtlas() api.IAtlas {
-// 	o := new(Atlas)
-// 	return o
-// }
-
 // Initialize this embedded object
 func (a *Atlas) Initialize() {
 	a.shapes = make(map[string]api.IAtlasShape)

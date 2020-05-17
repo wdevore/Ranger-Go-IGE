@@ -2,14 +2,10 @@ package api
 
 // IRenderGraphic represents a graphic render state
 type IRenderGraphic interface {
-	ShaderInUse() bool
 	BufferObjInUse() bool
 
 	Use()
 	UnUse()
-
-	UseShader()
-	UnUseShader()
 
 	UnUseBufferObj()
 	UseBufferObj()
