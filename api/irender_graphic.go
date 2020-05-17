@@ -14,6 +14,4 @@ type IRenderGraphic interface {
 
 	Render(shape IAtlasShape, model IMatrix4)
 	SetColor(color []float32)
-
-	Program() uint32
 }

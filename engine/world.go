@@ -175,8 +175,11 @@ func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 }
 
 func (w *world) Atlas() api.IAtlas {
-	// return w.activeRenG.Atlas()
 	return w.staticAtlas
+}
+
+func (w *world) Shader() api.IShader {
+	return w.shader
 }
 
 func (w *world) RasterFont() api.IRasterFont {

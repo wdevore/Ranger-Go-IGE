@@ -7,8 +7,6 @@ import (
 
 // RenderGraphic a graphic state for rendering against
 type RenderGraphic struct {
-	programID uint32
-
 	modelLoc int32
 	colorLoc int32
 
@@ -24,17 +22,17 @@ func NewRenderGraphic(isStatic bool, atlas api.IAtlas, shader api.IShader) api.I
 	o.bufObj = NewBufferObject()
 	o.bufObj.Construct(isStatic, atlas)
 
-	o.programID = shader.Program()
+	programID := shader.Program()
 
 	// ---------------------------------------
 	// Query shader
 	// ---------------------------------------
-	o.modelLoc = gl.GetUniformLocation(o.programID, gl.Str("model\x00"))
+	o.modelLoc = gl.GetUniformLocation(programID, gl.Str("model\x00"))
 	if o.modelLoc < 0 {
 		panic("World: couldn't find 'model' uniform variable")
 	}
 
-	o.colorLoc = gl.GetUniformLocation(o.programID, gl.Str("fragColor\x00"))
+	o.colorLoc = gl.GetUniformLocation(programID, gl.Str("fragColor\x00"))
 	if o.colorLoc < 0 {
 		panic("World: couldn't find 'fragColor' uniform variable")
 	}
@@ -78,11 +76,6 @@ func (r *RenderGraphic) UseBufferObj() {
 // BufferObj returns internal buffer object
 func (r *RenderGraphic) BufferObj() api.IBufferObject {
 	return r.bufObj
-}
-
-// Program returns the internal shader program
-func (r *RenderGraphic) Program() uint32 {
-	return r.programID
 }
 
 // SetColor sets the shader's color
