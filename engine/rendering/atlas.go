@@ -19,22 +19,14 @@ type Atlas struct {
 // - CenteredSquare
 // - CenteredTriangle
 // - CrowBar
-func NewAtlas() api.IAtlas {
-	o := new(Atlas)
-	o.shapes = make(map[string]api.IAtlasShape)
-	return o
-}
+// func NewAtlas() api.IAtlas {
+// 	o := new(Atlas)
+// 	return o
+// }
 
-// Build adds a few basic shapes to atlas
-func (a *Atlas) Build(uAtlas api.IAtlasObject) {
-	a.AddShape(buildPixel(uAtlas))
-	a.AddShape(buildSquare(uAtlas))
-	a.AddShape(buildCenteredSquare(uAtlas))
-	a.AddShape(buildCenteredTriangle(uAtlas))
-	a.AddShape(buildCircle(uAtlas))
-	a.AddShape(buildLine(uAtlas))
-	a.AddShape(buildCross(uAtlas))
-	a.AddShape(buildCrowBar(uAtlas))
+// Initialize this embedded object
+func (a *Atlas) Initialize() {
+	a.shapes = make(map[string]api.IAtlasShape)
 }
 
 // Shape returns a shape by name

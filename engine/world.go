@@ -19,7 +19,7 @@ type world struct {
 	properties   *configuration.Properties
 	relativePath string
 
-	// staticAtlas  api.IAtlas
+	staticAtlas  api.IAtlas
 	dynamicAtlas api.IAtlas
 
 	rasterFont api.IRasterFont
@@ -105,9 +105,11 @@ func (w *world) Configure() error {
 
 	shp := w.properties.Shaders
 
+	w.staticAtlas = rendering.NewStaticAtlas()
+
 	// Create a graphic that will store Static shapes
 	// pass functor for populating
-	renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true, rendering.DefaultAtlasPopulator)
+	renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true, w.staticAtlas)
 	w.AddRenderGraphic(renG)
 
 	// renG := rendering.NewRenderGraphic(shp.VertexShaderCode, shp.FragmentShaderCode, true)
@@ -156,7 +158,8 @@ func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 }
 
 func (w *world) Atlas() api.IAtlas {
-	return w.activeRenG.Atlas()
+	// return w.activeRenG.Atlas()
+	return w.staticAtlas
 }
 
 func (w *world) RasterFont() api.IRasterFont {

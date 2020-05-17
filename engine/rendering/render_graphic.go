@@ -22,12 +22,11 @@ type RenderGraphic struct {
 }
 
 // NewRenderGraphic creates a new graphic
-func NewRenderGraphic(vertexShaderCode, fragmentShaderCode string, isStatic bool, populator api.FunctorAtlasPopulator) api.IRenderGraphic {
+func NewRenderGraphic(vertexShaderCode, fragmentShaderCode string, isStatic bool, atlas api.IAtlas) api.IRenderGraphic {
 	o := new(RenderGraphic)
 
 	o.bufObj = NewBufferObject()
-	// pass functor for populating
-	o.bufObj.Construct(isStatic, populator)
+	o.bufObj.Construct(isStatic, atlas)
 
 	// ---------------------------------------
 	// Compile shader
@@ -121,11 +120,6 @@ func (r *RenderGraphic) UseBufferObj() {
 // BufferObj returns internal buffer object
 func (r *RenderGraphic) BufferObj() api.IBufferObject {
 	return r.bufObj
-}
-
-// Atlas returns internal uniform atlas
-func (r *RenderGraphic) Atlas() api.IAtlas {
-	return r.bufObj.Atlas()
 }
 
 // Program returns the internal shader program

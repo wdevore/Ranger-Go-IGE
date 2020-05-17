@@ -18,19 +18,29 @@ import (
 // - CenteredTriangle
 // - CrowBar
 
-// DefaultAtlasPopulator adds a few basic shapes to atlas
-func DefaultAtlasPopulator(atlas api.IAtlas, atlasObj api.IAtlasObject) {
-	atlas.AddShape(buildPixel(atlasObj))
-	atlas.AddShape(buildSquare(atlasObj))
-	atlas.AddShape(buildCenteredSquare(atlasObj))
-	atlas.AddShape(buildCenteredTriangle(atlasObj))
-	atlas.AddShape(buildCircle(atlasObj))
-	atlas.AddShape(buildLine(atlasObj))
-	atlas.AddShape(buildCross(atlasObj))
-	atlas.AddShape(buildCrowBar(atlasObj))
+type staticAtlas struct {
+	Atlas
 }
 
-func buildPixel(uAtlas api.IAtlasObject) api.IAtlasShape {
+// NewStaticAtlas creates an atlas to be populated
+func NewStaticAtlas() api.IAtlas {
+	o := new(staticAtlas)
+	o.Initialize()
+	return o
+}
+
+func (a *staticAtlas) Populate(atlasObj api.IAtlasObject) {
+	a.AddShape(a.buildPixel(atlasObj))
+	a.AddShape(a.buildSquare(atlasObj))
+	a.AddShape(a.buildCenteredSquare(atlasObj))
+	a.AddShape(a.buildCenteredTriangle(atlasObj))
+	a.AddShape(a.buildCircle(atlasObj))
+	a.AddShape(a.buildLine(atlasObj))
+	a.AddShape(a.buildCross(atlasObj))
+	a.AddShape(a.buildCrowBar(atlasObj))
+}
+
+func (a *staticAtlas) buildPixel(uAtlas api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape()
 	s.SetName("Pixel")
 	s.SetPrimitiveMode(gl.POINTS)
@@ -47,7 +57,7 @@ func buildPixel(uAtlas api.IAtlasObject) api.IAtlasShape {
 	return s
 }
 
-func buildLine(uAtlas api.IAtlasObject) api.IAtlasShape {
+func (a *staticAtlas) buildLine(uAtlas api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape()
 	s.SetName("Line")
 	s.SetPrimitiveMode(gl.LINES)
@@ -66,7 +76,7 @@ func buildLine(uAtlas api.IAtlasObject) api.IAtlasShape {
 	return s
 }
 
-func buildCross(uAtlas api.IAtlasObject) api.IAtlasShape {
+func (a *staticAtlas) buildCross(uAtlas api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape()
 	s.SetName("Cross")
 	s.SetPrimitiveMode(gl.LINES)
@@ -89,7 +99,7 @@ func buildCross(uAtlas api.IAtlasObject) api.IAtlasShape {
 	return s
 }
 
-func buildCircle(uAtlas api.IAtlasObject) api.IAtlasShape {
+func (a *staticAtlas) buildCircle(uAtlas api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape()
 	s.SetName("Circle12Segments")
 	s.SetPrimitiveMode(gl.TRIANGLE_FAN)
@@ -116,7 +126,7 @@ func buildCircle(uAtlas api.IAtlasObject) api.IAtlasShape {
 	return s
 }
 
-func buildSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
+func (a *staticAtlas) buildSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape()
 	s.SetName("Square")
 	s.SetPrimitiveMode(gl.TRIANGLES)
@@ -141,7 +151,7 @@ func buildSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
 	return s
 }
 
-func buildCenteredSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
+func (a *staticAtlas) buildCenteredSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape()
 	s.SetName("CenteredSquare")
 	s.SetPrimitiveMode(gl.TRIANGLES)
@@ -168,7 +178,7 @@ func buildCenteredSquare(uAtlas api.IAtlasObject) api.IAtlasShape {
 	return s
 }
 
-func buildCenteredTriangle(uAtlas api.IAtlasObject) api.IAtlasShape {
+func (a *staticAtlas) buildCenteredTriangle(uAtlas api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape()
 	s.SetName("CenteredTriangle")
 	s.SetPrimitiveMode(gl.TRIANGLES)
@@ -189,7 +199,7 @@ func buildCenteredTriangle(uAtlas api.IAtlasObject) api.IAtlasShape {
 	return s
 }
 
-func buildCrowBar(uAtlas api.IAtlasObject) api.IAtlasShape {
+func (a *staticAtlas) buildCrowBar(uAtlas api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape()
 	s.SetName("CrowBar")
 	s.SetPrimitiveMode(gl.TRIANGLES)

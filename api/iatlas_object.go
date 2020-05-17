@@ -10,6 +10,3 @@ type IAtlasObject interface {
 	End() int
 	Mesh() IMesh
 }
-
-// FunctorAtlasPopulator is a function for populating Atlases.
-type FunctorAtlasPopulator func(IAtlas, IAtlasObject)

@@ -8,7 +8,6 @@ import (
 type BufferObject struct {
 	atlasObject api.IAtlasObject // VectorAtlas
 	vao         *VAO
-	atlas       api.IAtlas
 }
 
 // NewBufferObject creates a new vector object with an associated Mesh
@@ -19,8 +18,9 @@ func NewBufferObject() api.IBufferObject {
 
 // Construct configures a buffer object
 // The second arg is a functor that given an atlas-object
-// populate the atlas
-func (b *BufferObject) Construct(isStatic bool, populator api.FunctorAtlasPopulator) {
+// populates the atlas
+// func (b *BufferObject) Construct(isStatic bool, populator api.FunctorAtlasPopulator) {
+func (b *BufferObject) Construct(isStatic bool, atlas api.IAtlas) {
 	b.vao = NewVAO()
 	b.vao.BindStart()
 
@@ -28,9 +28,8 @@ func (b *BufferObject) Construct(isStatic bool, populator api.FunctorAtlasPopula
 	// VBOs and EBOs
 	b.atlasObject = NewUniformAtlas(isStatic)
 
-	b.atlas = NewAtlas()
-	// Populate atlas with default objects
-	populator(b.atlas, b.atlasObject)
+	// Populate atlas with objects
+	atlas.Populate(b.atlasObject)
 
 	mesh := b.atlasObject.Mesh()
 
@@ -53,9 +52,4 @@ func (b *BufferObject) UnUse() {
 // Render renders the given shape using the currently activated VAO
 func (b *BufferObject) Render(vs api.IAtlasShape) {
 	b.vao.Render(vs)
-}
-
-// Atlas returns the internal atlas
-func (b *BufferObject) Atlas() api.IAtlas {
-	return b.atlas
 }

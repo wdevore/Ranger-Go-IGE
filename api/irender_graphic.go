@@ -16,8 +16,6 @@ type IRenderGraphic interface {
 
 	BufferObj() IBufferObject
 
-	Atlas() IAtlas
-
 	Render(shape IAtlasShape, model IMatrix4)
 	SetColor(color []float32)
 
