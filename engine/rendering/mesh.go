@@ -16,11 +16,11 @@ type Mesh struct {
 }
 
 // NewMesh creates a new Mesh object
-func NewMesh() api.IMesh {
+func NewMesh(isStatic bool) api.IMesh {
 	m := new(Mesh)
 	m.vertices = []float32{}
 	m.indices = []uint32{}
-	m.vbo = NewVBO()
+	m.vbo = NewVBO(isStatic)
 	m.ebo = NewEBO()
 	return m
 }
@@ -55,11 +55,15 @@ func (m *Mesh) AddIndex(index int) {
 
 // Vertices returns the internal vertices
 func (m *Mesh) Vertices() []float32 {
-
 	return m.vertices
 }
 
 // Indices returns the internal indices
 func (m *Mesh) Indices() []uint32 {
 	return m.indices
+}
+
+// Update modifies the VBO buffer
+func (m *Mesh) Update(offset, vertexCount int) {
+	m.vbo.Update(offset, vertexCount, m)
 }

@@ -7,8 +7,6 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
-const xyzComponentCount int32 = 3
-
 // We only have one attribute in this engine
 const attributeIndex uint32 = 0
 
@@ -33,8 +31,8 @@ func (v *VAO) BindStart() {
 
 // BindComplete setups vertex-array-ptr and disable vertex-array-attr
 func (v *VAO) BindComplete() {
-	arrayCount := xyzComponentCount * int32(unsafe.Sizeof(float32(0)))
-	gl.VertexAttribPointer(attributeIndex, int32(xyzComponentCount), gl.FLOAT, false, arrayCount, gl.PtrOffset(0))
+	arrayCount := int32(api.XYZComponentCount) * int32(unsafe.Sizeof(float32(0)))
+	gl.VertexAttribPointer(attributeIndex, int32(api.XYZComponentCount), gl.FLOAT, false, arrayCount, gl.PtrOffset(0))
 
 	gl.EnableVertexAttribArray(0)
 
@@ -50,7 +48,7 @@ func (v *VAO) Render(vs api.IAtlasShape) {
 	// Because we are using VBOs we need to awkwardly cast the offset value into a
 	// pointer to void.
 	// If we weren't using VBOs then we would use client-side addresses: &_mesh->indices[offset]
-	gl.DrawElements(vs.PrimitiveMode(), vs.Count(), uint32(gl.UNSIGNED_INT), gl.PtrOffset(vs.Offset()))
+	gl.DrawElements(vs.PrimitiveMode(), int32(vs.Count()), uint32(gl.UNSIGNED_INT), gl.PtrOffset(vs.Offset()))
 }
 
 // Use bind vertex array to Id

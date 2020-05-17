@@ -44,7 +44,7 @@ func (b *backgroundNode) Draw(model api.IMatrix4) {
 	// 	b.SetDirty(false)
 	// }
 
-	renG := b.World().UseRenderGraphic(api.GlobalRenderGraphic)
+	renG := b.World().UseRenderGraphic(api.StaticRenderGraphic)
 	renG.SetColor(b.color)
 	renG.Render(b.background, model)
 }

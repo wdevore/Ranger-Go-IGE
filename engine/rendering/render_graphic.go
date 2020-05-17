@@ -89,3 +89,8 @@ func (r *RenderGraphic) Render(shape api.IAtlasShape, model api.IMatrix4) {
 
 	r.bufObj.Render(shape)
 }
+
+// Update modifies the VBO buffer
+func (r *RenderGraphic) Update(offset, vertexCount int) {
+	r.bufObj.Update(offset, vertexCount*api.XYZComponentCount)
+}

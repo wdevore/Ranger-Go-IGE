@@ -6,8 +6,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
-// StaticAtlasNode is a generic node
-type StaticAtlasNode struct {
+// DynamicAtlasNode is a generic node
+type DynamicAtlasNode struct {
 	nodes.Node
 
 	color []float32
@@ -16,9 +16,9 @@ type StaticAtlasNode struct {
 	shape     api.IAtlasShape
 }
 
-// NewStaticAtlasNode constructs a generic shape node
-func NewStaticAtlasNode(name, atlasName string, world api.IWorld, parent api.INode) api.INode {
-	o := new(StaticAtlasNode)
+// NewDynamicAtlasNode constructs a generic shape node
+func NewDynamicAtlasNode(name, atlasName string, world api.IWorld, parent api.INode) api.INode {
+	o := new(DynamicAtlasNode)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
@@ -28,24 +28,24 @@ func NewStaticAtlasNode(name, atlasName string, world api.IWorld, parent api.INo
 }
 
 // Build configures the node
-func (r *StaticAtlasNode) Build(world api.IWorld) error {
+func (r *DynamicAtlasNode) Build(world api.IWorld) error {
 	r.Node.Build(world)
 
 	r.color = color.NewPaletteInt64(color.LightPurple).Array()
 
-	r.shape = world.Atlas().Shape(r.atlasName)
+	r.shape = world.DynoAtlas().Shape(r.atlasName)
 
 	return nil
 }
 
 // SetColor sets line color
-func (r *StaticAtlasNode) SetColor(color api.IPalette) {
+func (r *DynamicAtlasNode) SetColor(color api.IPalette) {
 	r.color = color.Array()
 }
 
 // Draw renders shape
-func (r *StaticAtlasNode) Draw(model api.IMatrix4) {
-	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
+func (r *DynamicAtlasNode) Draw(model api.IMatrix4) {
+	renG := r.World().UseRenderGraphic(api.DynamicRenderGraphic)
 	renG.SetColor(r.color)
 	renG.Render(r.shape, model)
 }

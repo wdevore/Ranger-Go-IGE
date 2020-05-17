@@ -17,6 +17,8 @@ type IWorld interface {
 	UseRenderGraphic(graphicID int) IRenderGraphic
 
 	Atlas() IAtlas
+	DynoAtlas() IAtlas
+
 	Shader() IShader
 
 	RasterFont() IRasterFont

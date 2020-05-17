@@ -24,22 +24,22 @@ func (a *dynamicAtlas) Populate(atlasObj api.IAtlasObject) {
 	a.AddShape(a.buildLine(atlasObj))
 }
 
-func (a *dynamicAtlas) buildLine(uAtlas api.IAtlasObject) api.IAtlasShape {
-	s := NewAtlasShape()
+func (a *dynamicAtlas) buildLine(atlasObj api.IAtlasObject) api.IAtlasShape {
+	s := NewAtlasShape(atlasObj)
 	s.SetName("Line")
 	s.SetPrimitiveMode(gl.LINES)
 
-	s.SetOffset(uAtlas.Begin())
+	s.SetOffset(atlasObj.Begin())
 
 	// These vertices are specified in unit local-space
 	// These values are simply starter values. The app will changes these dynamically.
-	v0 := uAtlas.AddVertex(-0.5, 0.0, 0.0)
-	v1 := uAtlas.AddVertex(0.5, 0.0, 0.0)
+	v0 := atlasObj.AddVertex(-1.0, -1.0, 0.0)
+	v1 := atlasObj.AddVertex(1.0, 1.0, 0.0)
 
-	uAtlas.AddIndex(v0)
-	uAtlas.AddIndex(v1)
+	atlasObj.AddIndex(v0)
+	atlasObj.AddIndex(v1)
 
-	s.SetCount(int32(uAtlas.End()))
+	s.SetCount(atlasObj.End())
 
 	return s
 }

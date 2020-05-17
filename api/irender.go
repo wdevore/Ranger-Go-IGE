@@ -1,8 +1,10 @@
 package api
 
 const (
-	// GlobalRenderGraphic generic global render setup
-	GlobalRenderGraphic = 0
+	// StaticRenderGraphic generic static render setup
+	StaticRenderGraphic = 0
+	// DynamicRenderGraphic generic dynamic render setup
+	DynamicRenderGraphic = 1
 )
 
 // IRender is the visual interface for drawing

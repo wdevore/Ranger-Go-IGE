@@ -53,3 +53,8 @@ func (b *BufferObject) UnUse() {
 func (b *BufferObject) Render(vs api.IAtlasShape) {
 	b.vao.Render(vs)
 }
+
+// Update modifies the VBO buffer
+func (b *BufferObject) Update(offset, vertexCount int) {
+	b.atlasObject.Mesh().Update(offset, vertexCount)
+}

@@ -13,4 +13,6 @@ type IMesh interface {
 
 	BindVBO()
 	BindEBO()
+
+	Update(offset, vertexCount int)
 }

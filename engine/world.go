@@ -103,7 +103,7 @@ func newWorld(relativePath string) api.IWorld {
 
 func (w *world) Configure() error {
 	w.renderRepo = make(map[int]api.IRenderGraphic)
-	w.renderIdx = api.GlobalRenderGraphic // Default
+	w.renderIdx = api.StaticRenderGraphic // Default
 
 	shp := w.properties.Shaders
 
@@ -165,7 +165,7 @@ func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 		w.activeRenG.UnUse()
 
 		// Activate new graphic
-		fmt.Println("graphicID: ", graphicID)
+		// fmt.Println("graphicID: ", graphicID)
 		w.activeRenGID = graphicID
 		w.activeRenG = w.renderRepo[graphicID]
 		w.activeRenG.Use()
@@ -176,6 +176,10 @@ func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 
 func (w *world) Atlas() api.IAtlas {
 	return w.staticAtlas
+}
+
+func (w *world) DynoAtlas() api.IAtlas {
+	return w.dynamicAtlas
 }
 
 func (w *world) Shader() api.IShader {

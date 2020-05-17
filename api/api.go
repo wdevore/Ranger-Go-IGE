@@ -13,3 +13,6 @@ const (
 	// OPEN indicates a polygon should be rendered open
 	OPEN = 1
 )
+
+// XYZComponentCount indicates how many parts to a vertex
+const XYZComponentCount int = 3

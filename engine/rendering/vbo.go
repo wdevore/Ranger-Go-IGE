@@ -17,11 +17,11 @@ type VBO struct {
 }
 
 // NewVBO creates a empty VBO defaulting to STATIC_DRAW
-func NewVBO() *VBO {
+func NewVBO(isStatic bool) *VBO {
 	o := new(VBO)
 
 	gl.GenBuffers(1, &o.vboID)
-	o.staticDraw = true
+	o.staticDraw = isStatic
 	o.floatSize = int(unsafe.Sizeof(float32(0)))
 
 	return o

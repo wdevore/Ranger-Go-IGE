@@ -6,4 +6,5 @@ type IBufferObject interface {
 	Use()
 	UnUse()
 	Render(vs IAtlasShape)
+	Update(offset, vertexCount int)
 }

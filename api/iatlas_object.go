@@ -9,4 +9,5 @@ type IAtlasObject interface {
 	Begin() int
 	End() int
 	Mesh() IMesh
+	Update(offset, vertexCount int)
 }
