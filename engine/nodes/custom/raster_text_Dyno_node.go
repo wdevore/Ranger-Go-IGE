@@ -89,8 +89,8 @@ func (r *RasterTextDynoNode) SetVerticalOffset(offset float32) {
 
 // pixelShifts is defined in raster_text_node
 
-var txv = maths.NewVector3()
-var iM4 = maths.NewMatrix4()
+// var txv = maths.NewVector3()
+// var iM4 = maths.NewMatrix4()
 
 // Draw renders shape
 func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
@@ -150,11 +150,12 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 			for _, shift := range pixelShifts {
 				bit := (g >> shift) & 1
 				if bit == bitInvert {
-					txv.Set2Components(0.0, 0.0)
-					r.m4.Set(model) // Reset for this pixel
-					r.m4.TranslateBy2Comps(gx, gy)
-					txv.Mul(r.m4)
-					r.shape.SetVertex2D(txv.X(), txv.Y(), i)
+					// txv.Set2Components(0.0, 0.0)
+					// r.m4.Set(model) // Reset for this pixel
+					// r.m4.TranslateBy2Comps(gx, gy)
+					// txv.Mul(r.m4)
+					// r.shape.SetVertex2D(txv.X(), txv.Y(), i)
+					r.shape.SetVertex2D(gx, gy, i)
 					i++
 				}
 				gx += s
@@ -167,7 +168,8 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 	// Update buffer
 	renG.Update(0, r.shape.Count())
 
-	renG.Render(r.shape, iM4)
+	// renG.Render(r.shape, iM4)
+	renG.Render(r.shape, model)
 
 	gl.PointSize(1)
 }
