@@ -16,6 +16,8 @@ type gameLayer struct {
 	angle float64
 	sqr   api.INode
 	line  api.INode
+
+	dynoTxt api.INode
 }
 
 func newBasicGameLayer(name string, world api.IWorld, parent api.INode) api.INode {
@@ -42,6 +44,13 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	gb := g.sqr.(*custom.StaticAtlasNode)
 	gb.SetColor(color.NewPaletteInt64(color.LightOrange))
 
+	g.dynoTxt = custom.NewRasterTextDynoNode("DynoTxt", world, g)
+	g.dynoTxt.SetScale(1.5)
+	gd := g.dynoTxt.(*custom.RasterTextDynoNode)
+	gd.SetText("Ranger is a Go!")
+	gd.SetColor(color.NewPaletteInt64(color.LightPink))
+	gd.SetPixelSize(3.0)
+
 	return nil
 }
 
@@ -49,6 +58,8 @@ func (g *gameLayer) Build(world api.IWorld) error {
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	g.sqr.SetRotation(maths.DegreeToRadians * g.angle)
 	g.angle -= 1.5
+
+	g.dynoTxt.SetRotation(maths.DegreeToRadians * -g.angle / 10)
 
 	glc := g.line.(*DynamicLineNode)
 

@@ -28,13 +28,13 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
 	if world.Properties().Engine.ShowTimingInfo {
-		g.timing = custom.NewRasterTextNode("TimingInfo", world, g)
-		g.timing.SetScale(1.0)
+		g.timing = custom.NewRasterTextDynoNode("TimingInfo", world, g)
+		g.timing.SetScale(2.0)
 		// Set position to lower-left corner
 		dvr := world.Properties().Window.DeviceRes
 		g.timing.SetPosition(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0)
 
-		gt := g.timing.(*custom.RasterTextNode)
+		gt := g.timing.(*custom.RasterTextDynoNode)
 		gt.SetText("-")
 		gt.SetPixelSize(2.0)
 		gt.SetColor(color.NewPaletteInt64(color.GreyBlue))
@@ -48,7 +48,7 @@ func (g *overlayLayer) Update(msPerUpdate, secPerUpdate float64) {
 
 	w := g.World()
 	if w.Properties().Engine.ShowTimingInfo {
-		gt := g.timing.(*custom.RasterTextNode)
+		gt := g.timing.(*custom.RasterTextDynoNode)
 		s := fmt.Sprintf("f:%d u:%d r:%2.3f", w.Fps(), w.Ups(), w.AvgRender())
 		gt.SetText(s)
 	}

@@ -8,8 +8,9 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 # Current Tasks and Goals
 * **Done** OpenGL 4.x
 * **Done** Raster Font (Slow version)
+* **Done** Raster Font (Faster version)
 * **Done** Static shapes: Circle
-* **Working** Dynamic shapes: Line, AABB
+* **Done** Dynamic shapes: Line
 * Node Dragging
 * Filters: transform and translate
 * Zoom Node
@@ -19,6 +20,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * Particles
 * Animation (tweening) -- Using tanema's library
 * Box2D physics (with space ship)
+* Stippling with OpenGL patterns
 * Zones combined with Zoom
 * Audio (SFXR 8bit sound)
   * May build GUI using imGui
