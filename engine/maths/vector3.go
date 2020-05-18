@@ -232,6 +232,11 @@ func (v *vector3) Cross(o api.IVector3) {
 // Transforms
 // --------------------------------------------------------------------------
 
+// |M00 M01 M02 M03|   |x|
+// |M10 M11 M12 M13| x |y|
+// |M20 M21 M22 M23|   |z|
+// |M30 M31 M32 M33|   |1|
+
 // Mul left-multiplies the vector by the given matrix, assuming the fourth (w) component of the vector is 1.
 func (v *vector3) Mul(m api.IMatrix4) {
 	me := m.Matrix()
@@ -242,5 +247,5 @@ func (v *vector3) Mul(m api.IMatrix4) {
 }
 
 func (v vector3) String() string {
-	return fmt.Sprintf("<%f, %f, %f>", v.x, v.y, v.z)
+	return fmt.Sprintf("<%7.3f, %7.3f, %7.3f>", v.x, v.y, v.z)
 }
