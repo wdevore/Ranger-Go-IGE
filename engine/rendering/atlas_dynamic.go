@@ -54,7 +54,7 @@ func (a *dynamicAtlas) buildPixelBuffer(atlasObj api.IAtlasObject) api.IAtlasSha
 
 	// These vertices are specified in unit local-space
 	// The app will changes these dynamically.
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 500; i++ {
 		vi := atlasObj.AddVertex(0.0, 0.0, 0.0)
 		atlasObj.AddIndex(vi)
 	}
