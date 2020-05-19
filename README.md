@@ -6,11 +6,12 @@ As was RangerGo, so is IGE, a variation of the [Ranger Dart](https://github.com/
 This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
 # Current Tasks and Goals
-* **Done** OpenGL 4.x
+* **Done** OpenGL 4.x Core
 * **Done** Raster Font (Slow version)
 * **Done** Raster Font (Faster version)
 * **Done** Static shapes: Circle
 * **Done** Dynamic shapes: Line
+* **Working** Space mappings
 * Node Dragging
 * Filters: transform and translate
 * Zoom Node

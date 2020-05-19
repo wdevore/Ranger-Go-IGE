@@ -15,6 +15,8 @@ type AtlasShape struct {
 	offset int
 	count  int
 
+	maxSize int
+
 	atlasObj api.IAtlasObject
 }
 
@@ -30,9 +32,24 @@ func (a *AtlasShape) SetOffset(offset int) {
 	a.offset = offset * int(unsafe.Sizeof(uint32(0)))
 }
 
+// SetOffset2 sets the offset without considering data-type size
+func (a *AtlasShape) SetOffset2(offset int) {
+	a.offset = offset
+}
+
 // Offset returns calculated offset
 func (a *AtlasShape) Offset() int {
 	return a.offset
+}
+
+// SetMaxSize set max size
+func (a *AtlasShape) SetMaxSize(size int) {
+	a.maxSize = size
+}
+
+// MaxSize returns maximum size of count
+func (a *AtlasShape) MaxSize() int {
+	return a.maxSize
 }
 
 // Name returns name

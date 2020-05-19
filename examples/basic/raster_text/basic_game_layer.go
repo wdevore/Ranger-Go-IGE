@@ -30,9 +30,9 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	square.SetScale(25.0)
 	square.SetPosition(0.0, 0.0)
 
-	g.text = custom.NewRasterTextNode("Text", world, g)
+	g.text = custom.NewRasterTextDynoNode("Text", world, g)
 	g.text.SetScale(2.0)
-	gt := g.text.(*custom.RasterTextNode)
+	gt := g.text.(*custom.RasterTextDynoNode)
 	gt.SetText("Ranger Go!")
 
 	return nil

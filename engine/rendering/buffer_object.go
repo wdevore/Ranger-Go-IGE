@@ -49,12 +49,7 @@ func (b *BufferObject) UnUse() {
 	b.vao.UnUse()
 }
 
-// Render renders the given shape using the currently activated VAO
-func (b *BufferObject) Render(vs api.IAtlasShape) {
-	b.vao.Render(vs)
-}
-
 // Update modifies the VBO buffer
-func (b *BufferObject) Update(offset, vertexCount int) {
-	b.atlasObject.Mesh().Update(offset, vertexCount)
+func (b *BufferObject) Update(offset, componentCount int) {
+	b.atlasObject.Mesh().Update(offset, componentCount)
 }

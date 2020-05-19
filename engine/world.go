@@ -10,6 +10,7 @@ import (
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/configuration"
+	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/fonts"
 )
@@ -23,6 +24,7 @@ type world struct {
 
 	staticAtlas  api.IAtlas
 	dynamicAtlas api.IAtlas
+	pixelAtlas   api.IAtlas
 
 	rasterFont api.IRasterFont
 
@@ -31,6 +33,9 @@ type world struct {
 
 	activeRenGID int
 	activeRenG   api.IRenderGraphic
+
+	viewSpace    api.IMatrix4
+	invViewSpace api.IMatrix4
 
 	// Debug Info
 	fps        int
@@ -105,6 +110,9 @@ func (w *world) Configure() error {
 	w.renderRepo = make(map[int]api.IRenderGraphic)
 	w.renderIdx = api.StaticRenderGraphic // Default
 
+	w.viewSpace = maths.NewMatrix4()
+	w.invViewSpace = maths.NewMatrix4()
+
 	shp := w.properties.Shaders
 
 	// ---------------------------------------
@@ -132,6 +140,10 @@ func (w *world) Configure() error {
 	renG = rendering.NewRenderGraphic(false, w.dynamicAtlas, w.shader)
 	w.AddRenderGraphic(renG)
 
+	w.pixelAtlas = rendering.NewPixelAtlas()
+	renG = rendering.NewRenderGraphic(false, w.pixelAtlas, w.shader)
+	w.AddRenderGraphic(renG)
+
 	// Force UseRenderGraphic to UnUse/Use for the first node visited
 	w.activeRenGID = -1
 
@@ -140,6 +152,14 @@ func (w *world) Configure() error {
 	err = w.rasterFont.Initialize("raster_font.data", w.relativePath)
 
 	return err
+}
+
+func (w *world) Viewspace() api.IMatrix4 {
+	return w.viewSpace
+}
+
+func (w *world) InvertedViewspace() api.IMatrix4 {
+	return w.invViewSpace
 }
 
 func (w *world) GenGraphicID() int {
@@ -180,6 +200,10 @@ func (w *world) Atlas() api.IAtlas {
 
 func (w *world) DynoAtlas() api.IAtlas {
 	return w.dynamicAtlas
+}
+
+func (w *world) PixelAtlas() api.IAtlas {
+	return w.pixelAtlas
 }
 
 func (w *world) Shader() api.IShader {

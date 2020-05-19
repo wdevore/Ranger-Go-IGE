@@ -64,6 +64,6 @@ func (m *Mesh) Indices() []uint32 {
 }
 
 // Update modifies the VBO buffer
-func (m *Mesh) Update(offset, vertexCount int) {
-	m.vbo.Update(offset, vertexCount, m)
+func (m *Mesh) Update(offset, componentCount int) {
+	m.vbo.Update(offset, componentCount, m)
 }

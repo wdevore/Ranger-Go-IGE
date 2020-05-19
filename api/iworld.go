@@ -16,8 +16,12 @@ type IWorld interface {
 	GetRenderGraphic(graphicID int) IRenderGraphic
 	UseRenderGraphic(graphicID int) IRenderGraphic
 
+	Viewspace() IMatrix4
+	InvertedViewspace() IMatrix4
+
 	Atlas() IAtlas
 	DynoAtlas() IAtlas
+	PixelAtlas() IAtlas
 
 	Shader() IShader
 

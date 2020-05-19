@@ -16,4 +16,6 @@ type IPoint interface {
 	SetByComp(x, y float32)
 	// SetByPoint sets point using another point
 	SetByPoint(IPoint)
+
+	MulPoint(IMatrix4)
 }

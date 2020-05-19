@@ -52,12 +52,12 @@ func (v *VBO) Bind(m *Mesh) {
 
 // Update moves any modified vertices to the buffer.
 // Note: Be sure to call the AtlasObject SetVertex prior.
-func (v *VBO) Update(offset, vertexCount int, m *Mesh) {
+func (v *VBO) Update(offset, count int, m *Mesh) {
 	if v.bufferUsage == gl.STATIC_DRAW {
 		panic("VBO is not configured as DYNAMIC_DRAW.")
 	}
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, v.vboID)
-	gl.BufferSubData(gl.ARRAY_BUFFER, offset, vertexCount*v.floatSize, gl.Ptr(m.Vertices()))
+	gl.BufferSubData(gl.ARRAY_BUFFER, offset*v.floatSize, count*v.floatSize, gl.Ptr(m.Vertices()))
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }

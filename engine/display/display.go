@@ -138,6 +138,11 @@ func (g *GlfwDisplay) initGLFW(world api.IWorld) error {
 
 	g.window.SetKeyCallback(g.keyCallback)
 
+	// Mouse events
+	g.window.SetMouseButtonCallback(g.mouseButtonCallback)
+	g.window.SetScrollCallback(g.scrollCallback)
+	g.window.SetCursorPosCallback(g.cursorPosCallback)
+
 	if wp.LockToVSync {
 		fmt.Println("Locking to VSync")
 		glfw.SwapInterval(1)
@@ -207,6 +212,20 @@ func (g *GlfwDisplay) keyCallback(glfwW *glfw.Window, key glfw.Key, scancode int
 			g.pointMode = !g.pointMode
 		}
 	}
+}
+
+func (g *GlfwDisplay) mouseButtonCallback(glfwW *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey) {
+	fmt.Println("mouseButtonCallback")
+}
+
+func (g *GlfwDisplay) scrollCallback(glfwW *glfw.Window, xoff float64, yoff float64) {
+	fmt.Println("scrollCallback")
+
+}
+
+func (g *GlfwDisplay) cursorPosCallback(glfwW *glfw.Window, xpos float64, ypos float64) {
+	fmt.Println("cursorPosCallback")
+
 }
 
 func (g *GlfwDisplay) framebufferSizeCallback(glfwW *glfw.Window, width int, height int) {

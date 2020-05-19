@@ -49,7 +49,7 @@ func (r *RasterTextDynoNode) Build(world api.IWorld) error {
 	r.inverted = false
 	r.whiteSpaceDistance = 2.0
 
-	r.shape = world.DynoAtlas().Shape("PixelBuffer")
+	r.shape = world.PixelAtlas().Shape("PixelBuffer")
 
 	return nil
 }
@@ -94,7 +94,7 @@ func (r *RasterTextDynoNode) SetVerticalOffset(offset float32) {
 
 // Draw renders shape
 func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
-	renG := r.World().UseRenderGraphic(api.DynamicRenderGraphic)
+	renG := r.World().UseRenderGraphic(api.DynamicPixelBufRenderGraphic)
 
 	renG.SetColor(r.color)
 	s := r.pixelSize
@@ -124,10 +124,10 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 	// fmt.Println("***************************************************")
 	gl.PointSize(s)
 
-	const textBufferOffset = 2
-	for i := textBufferOffset; i < r.shape.Count(); i++ {
-		r.shape.SetVertex2D(0.0, 0.0, i)
-	}
+	const textBufferOffset = 0
+	// for i := textBufferOffset; i < r.shape.MaxSize(); i++ {
+	// 	r.shape.SetVertex2D(0.0, 0.0, i)
+	// }
 
 	i := textBufferOffset
 	for _, c := range r.text {
@@ -155,6 +155,9 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 					// r.m4.TranslateBy2Comps(gx, gy)
 					// txv.Mul(r.m4)
 					// r.shape.SetVertex2D(txv.X(), txv.Y(), i)
+
+					// r.shape.SetVertex2D(10.0, 10.0, i)
+
 					r.shape.SetVertex2D(gx, gy, i)
 					i++
 				}
@@ -166,9 +169,12 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 	}
 
 	// Update buffer
+	r.shape.SetCount(i)
 	renG.Update(0, r.shape.Count())
 
+	// This goes with the txv approach above but it is slower
 	// renG.Render(r.shape, iM4)
+
 	renG.Render(r.shape, model)
 
 	gl.PointSize(1)

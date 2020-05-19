@@ -5,6 +5,5 @@ type IBufferObject interface {
 	Construct(isStatic bool, atlas IAtlas)
 	Use()
 	UnUse()
-	Render(vs IAtlasShape)
-	Update(offset, vertexCount int)
+	Update(offset, count int)
 }

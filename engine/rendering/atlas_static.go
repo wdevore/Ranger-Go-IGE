@@ -35,7 +35,7 @@ func (a *staticAtlas) Populate(atlasObj api.IAtlasObject) {
 	a.AddShape(a.buildCenteredSquare(atlasObj))
 	a.AddShape(a.buildCenteredTriangle(atlasObj))
 	a.AddShape(a.buildCircle(atlasObj))
-	a.AddShape(a.buildLine(atlasObj))
+	a.AddShape(a.buildHLine(atlasObj))
 	a.AddShape(a.buildCross(atlasObj))
 	a.AddShape(a.buildCrowBar(atlasObj))
 }
@@ -57,7 +57,7 @@ func (a *staticAtlas) buildPixel(atlasObj api.IAtlasObject) api.IAtlasShape {
 	return s
 }
 
-func (a *staticAtlas) buildLine(atlasObj api.IAtlasObject) api.IAtlasShape {
+func (a *staticAtlas) buildHLine(atlasObj api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape(atlasObj)
 	s.SetName("Line")
 	s.SetPrimitiveMode(gl.LINES)
@@ -67,6 +67,25 @@ func (a *staticAtlas) buildLine(atlasObj api.IAtlasObject) api.IAtlasShape {
 	// These vertices are specified in unit local-space
 	v0 := atlasObj.AddVertex(-0.5, 0.0, 0.0)
 	v1 := atlasObj.AddVertex(0.5, 0.0, 0.0)
+
+	atlasObj.AddIndex(v0)
+	atlasObj.AddIndex(v1)
+
+	s.SetCount(atlasObj.End())
+
+	return s
+}
+
+func (a *staticAtlas) buildVLine(atlasObj api.IAtlasObject) api.IAtlasShape {
+	s := NewAtlasShape(atlasObj)
+	s.SetName("Line")
+	s.SetPrimitiveMode(gl.LINES)
+
+	s.SetOffset(atlasObj.Begin())
+
+	// These vertices are specified in unit local-space
+	v0 := atlasObj.AddVertex(0.0, -0.5, 0.0)
+	v1 := atlasObj.AddVertex(0.0, 0.5, 0.0)
 
 	atlasObj.AddIndex(v0)
 	atlasObj.AddIndex(v1)

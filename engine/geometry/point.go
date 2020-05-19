@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
+	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 )
 
 type point struct {
@@ -48,6 +49,21 @@ func (p *point) SetByComp(x, y float32) {
 func (p *point) SetByPoint(ip api.IPoint) {
 	p.x = ip.X()
 	p.y = ip.Y()
+}
+
+// MulPoint left-multiplies the point by the given matrix
+// assuming the 3rd component = 0, fourth (w) component = 1.
+// |M00 M01 M02 M03|
+// |M10 M11 M12 M13|
+// |M20 M21 M22 M23|
+// |M30 M31 M32 M33|
+func (p *point) MulPoint(m api.IMatrix4) {
+	me := m.Matrix()
+
+	// vector = x, y, 0, 1
+	p.SetByComp(
+		p.x*me[maths.M00]+p.y*me[maths.M01]+me[maths.M03],
+		p.x*me[maths.M10]+p.y*me[maths.M11]+me[maths.M13])
 }
 
 func (p point) String() string {

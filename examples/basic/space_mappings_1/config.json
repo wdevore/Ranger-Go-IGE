@@ -1,0 +1,18 @@
+{
+  "Engine": {
+    "ShowTimingInfo": true
+  },
+  "Window": {
+    "DeviceRes": {
+      "Height": 900,
+      "Width": 1600
+    },
+    "FullScreen": false,
+    "Orientation": "Landscape",
+    "Position": {
+      "X": 200,
+      "Y": 200
+    },
+    "Title": "Space Mappings #1"
+  }
+}

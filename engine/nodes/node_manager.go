@@ -27,8 +27,8 @@ type nodeManager struct {
 	projection *display.Projection
 	viewport   *display.Viewport
 
-	viewSpace    api.IMatrix4
-	invViewSpace api.IMatrix4
+	// viewSpace    api.IMatrix4
+	// invViewSpace api.IMatrix4
 
 	projLoc int32
 	viewLoc int32
@@ -48,8 +48,8 @@ func NewNodeManager(world api.IWorld) api.INodeManager {
 	o.nodStack = newNodeStack()
 	o.transStack = newTransformStack()
 
-	o.viewSpace = maths.NewMatrix4()
-	o.invViewSpace = maths.NewMatrix4()
+	// o.viewSpace = maths.NewMatrix4()
+	// o.invViewSpace = maths.NewMatrix4()
 
 	o.timingTargets = NewNodeList()
 	o.eventTargets = NewNodeList()
@@ -77,7 +77,8 @@ func (n *nodeManager) Configure() error {
 	pm := n.projection.Matrix().Matrix()
 	gl.UniformMatrix4fv(n.projLoc, 1, false, &pm[0])
 
-	vm := n.viewSpace.Matrix()
+	// vm := n.viewSpace.Matrix()
+	vm := n.world.Viewspace().Matrix()
 	gl.UniformMatrix4fv(n.viewLoc, 1, false, &vm[0])
 
 	identity := maths.NewMatrix4()
@@ -87,6 +88,49 @@ func (n *nodeManager) Configure() error {
 	n.transStack.Initialize(identity)
 
 	return nil
+}
+
+func (n *nodeManager) configureProjections(world api.IWorld) {
+	wp := world.Properties().Window
+
+	// ------------------------------------------------------------
+	// Viewport device-space
+	// ------------------------------------------------------------
+	n.viewport = display.NewViewport()
+
+	n.viewport.SetDimensions(0, 0, wp.DeviceRes.Width, wp.DeviceRes.Height)
+	n.viewport.Apply()
+
+	// ------------------------------------------------------------
+	// Projection space
+	// ------------------------------------------------------------
+	n.projection = display.NewCamera()
+
+	camera := world.Properties().Camera
+	n.projection.SetProjection(
+		0.0, 0.0,
+		float32(wp.DeviceRes.Height), float32(wp.DeviceRes.Width),
+		camera.Depth.Near, camera.Depth.Far)
+
+	// ------------------------------------------------------------
+	// View-space
+	// ------------------------------------------------------------
+	offsetX := float32(0.0)
+	offsetY := float32(0.0)
+	if camera.Centered {
+		offsetX = float32(wp.DeviceRes.Width) / 2.0
+		offsetY = float32(wp.DeviceRes.Height) / 2.0
+	}
+
+	world.Viewspace().SetTranslate3Comp(offsetX, offsetY, 1.0)
+	// n.viewSpace.SetTranslate3Comp(offsetX, offsetY, 1.0)
+	// Rarely would you perform a Scale or Rotation on the view-space.
+	// But you could if you need to.
+	// view.ScaleByComp(2.0, 2.0, 1.0)
+
+	invVSP := world.InvertedViewspace()
+	invVSP.Set(world.Viewspace())
+	invVSP.Invert()
 }
 
 func (n *nodeManager) ClearEnabled(clear bool) {
@@ -271,44 +315,4 @@ func FindFirstElement(node api.INode, slice []api.INode) int {
 	}
 
 	return -1
-}
-
-func (n *nodeManager) configureProjections(world api.IWorld) {
-	wp := world.Properties().Window
-
-	// ------------------------------------------------------------
-	// Viewport device-space
-	// ------------------------------------------------------------
-	n.viewport = display.NewViewport()
-
-	n.viewport.SetDimensions(0, 0, wp.DeviceRes.Width, wp.DeviceRes.Height)
-	n.viewport.Apply()
-
-	// ------------------------------------------------------------
-	// Projection space
-	// ------------------------------------------------------------
-	n.projection = display.NewCamera()
-
-	camera := world.Properties().Camera
-	n.projection.SetProjection(
-		0.0, 0.0,
-		float32(wp.DeviceRes.Height), float32(wp.DeviceRes.Width),
-		camera.Depth.Near, camera.Depth.Far)
-
-	// ------------------------------------------------------------
-	// View-space
-	// ------------------------------------------------------------
-	offsetX := float32(0.0)
-	offsetY := float32(0.0)
-	if camera.Centered {
-		offsetX = float32(wp.DeviceRes.Width) / 2.0
-		offsetY = float32(wp.DeviceRes.Height) / 2.0
-	}
-	n.viewSpace.SetTranslate3Comp(offsetX, offsetY, 1.0)
-	// Rarely would you perform a Scale or Rotation on the view-space.
-	// But you could if you need to.
-	// view.ScaleByComp(2.0, 2.0, 1.0)
-
-	n.invViewSpace.Set(n.viewSpace)
-	n.invViewSpace.Invert()
 }

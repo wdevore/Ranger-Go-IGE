@@ -23,6 +23,7 @@ func NewEBO() *EBO {
 func (b *EBO) Bind(m api.IMesh) {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, b.eboID)
 
-	indicesCount := len(m.Indices()) * int(unsafe.Sizeof(uint32(0)))
-	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, indicesCount, gl.Ptr(m.Indices()), gl.STATIC_DRAW)
+	indicesSize := len(m.Indices()) * int(unsafe.Sizeof(uint32(0)))
+	// fmt.Println("EBO.Bind: ", indicesSize)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, indicesSize, gl.Ptr(m.Indices()), gl.STATIC_DRAW)
 }

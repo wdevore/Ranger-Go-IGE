@@ -39,18 +39,6 @@ func (v *VAO) BindComplete() {
 	gl.BindVertexArray(0) // UnUse
 }
 
-// Render shape using VAO
-func (v *VAO) Render(vs api.IAtlasShape) {
-	// The signature of glDrawElements was defined back before there were buffer objects;
-	// originally you'd pass an actual pointer to data in a client-side vertex array.
-	// When device-side buffers were introduced, this function was extended to support them
-	// as well, by shoehorning a buffer offset into the address argument.
-	// Because we are using VBOs we need to awkwardly cast the offset value into a
-	// pointer to void.
-	// If we weren't using VBOs then we would use client-side addresses: &_mesh->indices[offset]
-	gl.DrawElements(vs.PrimitiveMode(), int32(vs.Count()), uint32(gl.UNSIGNED_INT), gl.PtrOffset(vs.Offset()))
-}
-
 // Use bind vertex array to Id
 func (v *VAO) Use() {
 	gl.BindVertexArray(v.vaoID)
