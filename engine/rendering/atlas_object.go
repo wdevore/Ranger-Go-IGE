@@ -65,3 +65,7 @@ func (a *AtlasObject) Mesh() api.IMesh {
 func (a *AtlasObject) Update(offset, vertexCount int) {
 	a.mesh.Update(offset, vertexCount)
 }
+
+func (a *AtlasObject) UpdatePreScaled(offset, vertexCount int) {
+	a.mesh.UpdatePreScaled(offset, vertexCount)
+}

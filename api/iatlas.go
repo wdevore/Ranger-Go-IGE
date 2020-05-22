@@ -6,4 +6,7 @@ type IAtlas interface {
 	Shape(string) IAtlasShape
 	Shapes() map[string]IAtlasShape
 	AddShape(vs IAtlasShape)
+
+	// OpenGL Object type specific behaviours
+	GetNextIndex(glType int) int
 }

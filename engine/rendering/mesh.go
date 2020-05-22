@@ -5,7 +5,9 @@ import "github.com/wdevore/Ranger-Go-IGE/api"
 
 // Mesh combines a shader's VBO and EBO features.
 type Mesh struct {
-	// Vertices are for VBO
+	// Backing arrays are for VBO
+	// The total size of all arrays is the size the VBO
+	// buffer is defined for.
 	vertices []float32
 
 	// Indices are for EBO
@@ -23,6 +25,10 @@ func NewMesh(isStatic bool) api.IMesh {
 	m.vbo = NewVBO(isStatic)
 	m.ebo = NewEBO()
 	return m
+}
+
+func (m *Mesh) VboID() uint32 {
+	return m.vbo.VboID()
 }
 
 // BindVBO calls BindBuffer and BufferData
@@ -64,6 +70,10 @@ func (m *Mesh) Indices() []uint32 {
 }
 
 // Update modifies the VBO buffer
-func (m *Mesh) Update(offset, componentCount int) {
-	m.vbo.Update(offset, componentCount, m)
+func (m *Mesh) Update(offset, size int) {
+	m.vbo.Update(offset, size, m.vertices)
+}
+
+func (m *Mesh) UpdatePreScaled(offset, size int) {
+	m.vbo.UpdatePreScaled(offset, size, m.vertices)
 }

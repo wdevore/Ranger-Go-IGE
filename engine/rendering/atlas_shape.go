@@ -12,8 +12,10 @@ type AtlasShape struct {
 	primitiveMode uint32
 	// Offset is multiplied by the size of an Unsigned Int in preparation for
 	// drawing.
-	offset int
-	count  int
+	offset       int
+	elementCount int
+
+	count int
 
 	maxSize int
 
@@ -32,14 +34,26 @@ func (a *AtlasShape) SetOffset(offset int) {
 	a.offset = offset * int(unsafe.Sizeof(uint32(0)))
 }
 
-// SetOffset2 sets the offset without considering data-type size
-func (a *AtlasShape) SetOffset2(offset int) {
+// SetElementOffset sets the EBO offset without considering data-type size
+// The value should be in bytes
+func (a *AtlasShape) SetElementOffset(offset int) {
 	a.offset = offset
 }
 
 // Offset returns calculated offset
 func (a *AtlasShape) Offset() int {
 	return a.offset
+}
+
+// SetElementCount specifies how many elements are need to draw based
+// primitive mode type.
+func (a *AtlasShape) SetElementCount(count int) {
+	a.elementCount = count
+}
+
+// ElementCount returns how many elements are need to draw
+func (a *AtlasShape) ElementCount() int {
+	return a.elementCount
 }
 
 // SetMaxSize set max size
@@ -72,12 +86,12 @@ func (a *AtlasShape) SetPrimitiveMode(m uint32) {
 	a.primitiveMode = m
 }
 
-// Count returns count
+// Count returns the total count of elements
 func (a *AtlasShape) Count() int {
 	return a.count
 }
 
-// SetCount sets index count
+// SetCount sets total element count
 func (a *AtlasShape) SetCount(c int) {
 	a.count = c
 }

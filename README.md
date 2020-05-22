@@ -12,6 +12,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Static shapes: Circle
 * **Done** Dynamic shapes: Line
 * **Working** Space mappings
+* Alpha coloring / transparency
 * Node Dragging
 * Filters: transform and translate
 * Zoom Node
@@ -99,6 +100,7 @@ https://www.shadertoy.com/view/Xd2yRd Alternative easing functions
 ## Knowledge
 https://learnopengl.com/Getting-started/Coordinate-Systems
 http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
+https://www.haroldserrano.com/blog/loading-vertex-normal-and-uv-data-onto-opengl-buffers
 
 ## SVG
 

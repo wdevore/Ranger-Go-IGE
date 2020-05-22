@@ -3,8 +3,11 @@ package api
 // IAtlasShape represents a vector shape
 type IAtlasShape interface {
 	SetOffset(offset int)
-	SetOffset2(offset int)
+	SetElementOffset(offset int)
 	Offset() int
+
+	SetElementCount(count int)
+	ElementCount() int
 
 	SetMaxSize(size int)
 	MaxSize() int

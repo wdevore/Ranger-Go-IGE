@@ -9,6 +9,7 @@ import (
 
 type pixelAtlas struct {
 	Atlas
+	index int
 }
 
 // NewPixelAtlas creates an atlas to be populated
@@ -18,7 +19,7 @@ func NewPixelAtlas() api.IAtlas {
 	return o
 }
 
-func (a *pixelAtlas) Populate(atlasObj api.IAtlasObject) {
+func (p *pixelAtlas) Populate(atlasObj api.IAtlasObject) {
 	s := NewAtlasShape(atlasObj)
 	s.SetName("PixelBuffer")
 	s.SetPrimitiveMode(gl.POINTS)
@@ -34,5 +35,11 @@ func (a *pixelAtlas) Populate(atlasObj api.IAtlasObject) {
 	}
 
 	s.SetCount(atlasObj.End())
-	a.AddShape(s)
+	p.AddShape(s)
+}
+
+func (p *pixelAtlas) GetNextIndex(glType int) int {
+	id := p.index
+	p.index++
+	return id
 }

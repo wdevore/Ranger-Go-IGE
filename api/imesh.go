@@ -11,8 +11,10 @@ type IMesh interface {
 
 	AddIndex(index int)
 
+	VboID() uint32
 	BindVBO()
 	BindEBO()
 
 	Update(offset, vertexCount int)
+	UpdatePreScaled(offset, vertexCount int)
 }

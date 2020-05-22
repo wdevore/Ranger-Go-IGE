@@ -20,6 +20,7 @@ import (
 
 type staticAtlas struct {
 	Atlas
+	index int
 }
 
 // NewStaticAtlas creates an atlas to be populated
@@ -55,6 +56,15 @@ func (a *staticAtlas) buildPixel(atlasObj api.IAtlasObject) api.IAtlasShape {
 	s.SetCount(atlasObj.End())
 
 	return s
+}
+
+func (a *staticAtlas) GetNextIndex(glType int) int {
+	id := a.index
+	switch glType {
+	case api.GLLines:
+		a.index += 2
+	}
+	return id
 }
 
 func (a *staticAtlas) buildHLine(atlasObj api.IAtlasObject) api.IAtlasShape {

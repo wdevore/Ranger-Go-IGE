@@ -16,3 +16,8 @@ const (
 
 // XYZComponentCount indicates how many parts to a vertex
 const XYZComponentCount int = 3
+
+// OpenGL Object types
+const (
+	GLLines = 0
+)

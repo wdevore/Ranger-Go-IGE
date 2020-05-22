@@ -7,8 +7,9 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
-// We only have one attribute in this engine
-const attributeIndex uint32 = 0
+// We only have one attribute (position) in the shader
+// Some shaders may have normals and/or textures coords
+const positionIndex uint32 = 0
 
 // VAO defines a Vertex Array Object
 type VAO struct {
@@ -31,8 +32,12 @@ func (v *VAO) BindStart() {
 
 // BindComplete setups vertex-array-ptr and disable vertex-array-attr
 func (v *VAO) BindComplete() {
+	// Count == (xyz=3) * sizeof(float32)=4 == 12 thus each
+	// vertex is 12 bytes
 	arrayCount := int32(api.XYZComponentCount) * int32(unsafe.Sizeof(float32(0)))
-	gl.VertexAttribPointer(attributeIndex, int32(api.XYZComponentCount), gl.FLOAT, false, arrayCount, gl.PtrOffset(0))
+
+	// We can link the attribute position with the data in the vertexData array
+	gl.VertexAttribPointer(positionIndex, int32(api.XYZComponentCount), gl.FLOAT, false, arrayCount, gl.PtrOffset(0))
 
 	gl.EnableVertexAttribArray(0)
 
