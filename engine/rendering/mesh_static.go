@@ -17,8 +17,7 @@ type StaticMesh struct {
 	ebo *EBO
 }
 
-// NewStaticMesh creates a new Mesh object
-func NewStaticMesh(isStatic bool) api.IMesh {
+func newStaticMesh(isStatic bool) api.IMesh {
 	m := new(StaticMesh)
 	m.vertices = []float32{}
 	m.indices = []uint32{}
