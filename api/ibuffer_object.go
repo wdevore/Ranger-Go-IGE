@@ -2,7 +2,7 @@ package api
 
 // IBufferObject represents a vector object
 type IBufferObject interface {
-	Construct(isStatic bool, atlas IAtlas)
+	Construct(meshType int, atlas IAtlas)
 
 	Vertices() []float32
 

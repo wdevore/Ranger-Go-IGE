@@ -16,11 +16,11 @@ type RenderGraphic struct {
 }
 
 // NewRenderGraphic creates a new graphic
-func NewRenderGraphic(isStatic bool, atlas api.IAtlas, shader api.IShader) api.IRenderGraphic {
+func NewRenderGraphic(meshType int, atlas api.IAtlas, shader api.IShader) api.IRenderGraphic {
 	o := new(RenderGraphic)
 
 	o.bufObj = NewBufferObject()
-	o.bufObj.Construct(isStatic, atlas)
+	o.bufObj.Construct(meshType, atlas)
 
 	programID := shader.Program()
 

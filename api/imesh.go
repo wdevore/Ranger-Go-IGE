@@ -1,8 +1,23 @@
 package api
 
+const (
+	// MeshStatic represents static VBO buffers
+	MeshStatic = 0
+	// MeshDynamic represents dynamic single mesh buffers,
+	// for example, PixelBuffer
+	MeshDynamic = 1
+	// MeshDynamicMulti represent dynamic multi mesh buffers,
+	// for example, lines
+	MeshDynamicMulti = 2
+)
+
 // IMesh represents 2D polygon
 type IMesh interface {
 	Vertices() []float32
+	GenNextBackingIndex() int
+	AddArray() int
+	ActivateArray(backingIdx int)
+
 	Indices() []uint32
 
 	AddVertex(x, y, z float32)

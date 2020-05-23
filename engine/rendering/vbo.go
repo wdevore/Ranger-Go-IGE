@@ -13,17 +13,17 @@ import (
 type VBO struct {
 	vboID uint32 // GLuint
 
-	staticDraw  bool
+	staticDraw  int
 	bufferUsage uint32
 	floatSize   int
 }
 
 // NewVBO creates a empty VBO defaulting to STATIC_DRAW
-func NewVBO(isStatic bool) *VBO {
+func NewVBO(meshType int) *VBO {
 	o := new(VBO)
 
 	gl.GenBuffers(1, &o.vboID)
-	o.staticDraw = isStatic
+	o.staticDraw = meshType
 	o.floatSize = int(unsafe.Sizeof(float32(0)))
 
 	return o
@@ -36,8 +36,8 @@ func (v *VBO) VboID() uint32 {
 
 // SetDrawUsage changes buffer usage style between static or dynamic.
 // This MUST be called prior to Bind() call.
-func (v *VBO) SetDrawUsage(usage bool) {
-	v.staticDraw = usage
+func (v *VBO) SetDrawUsage(meshType int) {
+	v.staticDraw = meshType
 }
 
 // Bind binds the buffer id against the mesh vertices
@@ -51,7 +51,7 @@ func (v *VBO) Bind(m api.IMesh) {
 	// defined vertex data into the buffer's memory. glBufferData is a function
 	// specifically targeted to copy user-defined data into the currently bound buffer.
 	v.bufferUsage = uint32(gl.STATIC_DRAW)
-	if !v.staticDraw {
+	if v.staticDraw != api.MeshStatic {
 		v.bufferUsage = gl.DYNAMIC_DRAW
 		// gl.BufferStorage()
 	}

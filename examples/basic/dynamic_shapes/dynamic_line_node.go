@@ -90,12 +90,9 @@ func (r *DynamicLineNode) Draw(model api.IMatrix4) {
 
 	if r.IsDirty() {
 		// Update buffer
-
-		// renG.UpdatePreScaled(r.vboOffset, r.countBytes)
-
 		bufVertices := renG.Vertices()
 
-		// Get rid of this buffer hack---------------
+		// TODO Get rid of this buffer hack---------------
 		// Vertices should come from Mesh
 		i := r.p1Index * 3
 		vertices := []float32{

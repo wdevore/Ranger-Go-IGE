@@ -39,13 +39,13 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	gb := g.sqr.(*custom.StaticAtlasNode)
 	gb.SetColor(color.NewPaletteInt64(color.LightOrange))
 
-	g.dynoTxt = custom.NewRasterTextDynoNode("DynoTxt", world, g)
-	g.dynoTxt.SetScale(2.0)
-	g.dynoTxt.SetPosition(-100.0, 100.0)
-	gd := g.dynoTxt.(*custom.RasterTextDynoNode)
-	gd.SetText("Ranger is a Go!")
-	gd.SetColor(color.NewPaletteInt64(color.LightPink))
-	gd.SetPixelSize(3.0)
+	// g.dynoTxt = custom.NewRasterTextDynoNode("DynoTxt", world, g)
+	// g.dynoTxt.SetScale(2.0)
+	// g.dynoTxt.SetPosition(-100.0, 100.0)
+	// gd := g.dynoTxt.(*custom.RasterTextDynoNode)
+	// gd.SetText("Ranger is a Go!")
+	// gd.SetColor(color.NewPaletteInt64(color.LightPink))
+	// gd.SetPixelSize(3.0)
 
 	// ---------------------------------------------------------------------
 	g.line = newDynamicLineNode("DynoLin", world, g)

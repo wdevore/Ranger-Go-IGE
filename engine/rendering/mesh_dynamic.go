@@ -3,11 +3,10 @@ package rendering
 
 import "github.com/wdevore/Ranger-Go-IGE/api"
 
-// StaticMesh combines a shader's VBO and EBO features.
-type StaticMesh struct {
+// DynamicMesh combines a shader's VBO and EBO features,
+// but has a single backing array
+type DynamicMesh struct {
 	// Backing array is for Dynamic VBOs
-	// The total size of all arrays is the size the VBO
-	// buffer is defined for.
 	vertices []float32
 
 	// Indices are for EBO
@@ -17,51 +16,51 @@ type StaticMesh struct {
 	ebo *EBO
 }
 
-func newStaticMesh() api.IMesh {
-	m := new(StaticMesh)
+func newDynamicMesh() api.IMesh {
+	m := new(DynamicMesh)
 	m.vertices = []float32{}
 	m.indices = []uint32{}
-	m.vbo = NewVBO(api.MeshStatic)
+	m.vbo = NewVBO(api.MeshDynamic)
 	m.ebo = NewEBO()
 	return m
 }
 
 // VboID return internal vbo id
-func (m *StaticMesh) VboID() uint32 {
+func (m *DynamicMesh) VboID() uint32 {
 	return m.vbo.VboID()
 }
 
 // BindVBO calls BindBuffer and BufferData
-func (m *StaticMesh) BindVBO() {
+func (m *DynamicMesh) BindVBO() {
 	m.vbo.Bind(m)
 }
 
 // BindEBO calls BindBuffer and BufferData
-func (m *StaticMesh) BindEBO() {
+func (m *DynamicMesh) BindEBO() {
 	m.ebo.Bind(m)
 }
 
 // GenNextBackingIndex generates next backing array index
-func (m *StaticMesh) GenNextBackingIndex() int {
+func (m *DynamicMesh) GenNextBackingIndex() int {
 	return 0
 }
 
 // AddArray creates a new backing array
-func (m *StaticMesh) AddArray() int {
+func (m *DynamicMesh) AddArray() int {
 	return 0
 }
 
 // ActivateArray activates a previous backing array
-func (m *StaticMesh) ActivateArray(backingIdx int) {
+func (m *DynamicMesh) ActivateArray(backingIdx int) {
 }
 
 // AddVertex adds a vertex
-func (m *StaticMesh) AddVertex(x, y, z float32) {
+func (m *DynamicMesh) AddVertex(x, y, z float32) {
 	m.vertices = append(m.vertices, x, y, z)
 }
 
 // SetVertex sets an existing vertex components.
-func (m *StaticMesh) SetVertex(x, y, z float32, index int) {
+func (m *DynamicMesh) SetVertex(x, y, z float32, index int) {
 	i := index * 3
 	m.vertices[i] = x
 	m.vertices[i+1] = y
@@ -69,31 +68,31 @@ func (m *StaticMesh) SetVertex(x, y, z float32, index int) {
 }
 
 // AddIndex adds an index for EBOs
-func (m *StaticMesh) AddIndex(index int) {
+func (m *DynamicMesh) AddIndex(index int) {
 	m.indices = append(m.indices, uint32(index))
 }
 
 // Vertices returns the internal vertices
-func (m *StaticMesh) Vertices() []float32 {
+func (m *DynamicMesh) Vertices() []float32 {
 	return m.vertices
 }
 
 // Indices returns the internal indices
-func (m *StaticMesh) Indices() []uint32 {
+func (m *DynamicMesh) Indices() []uint32 {
 	return m.indices
 }
 
 // Update modifies the VBO buffer
-func (m *StaticMesh) Update(offset, size int) {
+func (m *DynamicMesh) Update(offset, size int) {
 	m.vbo.Update(offset, size, m.vertices)
 }
 
 // UpdatePreScaled requires prescaled values
-func (m *StaticMesh) UpdatePreScaled(offset, size int) {
+func (m *DynamicMesh) UpdatePreScaled(offset, size int) {
 	m.vbo.UpdatePreScaled(offset, size, m.vertices)
 }
 
 // Discard deletes the backing array
-func (m *StaticMesh) Discard() {
+func (m *DynamicMesh) Discard() {
 	m.vertices = nil
 }

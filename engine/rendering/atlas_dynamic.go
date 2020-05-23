@@ -57,7 +57,7 @@ func (a *dynamicAtlas) buildLine(atlasObj api.IAtlasObject) api.IAtlasShape {
 	s.SetCount(atlasObj.End())
 
 	// Lines require 2 elements where "element" refers to an EBO
-	// item. In this case a "begin" indice and "end" indice
+	// item. In this case a "begin" index and "end" index
 	s.SetElementCount(2)
 
 	return s

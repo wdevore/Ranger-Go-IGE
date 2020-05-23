@@ -20,13 +20,20 @@ func NewBufferObject() api.IBufferObject {
 }
 
 // Construct configures a buffer object
-func (b *BufferObject) Construct(isStatic bool, atlas api.IAtlas) {
+func (b *BufferObject) Construct(meshType int, atlas api.IAtlas) {
 	b.vao = NewVAO()
 	b.vao.BindStart()
 
 	// The Atlas contains a Mesh and the Mesh contains
 	// VBOs and EBOs
-	b.atlasObject = newAtlasObject(isStatic)
+	// AtlasObject
+	//    Mesh
+	//      VBO,EBO
+	b.atlasObject = newAtlasObject(meshType)
+	// TODO ONLY MeshDynamic needs an auotmatic array added
+	if meshType != api.MeshStatic {
+		b.atlasObject.AddArray()
+	}
 
 	// Populate atlas with objects
 	atlas.Populate(b.atlasObject)

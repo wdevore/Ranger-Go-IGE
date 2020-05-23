@@ -133,15 +133,15 @@ func (w *world) Configure() error {
 	// Create a graphic that will store Static shapes
 	// pass functor for populating
 	w.staticAtlas = rendering.NewStaticAtlas()
-	renG := rendering.NewRenderGraphic(true, w.staticAtlas, w.shader)
+	renG := rendering.NewRenderGraphic(api.MeshStatic, w.staticAtlas, w.shader)
 	w.AddRenderGraphic(renG)
 
 	w.dynamicAtlas = rendering.NewDynamicAtlas()
-	renG = rendering.NewRenderGraphic(false, w.dynamicAtlas, w.shader)
+	renG = rendering.NewRenderGraphic(api.MeshDynamicMulti, w.dynamicAtlas, w.shader)
 	w.AddRenderGraphic(renG)
 
 	w.pixelAtlas = rendering.NewPixelAtlas()
-	renG = rendering.NewRenderGraphic(false, w.pixelAtlas, w.shader)
+	renG = rendering.NewRenderGraphic(api.MeshDynamic, w.pixelAtlas, w.shader)
 	w.AddRenderGraphic(renG)
 
 	// Force UseRenderGraphic to UnUse/Use for the first node visited

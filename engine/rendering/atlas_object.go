@@ -13,15 +13,28 @@ type AtlasObject struct {
 	mesh api.IMesh
 }
 
-func newAtlasObject(isStatic bool) api.IAtlasObject {
+func newAtlasObject(meshType int) api.IAtlasObject {
 	o := new(AtlasObject)
-	o.Initialize(isStatic)
+	o.Initialize(meshType)
 	return o
 }
 
 // Initialize sets defaults
-func (a *AtlasObject) Initialize(isStatic bool) {
-	a.mesh = NewStaticMesh(isStatic)
+func (a *AtlasObject) Initialize(meshType int) {
+	switch meshType {
+	case api.MeshStatic:
+		a.mesh = newStaticMesh()
+	case api.MeshDynamic:
+		// Each shape that is added to the mesh will get a different backing array.
+		a.mesh = newDynamicMesh()
+	case api.MeshDynamicMulti:
+		a.mesh = newDynamicMultiMesh()
+	}
+}
+
+// AddArray adds a backing array to mesh
+func (a *AtlasObject) AddArray() int {
+	return a.mesh.AddArray()
 }
 
 // AddVertex adds a vertex to the mesh
