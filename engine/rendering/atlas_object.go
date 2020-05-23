@@ -15,8 +15,11 @@ type AtlasObject struct {
 	mesh api.IMesh
 }
 
-// No Allocator as this type is abstract and meant to
-// be embedded
+func newAtlasObject(isStatic bool) api.IAtlasObject {
+	o := new(AtlasObject)
+	o.Initialize(isStatic)
+	return o
+}
 
 // Initialize sets defaults
 func (a *AtlasObject) Initialize(isStatic bool) {

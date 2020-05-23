@@ -9,7 +9,7 @@ import (
 
 // BufferObject associates an Atlas with a VAO
 type BufferObject struct {
-	atlasObject api.IAtlasObject // VectorAtlas
+	atlasObject api.IAtlasObject
 	vao         *VAO
 }
 
@@ -29,7 +29,7 @@ func (b *BufferObject) Construct(isStatic bool, atlas api.IAtlas) {
 
 	// The Atlas contains a Mesh and the Mesh contains
 	// VBOs and EBOs
-	b.atlasObject = NewUniformAtlas(isStatic)
+	b.atlasObject = newAtlasObject(isStatic)
 
 	// Populate atlas with objects
 	atlas.Populate(b.atlasObject)
