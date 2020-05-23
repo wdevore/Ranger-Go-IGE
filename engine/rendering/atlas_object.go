@@ -66,6 +66,7 @@ func (a *AtlasObject) Update(offset, vertexCount int) {
 	a.mesh.Update(offset, vertexCount)
 }
 
+// UpdatePreScaled requires prescaled values
 func (a *AtlasObject) UpdatePreScaled(offset, vertexCount int) {
 	a.mesh.UpdatePreScaled(offset, vertexCount)
 }

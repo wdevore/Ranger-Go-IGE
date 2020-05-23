@@ -45,6 +45,7 @@ func (r *RenderGraphic) BufferObjInUse() bool {
 	return r.bufferObjInUse
 }
 
+// Vertices returns buffer object's mesh's backing array
 func (r *RenderGraphic) Vertices() []float32 {
 	return r.bufObj.Vertices()
 }

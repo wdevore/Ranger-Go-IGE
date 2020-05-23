@@ -6,6 +6,7 @@ import (
 	"unsafe"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
+	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
 // VBO represents a shader's VBO features.
@@ -28,6 +29,7 @@ func NewVBO(isStatic bool) *VBO {
 	return o
 }
 
+// VboID returns internal vbo buffer id.
 func (v *VBO) VboID() uint32 {
 	return v.vboID
 }
@@ -39,7 +41,7 @@ func (v *VBO) SetDrawUsage(usage bool) {
 }
 
 // Bind binds the buffer id against the mesh vertices
-func (v *VBO) Bind(m *Mesh) {
+func (v *VBO) Bind(m api.IMesh) {
 	// the buffer type of a vertex buffer object is GL_ARRAY_BUFFER
 	// From this point on any buffer calls we make (on the GL_ARRAY_BUFFER target)
 	// will be used to configure the currently bound buffer, which is VBO
@@ -54,6 +56,10 @@ func (v *VBO) Bind(m *Mesh) {
 		// gl.BufferStorage()
 	}
 	gl.BufferData(gl.ARRAY_BUFFER, len(m.Vertices())*v.floatSize, gl.Ptr(m.Vertices()), v.bufferUsage)
+
+	if v.bufferUsage == gl.STATIC_DRAW {
+		m.Discard()
+	}
 }
 
 // Update moves any modified vertices to the buffer.

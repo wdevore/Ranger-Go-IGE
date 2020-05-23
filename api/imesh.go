@@ -13,6 +13,8 @@ type IMesh interface {
 
 	VboID() uint32
 	BindVBO()
+	Discard()
+
 	BindEBO()
 
 	Update(offset, vertexCount int)

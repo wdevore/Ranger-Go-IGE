@@ -42,6 +42,7 @@ func (b *BufferObject) Construct(isStatic bool, atlas api.IAtlas) {
 	b.vao.BindComplete()
 }
 
+// Vertices returns internal vertex backing array
 func (b *BufferObject) Vertices() []float32 {
 	return b.atlasObject.Mesh().Vertices()
 }
@@ -61,10 +62,12 @@ func (b *BufferObject) Update(offset, size int) {
 	b.atlasObject.Mesh().Update(offset, size)
 }
 
+// UpdatePreScaled requires prescaled values
 func (b *BufferObject) UpdatePreScaled(offset, size int) {
 	b.atlasObject.Mesh().UpdatePreScaled(offset, size)
 }
 
+// UpdatePreScaledUsing requires a specific size vertex array
 func (b *BufferObject) UpdatePreScaledUsing(offset, size int, vertices []float32) {
 	// if v.bufferUsage == gl.STATIC_DRAW {
 	// 	panic("VBO is not configured as DYNAMIC_DRAW.")

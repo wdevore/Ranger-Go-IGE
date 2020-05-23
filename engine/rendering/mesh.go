@@ -5,7 +5,7 @@ import "github.com/wdevore/Ranger-Go-IGE/api"
 
 // Mesh combines a shader's VBO and EBO features.
 type Mesh struct {
-	// Backing arrays are for VBO
+	// Backing array is for Dynamic VBOs
 	// The total size of all arrays is the size the VBO
 	// buffer is defined for.
 	vertices []float32
@@ -27,6 +27,7 @@ func NewMesh(isStatic bool) api.IMesh {
 	return m
 }
 
+// VboID return internal vbo id
 func (m *Mesh) VboID() uint32 {
 	return m.vbo.VboID()
 }
@@ -74,6 +75,12 @@ func (m *Mesh) Update(offset, size int) {
 	m.vbo.Update(offset, size, m.vertices)
 }
 
+// UpdatePreScaled requires prescaled values
 func (m *Mesh) UpdatePreScaled(offset, size int) {
 	m.vbo.UpdatePreScaled(offset, size, m.vertices)
+}
+
+// Discard deletes the backing array
+func (m *Mesh) Discard() {
+	m.vertices = nil
 }
