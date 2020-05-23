@@ -19,9 +19,9 @@ type IWorld interface {
 	Viewspace() IMatrix4
 	InvertedViewspace() IMatrix4
 
-	Atlas() IAtlas
-	DynoAtlas() IAtlas
-	PixelAtlas() IAtlas
+	Atlas() IAtlas      // Static atlas
+	DynoAtlas() IAtlas  // DynamicMulti atlas
+	PixelAtlas() IAtlas // Dynamic atlas
 
 	Shader() IShader
 

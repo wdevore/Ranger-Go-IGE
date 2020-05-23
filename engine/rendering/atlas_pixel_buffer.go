@@ -9,7 +9,6 @@ import (
 
 type pixelAtlas struct {
 	Atlas
-	index int
 }
 
 // NewPixelAtlas creates an atlas to be populated
@@ -39,7 +38,5 @@ func (p *pixelAtlas) Populate(atlasObj api.IAtlasObject) {
 }
 
 func (p *pixelAtlas) GetNextIndex(glType int) int {
-	id := p.index
-	p.index++
-	return id
+	return 0
 }

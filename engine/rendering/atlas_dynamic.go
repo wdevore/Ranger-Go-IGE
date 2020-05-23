@@ -58,16 +58,13 @@ func (a *dynamicAtlas) buildLine(atlasObj api.IAtlasObject) api.IAtlasShape {
 
 	// Lines require 2 elements where "element" refers to an EBO
 	// item. In this case a "begin" index and "end" index
-	s.SetElementCount(2)
+	s.SetElementCount(eboElementCountPerComponent)
 
 	return s
 }
 
 func (a *dynamicAtlas) GetNextIndex(glType int) int {
 	id := a.index
-	switch glType {
-	case api.GLLines:
-		a.index += eboElementCountPerComponent
-	}
+	a.index += 2
 	return id
 }

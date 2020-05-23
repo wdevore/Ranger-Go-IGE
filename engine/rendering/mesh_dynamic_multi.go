@@ -24,7 +24,7 @@ func newDynamicMultiMesh() api.IMesh {
 	m := new(DynamicMultiMesh)
 	m.vertices = [][]float32{}
 	m.indices = []uint32{}
-	m.vbo = NewVBO(api.MeshDynamic)
+	m.vbo = NewVBO(api.MeshDynamicMulti)
 	m.ebo = NewEBO()
 	return m
 }
