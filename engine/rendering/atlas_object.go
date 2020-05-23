@@ -21,7 +21,7 @@ func newAtlasObject(isStatic bool) api.IAtlasObject {
 
 // Initialize sets defaults
 func (a *AtlasObject) Initialize(isStatic bool) {
-	a.mesh = NewMesh(isStatic)
+	a.mesh = NewStaticMesh(isStatic)
 }
 
 // AddVertex adds a vertex to the mesh
