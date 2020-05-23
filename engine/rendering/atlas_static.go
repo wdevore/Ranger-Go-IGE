@@ -37,6 +37,7 @@ func (a *staticAtlas) Populate(atlasObj api.IAtlasObject) {
 	a.AddShape(a.buildCenteredTriangle(atlasObj))
 	a.AddShape(a.buildCircle(atlasObj))
 	a.AddShape(a.buildHLine(atlasObj))
+	a.AddShape(a.buildVLine(atlasObj))
 	a.AddShape(a.buildCross(atlasObj))
 	a.AddShape(a.buildCrowBar(atlasObj))
 }
@@ -69,7 +70,7 @@ func (a *staticAtlas) GetNextIndex(glType int) int {
 
 func (a *staticAtlas) buildHLine(atlasObj api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape(atlasObj)
-	s.SetName("Line")
+	s.SetName("HLine")
 	s.SetPrimitiveMode(gl.LINES)
 
 	s.SetOffset(atlasObj.Begin())
@@ -88,7 +89,7 @@ func (a *staticAtlas) buildHLine(atlasObj api.IAtlasObject) api.IAtlasShape {
 
 func (a *staticAtlas) buildVLine(atlasObj api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape(atlasObj)
-	s.SetName("Line")
+	s.SetName("VLine")
 	s.SetPrimitiveMode(gl.LINES)
 
 	s.SetOffset(atlasObj.Begin())

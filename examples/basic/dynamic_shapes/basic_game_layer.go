@@ -21,19 +21,42 @@ type gameLayer struct {
 	dynoTxt api.INode
 }
 
-func newBasicGameLayer(name string, world api.IWorld, parent api.INode) api.INode {
+func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(gameLayer)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
-	o.Build(world)
-	return o
+	if err := o.Build(world); err != nil {
+		return nil, err
+	}
+	return o, nil
 }
 
 func (g *gameLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
-	g.sqr = custom.NewStaticAtlasNode("Sqr", "CenteredSquare", world, g)
+	dvr := world.Properties().Window.DeviceRes
+
+	hline, err := custom.NewStaticAtlasNode("HLine", "HLine", world, g)
+	if err != nil {
+		return err
+	}
+	hline.SetScale(float32(dvr.Width))
+	ghl := hline.(*custom.StaticAtlasNode)
+	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
+
+	vline, err := custom.NewStaticAtlasNode("VLine", "VLine", world, g)
+	if err != nil {
+		return err
+	}
+	vline.SetScale(float32(dvr.Height))
+	gvl := vline.(*custom.StaticAtlasNode)
+	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
+
+	g.sqr, err = custom.NewStaticAtlasNode("Sqr", "CenteredSquare", world, g)
+	if err != nil {
+		return err
+	}
 	g.sqr.SetScale(100.0)
 	g.sqr.SetPosition(100.0, 100.0)
 	gb := g.sqr.(*custom.StaticAtlasNode)

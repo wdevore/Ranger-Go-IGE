@@ -27,37 +27,37 @@ func newBasicGameLayer(name string, world api.IWorld, parent api.INode) api.INod
 func (g *gameLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
-	square := custom.NewStaticAtlasNode("Square", "CenteredSquare", world, g)
+	square, _ := custom.NewStaticAtlasNode("Square", "CenteredSquare", world, g)
 	square.SetScale(100.0)
 	square.SetPosition(110.0, 100.0)
 
-	circle := custom.NewStaticAtlasNode("Circle", "Circle12Segments", world, g)
+	circle, _ := custom.NewStaticAtlasNode("Circle", "Circle12Segments", world, g)
 	circle.SetScale(100.0)
 	circle.SetPosition(0.0, 100.0)
 	gc := circle.(*custom.StaticAtlasNode)
 	gc.SetColor(color.NewPaletteInt64(color.GoldYellow))
 
-	tri := custom.NewStaticAtlasNode("Triangle", "CenteredTriangle", world, g)
+	tri, _ := custom.NewStaticAtlasNode("Triangle", "CenteredTriangle", world, g)
 	tri.SetScale(100.0)
 	tri.SetPosition(-100.0, 100.0)
 	gt := tri.(*custom.StaticAtlasNode)
 	gt.SetColor(color.NewPaletteInt64(color.Pink))
 
-	line := custom.NewStaticAtlasNode("Line", "Line", world, g)
+	line, _ := custom.NewStaticAtlasNode("Line", "Line", world, g)
 	line.SetScale(100.0)
 	line.SetPosition(-200.0, 100.0)
 	line.SetRotation(maths.DegreeToRadians * 45.0)
 	ge := line.(*custom.StaticAtlasNode)
 	ge.SetColor(color.NewPaletteInt64(color.GreenYellow))
 
-	cross := custom.NewStaticAtlasNode("Plus", "Cross", world, g)
+	cross, _ := custom.NewStaticAtlasNode("Plus", "Cross", world, g)
 	cross.SetScale(100.0)
 	cross.SetPosition(-300.0, 100.0)
 	// cross.SetRotation(maths.DegreeToRadians * 45.0)
 	gs := cross.(*custom.StaticAtlasNode)
 	gs.SetColor(color.NewPaletteInt64(color.PanSkin))
 
-	g.crow = custom.NewStaticAtlasNode("Crow", "CrowBar", world, g)
+	g.crow, _ = custom.NewStaticAtlasNode("Crow", "CrowBar", world, g)
 	g.crow.SetScale(100.0)
 	g.crow.SetPosition(300.0, 100.0)
 	gb := g.crow.(*custom.StaticAtlasNode)

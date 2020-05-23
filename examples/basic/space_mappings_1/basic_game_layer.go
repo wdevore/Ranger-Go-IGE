@@ -43,7 +43,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	glc.SetPoint1(50.0, -50.0)
 	glc.SetPoint2(100.0, -100.0)
 
-	g.sqr = custom.NewStaticAtlasNode("Sqr", "CenteredSquare", world, g)
+	g.sqr, _ = custom.NewStaticAtlasNode("Sqr", "CenteredSquare", world, g)
 	g.sqr.SetScale(100.0)
 	g.sqr.SetPosition(100.0, 100.0)
 	gb := g.sqr.(*custom.StaticAtlasNode)

@@ -1,6 +1,8 @@
 package custom
 
 import (
+	"fmt"
+
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
@@ -17,14 +19,17 @@ type StaticAtlasNode struct {
 }
 
 // NewStaticAtlasNode constructs a generic shape node
-func NewStaticAtlasNode(name, atlasName string, world api.IWorld, parent api.INode) api.INode {
+func NewStaticAtlasNode(name, atlasName string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(StaticAtlasNode)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
 	o.atlasName = atlasName
-	o.Build(world)
-	return o
+	if err := o.Build(world); err != nil {
+		return nil, err
+	}
+
+	return o, nil
 }
 
 // Build configures the node
@@ -34,6 +39,10 @@ func (r *StaticAtlasNode) Build(world api.IWorld) error {
 	r.color = color.NewPaletteInt64(color.LightPurple).Array()
 
 	r.shape = world.Atlas().Shape(r.atlasName)
+
+	if r.shape == nil {
+		return fmt.Errorf("StaticAtlasNode.Build: Shape '%s' not found", r.atlasName)
+	}
 
 	return nil
 }
