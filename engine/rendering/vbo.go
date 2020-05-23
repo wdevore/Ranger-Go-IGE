@@ -55,7 +55,9 @@ func (v *VBO) Bind(m api.IMesh) {
 		v.bufferUsage = gl.DYNAMIC_DRAW
 		// gl.BufferStorage()
 	}
-	gl.BufferData(gl.ARRAY_BUFFER, len(m.Vertices())*v.floatSize, gl.Ptr(m.Vertices()), v.bufferUsage)
+
+	mV := m.Vertices()
+	gl.BufferData(gl.ARRAY_BUFFER, len(mV)*v.floatSize, gl.Ptr(mV), v.bufferUsage)
 
 	if v.bufferUsage == gl.STATIC_DRAW {
 		m.Discard()
