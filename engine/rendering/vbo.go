@@ -59,6 +59,8 @@ func (v *VBO) Bind(m api.IMesh) {
 	mV := m.Vertices()
 	gl.BufferData(gl.ARRAY_BUFFER, len(mV)*v.floatSize, gl.Ptr(mV), v.bufferUsage)
 
+	// Static vbo's don't need the backing array once the data has
+	// been copied to the GL buffer.
 	if v.bufferUsage == gl.STATIC_DRAW {
 		m.Discard()
 	}
