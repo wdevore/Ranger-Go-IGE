@@ -20,9 +20,6 @@ func NewBufferObject() api.IBufferObject {
 }
 
 // Construct configures a buffer object
-// The second arg is a functor that given an atlas-object
-// populates the atlas
-// func (b *BufferObject) Construct(isStatic bool, populator api.FunctorAtlasPopulator) {
 func (b *BufferObject) Construct(isStatic bool, atlas api.IAtlas) {
 	b.vao = NewVAO()
 	b.vao.BindStart()
