@@ -5,8 +5,6 @@ import "github.com/wdevore/Ranger-Go-IGE/api"
 // AtlasObject helps managing a Mesh. It is abstract and
 // should be embedded.
 type AtlasObject struct {
-	// isStatic bool
-
 	prevVertexCount int
 	vertexCount     int
 	indexCount      int
@@ -23,7 +21,6 @@ func newAtlasObject(isStatic bool) api.IAtlasObject {
 
 // Initialize sets defaults
 func (a *AtlasObject) Initialize(isStatic bool) {
-	// a.isStatic = isStatic
 	a.mesh = NewMesh(isStatic)
 }
 

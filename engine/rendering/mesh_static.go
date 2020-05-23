@@ -3,8 +3,8 @@ package rendering
 
 import "github.com/wdevore/Ranger-Go-IGE/api"
 
-// Mesh combines a shader's VBO and EBO features.
-type Mesh struct {
+// StaticMesh combines a shader's VBO and EBO features.
+type StaticMesh struct {
 	// Backing array is for Dynamic VBOs
 	// The total size of all arrays is the size the VBO
 	// buffer is defined for.
@@ -19,7 +19,7 @@ type Mesh struct {
 
 // NewMesh creates a new Mesh object
 func NewMesh(isStatic bool) api.IMesh {
-	m := new(Mesh)
+	m := new(StaticMesh)
 	m.vertices = []float32{}
 	m.indices = []uint32{}
 	m.vbo = NewVBO(isStatic)
@@ -28,27 +28,27 @@ func NewMesh(isStatic bool) api.IMesh {
 }
 
 // VboID return internal vbo id
-func (m *Mesh) VboID() uint32 {
+func (m *StaticMesh) VboID() uint32 {
 	return m.vbo.VboID()
 }
 
 // BindVBO calls BindBuffer and BufferData
-func (m *Mesh) BindVBO() {
+func (m *StaticMesh) BindVBO() {
 	m.vbo.Bind(m)
 }
 
 // BindEBO calls BindBuffer and BufferData
-func (m *Mesh) BindEBO() {
+func (m *StaticMesh) BindEBO() {
 	m.ebo.Bind(m)
 }
 
 // AddVertex adds a vertex
-func (m *Mesh) AddVertex(x, y, z float32) {
+func (m *StaticMesh) AddVertex(x, y, z float32) {
 	m.vertices = append(m.vertices, x, y, z)
 }
 
 // SetVertex sets an existing vertex components.
-func (m *Mesh) SetVertex(x, y, z float32, index int) {
+func (m *StaticMesh) SetVertex(x, y, z float32, index int) {
 	i := index * 3
 	m.vertices[i] = x
 	m.vertices[i+1] = y
@@ -56,31 +56,31 @@ func (m *Mesh) SetVertex(x, y, z float32, index int) {
 }
 
 // AddIndex adds an index for EBOs
-func (m *Mesh) AddIndex(index int) {
+func (m *StaticMesh) AddIndex(index int) {
 	m.indices = append(m.indices, uint32(index))
 }
 
 // Vertices returns the internal vertices
-func (m *Mesh) Vertices() []float32 {
+func (m *StaticMesh) Vertices() []float32 {
 	return m.vertices
 }
 
 // Indices returns the internal indices
-func (m *Mesh) Indices() []uint32 {
+func (m *StaticMesh) Indices() []uint32 {
 	return m.indices
 }
 
 // Update modifies the VBO buffer
-func (m *Mesh) Update(offset, size int) {
+func (m *StaticMesh) Update(offset, size int) {
 	m.vbo.Update(offset, size, m.vertices)
 }
 
 // UpdatePreScaled requires prescaled values
-func (m *Mesh) UpdatePreScaled(offset, size int) {
+func (m *StaticMesh) UpdatePreScaled(offset, size int) {
 	m.vbo.UpdatePreScaled(offset, size, m.vertices)
 }
 
 // Discard deletes the backing array
-func (m *Mesh) Discard() {
+func (m *StaticMesh) Discard() {
 	m.vertices = nil
 }
