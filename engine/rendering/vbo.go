@@ -75,16 +75,11 @@ func (v *VBO) Update(offset, count int, vertices []float32) {
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, v.vboID)
 	gl.BufferSubData(gl.ARRAY_BUFFER, offset*v.floatSize, count*v.floatSize, gl.Ptr(vertices))
-	// gl.BufferSubData(gl.ARRAY_BUFFER, offset, count, gl.Ptr(m.Vertices()))
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
 
 // UpdatePreScaled expects parms to be prescaled by data-type.
 func (v *VBO) UpdatePreScaled(offset, size int, vertices []float32) {
-	// if v.bufferUsage == gl.STATIC_DRAW {
-	// 	panic("VBO is not configured as DYNAMIC_DRAW.")
-	// }
-
 	gl.BindBuffer(gl.ARRAY_BUFFER, v.vboID)
 
 	// The last parameter should be a separate buffer

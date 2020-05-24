@@ -105,10 +105,7 @@ func (r *RenderGraphic) Render(shape api.IAtlasShape, model api.IMatrix4) {
 	gl.UniformMatrix4fv(r.modelLoc, 1, false, &model.Matrix()[0])
 	gl.DrawElements(shape.PrimitiveMode(), int32(shape.Count()), uint32(gl.UNSIGNED_INT), gl.PtrOffset(shape.Offset()))
 
-	// Slower because of extra compound call.
-	// r.RenderElements(shape, shape.Count(), shape.Offset(), model)
-
-	// Test code
+	// TODO evaluate for use
 	// gl.DrawElementsBaseVertex(shape.PrimitiveMode(), int32(shape.Count()), uint32(gl.UNSIGNED_INT), gl.Ptr(&indices[0]), int32(shape.Offset()))
 }
 

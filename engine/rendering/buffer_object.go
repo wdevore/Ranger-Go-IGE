@@ -74,10 +74,6 @@ func (b *BufferObject) UpdatePreScaled(offset, size int) {
 
 // UpdatePreScaledUsing requires a specific size vertex array
 func (b *BufferObject) UpdatePreScaledUsing(offset, size int, vertices []float32) {
-	// if v.bufferUsage == gl.STATIC_DRAW {
-	// 	panic("VBO is not configured as DYNAMIC_DRAW.")
-	// }
-
 	gl.BindBuffer(gl.ARRAY_BUFFER, b.atlasObject.Mesh().VboID())
 
 	// The last parameter should be a separate buffer
