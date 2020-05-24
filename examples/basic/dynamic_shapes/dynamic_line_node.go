@@ -5,6 +5,7 @@ import (
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
@@ -17,6 +18,7 @@ type DynamicLineNode struct {
 	atlasName          string
 	shape              api.IAtlasShape
 	elementIndexOffset int
+	backingArrayIdx    int
 
 	p1Index int
 	p2Index int
@@ -42,10 +44,15 @@ func (r *DynamicLineNode) Build(world api.IWorld) error {
 
 	r.color = color.NewPaletteInt64(color.Red).Array()
 
-	r.shape = world.DynoAtlas().Shape("Line")
+	r.shape = world.DynoAtlas().GetNextShape("Line")
+	r.backingArrayIdx = r.shape.BackingArrayIdx()
 
-	r.p1Index = world.DynoAtlas().GetNextIndex(api.GLLines)
-	r.p2Index = r.p1Index + 1
+	r.p1Index = 0
+	r.p2Index = 1
+	r.SetVBOOffset(0)
+	// Each line is xyz + xyz = 6 components
+	r.SetCountBytes(rendering.VboElementCountPerLine)
+	r.SetElementOffset(0) // relative to EBO
 
 	return nil
 }
@@ -57,6 +64,7 @@ func (r *DynamicLineNode) SetColor(color api.IPalette) {
 
 // SetPoint1 sets point 1 end position
 func (r *DynamicLineNode) SetPoint1(x, y float32) {
+	// r.shape.A
 	r.shape.SetVertex2D(x, y, r.p1Index)
 	r.SetDirty(true)
 }
@@ -90,17 +98,9 @@ func (r *DynamicLineNode) Draw(model api.IMatrix4) {
 
 	if r.IsDirty() {
 		// Update buffer
-		bufVertices := renG.Vertices()
+		bufVertices := r.shape.Vertices(r.backingArrayIdx)
 
-		// TODO Get rid of this buffer hack---------------
-		// Vertices should come from Mesh
-		i := r.p1Index * 3
-		vertices := []float32{
-			bufVertices[i], bufVertices[i+1], bufVertices[i+2],
-			bufVertices[i+3], bufVertices[i+4], bufVertices[i+5]}
-		// ---------------------------
-
-		renG.UpdatePreScaledUsing(r.vboOffset, r.countBytes, vertices)
+		renG.UpdatePreScaledUsing(r.vboOffset, r.countBytes, bufVertices)
 
 		r.SetDirty(false)
 	}

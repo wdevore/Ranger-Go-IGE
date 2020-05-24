@@ -6,6 +6,14 @@ type IAtlasShape interface {
 	SetElementOffset(offset int)
 	Offset() int
 
+	BackingArrayIdx() int
+	SetBackingArrayIdx(idx int)
+
+	Vertices(backingArrayIdx int) []float32
+
+	InUse() bool
+	SetInUse(inuse bool)
+
 	SetElementCount(count int)
 	ElementCount() int
 

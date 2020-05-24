@@ -14,6 +14,8 @@ const (
 // IMesh represents 2D polygon
 type IMesh interface {
 	Vertices() []float32
+	VerticesUsing(backingArrayIdx int) []float32
+
 	GenNextBackingIndex() int
 	AddArray() int
 	ActivateArray(backingIdx int)

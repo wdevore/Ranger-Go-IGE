@@ -11,7 +11,6 @@ type DynamicMultiMesh struct {
 	vertices              [][]float32
 	backingIndexCnt       int
 	activeBackingArrayIdx int
-	activeBackingArray    []float32
 
 	// Indices are for EBO
 	indices []uint32
@@ -55,9 +54,7 @@ func (m *DynamicMultiMesh) GenNextBackingIndex() int {
 func (m *DynamicMultiMesh) AddArray() int {
 	m.activeBackingArrayIdx = m.GenNextBackingIndex()
 
-	m.activeBackingArray = []float32{}
-
-	m.vertices = append(m.vertices, m.activeBackingArray)
+	m.vertices = append(m.vertices, []float32{})
 
 	return m.activeBackingArrayIdx
 }
@@ -65,7 +62,6 @@ func (m *DynamicMultiMesh) AddArray() int {
 // ActivateArray activates a previous backing array
 func (m *DynamicMultiMesh) ActivateArray(backingIdx int) {
 	m.activeBackingArrayIdx = backingIdx
-	m.activeBackingArray = m.vertices[backingIdx]
 }
 
 // AddVertex adds a vertex
@@ -92,6 +88,12 @@ func (m *DynamicMultiMesh) AddIndex(index int) {
 // Vertices returns the internal vertices
 func (m *DynamicMultiMesh) Vertices() []float32 {
 	v := m.vertices[m.activeBackingArrayIdx]
+	return v
+}
+
+// VerticesUsing returns a selected vertex array
+func (m *DynamicMultiMesh) VerticesUsing(backingArrayIdx int) []float32 {
+	v := m.vertices[backingArrayIdx]
 	return v
 }
 

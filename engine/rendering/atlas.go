@@ -1,6 +1,8 @@
 package rendering
 
 import (
+	"strings"
+
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
@@ -17,6 +19,22 @@ func (a *Atlas) Initialize() {
 // Shape returns a shape by name
 func (a *Atlas) Shape(name string) api.IAtlasShape {
 	return a.shapes[name]
+}
+
+// GetNextShape returns the next available shape by category
+func (a *Atlas) GetNextShape(category string) api.IAtlasShape {
+	var shape api.IAtlasShape = nil
+
+	for name, shp := range a.shapes {
+		cat := strings.Split(name, "-")
+		if cat[0] == category && !shp.InUse() {
+			shp.SetInUse(true)
+			shape = shp
+			break
+		}
+	}
+
+	return shape
 }
 
 // Shapes returns all the shapes the atlas contains

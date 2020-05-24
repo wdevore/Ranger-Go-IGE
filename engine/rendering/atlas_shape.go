@@ -19,7 +19,9 @@ type AtlasShape struct {
 
 	maxSize int
 
-	atlasObj api.IAtlasObject
+	atlasObj        api.IAtlasObject
+	backingArrayIdx int
+	inUse           bool
 }
 
 // NewAtlasShape creates a new vector shape
@@ -27,6 +29,31 @@ func NewAtlasShape(atlasObj api.IAtlasObject) api.IAtlasShape {
 	o := new(AtlasShape)
 	o.atlasObj = atlasObj
 	return o
+}
+
+// InUse indicates if the shape is already in use by a node
+func (a *AtlasShape) InUse() bool {
+	return a.inUse
+}
+
+// SetInUse sets the inuse status
+func (a *AtlasShape) SetInUse(inuse bool) {
+	a.inUse = inuse
+}
+
+// BackingArrayIdx returns the
+func (a *AtlasShape) BackingArrayIdx() int {
+	return a.backingArrayIdx
+}
+
+// SetBackingArrayIdx set ...
+func (a *AtlasShape) SetBackingArrayIdx(idx int) {
+	a.backingArrayIdx = idx
+}
+
+// Vertices returns a selected vertex array from Mesh
+func (a *AtlasShape) Vertices(backingArrayIdx int) []float32 {
+	return a.atlasObj.Mesh().VerticesUsing(backingArrayIdx)
 }
 
 // SetOffset scales offset by size of an uint32
@@ -98,11 +125,13 @@ func (a *AtlasShape) SetCount(c int) {
 
 // SetVertex3D sets the atlas object's buffer data
 func (a *AtlasShape) SetVertex3D(x, y, z float32, index int) {
+	a.atlasObj.Mesh().ActivateArray(a.backingArrayIdx)
 	a.atlasObj.SetVertex(x, y, z, index)
 }
 
 // SetVertex2D sets the atlas object's buffer data using a Z = 0
 func (a *AtlasShape) SetVertex2D(x, y float32, index int) {
+	a.atlasObj.Mesh().ActivateArray(a.backingArrayIdx)
 	a.atlasObj.SetVertex(x, y, 0.0, index)
 }
 

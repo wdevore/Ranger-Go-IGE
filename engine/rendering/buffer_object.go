@@ -30,8 +30,9 @@ func (b *BufferObject) Construct(meshType int, atlas api.IAtlas) {
 	//    Mesh
 	//      VBO,EBO
 	b.atlasObject = newAtlasObject(meshType)
-	// TODO ONLY MeshDynamic needs an auotmatic array added
-	if meshType != api.MeshStatic {
+
+	// MeshDynamic needs an array added automatically.
+	if meshType == api.MeshDynamic {
 		b.atlasObject.AddArray()
 	}
 

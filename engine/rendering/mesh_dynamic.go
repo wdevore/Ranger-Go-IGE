@@ -77,6 +77,12 @@ func (m *DynamicMesh) Vertices() []float32 {
 	return m.vertices
 }
 
+// VerticesUsing returns a selected vertex array
+// FIXME refactor to remove this unneeded method
+func (m *DynamicMesh) VerticesUsing(backingArrayIdx int) []float32 {
+	return m.vertices
+}
+
 // Indices returns the internal indices
 func (m *DynamicMesh) Indices() []uint32 {
 	return m.indices
