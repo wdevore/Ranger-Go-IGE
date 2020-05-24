@@ -23,13 +23,15 @@ type gameLayer struct {
 	viewPoint api.IPoint
 }
 
-func newBasicGameLayer(name string, world api.IWorld, parent api.INode) api.INode {
+func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(gameLayer)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
-	o.Build(world)
-	return o
+	if err := o.Build(world); err != nil {
+		return nil, err
+	}
+	return o, nil
 }
 
 func (g *gameLayer) Build(world api.IWorld) error {
@@ -37,13 +39,21 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	dvr := world.Properties().Window.DeviceRes
 
-	g.line = newDynamicLineNode("DynoLin", world, g)
+	var err error
+
+	g.line, err = newDynamicLineNode("DynoLin", world, g)
+	if err != nil {
+		return err
+	}
 	glc := g.line.(*DynamicLineNode)
 	glc.SetColor(color.NewPaletteInt64(color.White))
 	glc.SetPoint1(50.0, -50.0)
 	glc.SetPoint2(100.0, -100.0)
 
-	g.sqr, _ = custom.NewStaticAtlasNode("Sqr", "CenteredSquare", world, g)
+	g.sqr, err = custom.NewStaticAtlasNode("Sqr", "CenteredSquare", world, g)
+	if err != nil {
+		return err
+	}
 	g.sqr.SetScale(100.0)
 	g.sqr.SetPosition(100.0, 100.0)
 	gb := g.sqr.(*custom.StaticAtlasNode)

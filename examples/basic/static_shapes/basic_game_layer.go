@@ -15,13 +15,15 @@ type gameLayer struct {
 	crow  api.INode
 }
 
-func newBasicGameLayer(name string, world api.IWorld, parent api.INode) api.INode {
+func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(gameLayer)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
-	o.Build(world)
-	return o
+	if err := o.Build(world); err != nil {
+		return nil, err
+	}
+	return o, nil
 }
 
 func (g *gameLayer) Build(world api.IWorld) error {
@@ -37,27 +39,39 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	gc := circle.(*custom.StaticAtlasNode)
 	gc.SetColor(color.NewPaletteInt64(color.GoldYellow))
 
-	tri, _ := custom.NewStaticAtlasNode("Triangle", "CenteredTriangle", world, g)
+	tri, err := custom.NewStaticAtlasNode("Triangle", "CenteredTriangle", world, g)
+	if err != nil {
+		return err
+	}
 	tri.SetScale(100.0)
 	tri.SetPosition(-100.0, 100.0)
 	gt := tri.(*custom.StaticAtlasNode)
 	gt.SetColor(color.NewPaletteInt64(color.Pink))
 
-	line, _ := custom.NewStaticAtlasNode("Line", "Line", world, g)
+	line, err := custom.NewStaticAtlasNode("Line", "HLine", world, g)
+	if err != nil {
+		return err
+	}
 	line.SetScale(100.0)
 	line.SetPosition(-200.0, 100.0)
 	line.SetRotation(maths.DegreeToRadians * 45.0)
 	ge := line.(*custom.StaticAtlasNode)
 	ge.SetColor(color.NewPaletteInt64(color.GreenYellow))
 
-	cross, _ := custom.NewStaticAtlasNode("Plus", "Cross", world, g)
+	cross, err := custom.NewStaticAtlasNode("Plus", "Cross", world, g)
+	if err != nil {
+		return err
+	}
 	cross.SetScale(100.0)
 	cross.SetPosition(-300.0, 100.0)
 	// cross.SetRotation(maths.DegreeToRadians * 45.0)
 	gs := cross.(*custom.StaticAtlasNode)
 	gs.SetColor(color.NewPaletteInt64(color.PanSkin))
 
-	g.crow, _ = custom.NewStaticAtlasNode("Crow", "CrowBar", world, g)
+	g.crow, err = custom.NewStaticAtlasNode("Crow", "CrowBar", world, g)
+	if err != nil {
+		return err
+	}
 	g.crow.SetScale(100.0)
 	g.crow.SetPosition(300.0, 100.0)
 	gb := g.crow.(*custom.StaticAtlasNode)

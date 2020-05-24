@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
@@ -17,13 +19,16 @@ type DynamicLineNode struct {
 }
 
 // NewDynamicLineNode constructs a generic shape node
-func newDynamicLineNode(name string, world api.IWorld, parent api.INode) api.INode {
+func newDynamicLineNode(name string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(DynamicLineNode)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
-	o.Build(world)
-	return o
+	if err := o.Build(world); err != nil {
+		return nil, err
+	}
+
+	return o, nil
 }
 
 // Build configures the node
@@ -32,7 +37,11 @@ func (r *DynamicLineNode) Build(world api.IWorld) error {
 
 	r.color = color.NewPaletteInt64(color.LightPurple).Array()
 
-	r.shape = world.DynoAtlas().Shape("Line")
+	r.atlasName = "Line-0"
+	r.shape = world.DynoAtlas().Shape(r.atlasName)
+	if r.shape == nil {
+		return fmt.Errorf("StaticAtlasNode.Build: Shape '%s' not found", r.atlasName)
+	}
 
 	return nil
 }
