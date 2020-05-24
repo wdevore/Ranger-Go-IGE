@@ -7,10 +7,12 @@ import (
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/wdevore/Ranger-Go-IGE/api"
+	"github.com/wdevore/Ranger-Go-IGE/engine/io"
 )
 
 // GlfwDisplay glfw window
 type GlfwDisplay struct {
+	engine        api.IEngine
 	window        *glfw.Window
 	quitTriggered bool
 	polygonMode   bool
@@ -20,9 +22,10 @@ type GlfwDisplay struct {
 	clearMask  uint32
 }
 
-// New creates a new diplay
-func New() *GlfwDisplay {
+// NewDisplay creates a new display
+func NewDisplay(engine api.IEngine) *GlfwDisplay {
 	o := new(GlfwDisplay)
+	o.engine = engine
 	o.clearMask = gl.COLOR_BUFFER_BIT
 	o.polygonMode = false
 
@@ -187,6 +190,8 @@ func (g *GlfwDisplay) initGL(world api.IWorld) error {
 	return nil
 }
 
+var event = io.NewEvent()
+
 func (g *GlfwDisplay) keyCallback(glfwW *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
 	// fmt.Println("key pressed ", key)
 
@@ -214,18 +219,26 @@ func (g *GlfwDisplay) keyCallback(glfwW *glfw.Window, key glfw.Key, scancode int
 	}
 }
 
+// Mouse button events
 func (g *GlfwDisplay) mouseButtonCallback(glfwW *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey) {
-	fmt.Println("mouseButtonCallback")
+	// fmt.Println("mouseButtonCallback")
 }
 
+// Mouse wheel events
 func (g *GlfwDisplay) scrollCallback(glfwW *glfw.Window, xoff float64, yoff float64) {
-	fmt.Println("scrollCallback")
+	// fmt.Println("scrollCallback")
 
 }
 
+// Mouse motion events
 func (g *GlfwDisplay) cursorPosCallback(glfwW *glfw.Window, xpos float64, ypos float64) {
-	fmt.Println("cursorPosCallback")
-
+	// fmt.Println("cursorPosCallback")
+	event.SetType(api.IOTypeMouseMotion)
+	// event.SetState(t.State)
+	// event.SetWhich(t.Which)
+	event.SetMousePosition(int32(xpos), int32(ypos))
+	// event.SetMouseRelMovement(t.XRel, t.YRel)
+	g.engine.RouteEvents(event)
 }
 
 func (g *GlfwDisplay) framebufferSizeCallback(glfwW *glfw.Window, width int, height int) {

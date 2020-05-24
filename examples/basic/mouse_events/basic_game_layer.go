@@ -41,14 +41,21 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	var err error
 
-	g.line, err = newDynamicLineNode("DynoLin", world, g)
+	hline, err := custom.NewStaticAtlasNode("HLine", "HLine", world, g)
 	if err != nil {
 		return err
 	}
-	glc := g.line.(*DynamicLineNode)
-	glc.SetColor(color.NewPaletteInt64(color.White))
-	glc.SetPoint1(50.0, -50.0)
-	glc.SetPoint2(100.0, -100.0)
+	hline.SetScale(float32(dvr.Width))
+	ghl := hline.(*custom.StaticAtlasNode)
+	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
+
+	vline, err := custom.NewStaticAtlasNode("VLine", "VLine", world, g)
+	if err != nil {
+		return err
+	}
+	vline.SetScale(float32(dvr.Height))
+	gvl := vline.(*custom.StaticAtlasNode)
+	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	g.sqr, err = custom.NewStaticAtlasNode("Sqr", "CenteredSquare", world, g)
 	if err != nil {
@@ -60,12 +67,12 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	gb.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	g.dynoTxt = custom.NewRasterTextDynoNode("DynoTxt", world, g)
-	g.dynoTxt.SetScale(1.0)
+	g.dynoTxt.SetScale(2.0)
 	g.dynoTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
 	gd := g.dynoTxt.(*custom.RasterTextDynoNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.White))
-	gd.SetPixelSize(2.0)
+	gd.SetPixelSize(1.0)
 
 	g.viewPoint = geometry.NewPoint()
 
@@ -89,11 +96,13 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 // EnterNode called when a node is entering the stage
 func (g *gameLayer) EnterNode(man api.INodeManager) {
 	man.RegisterTarget(g)
+	man.RegisterEventTarget(g)
 }
 
 // ExitNode called when a node is exiting stage
 func (g *gameLayer) ExitNode(man api.INodeManager) {
 	man.UnRegisterTarget(g)
+	man.UnRegisterEventTarget(g)
 }
 
 // -----------------------------------------------------

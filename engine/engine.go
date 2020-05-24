@@ -64,7 +64,7 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 
 	o.sceneGraph = nodes.NewNodeManager(o.world)
 
-	o.windowDisplay = display.New()
+	o.windowDisplay = display.NewDisplay(o)
 	err = o.windowDisplay.Initialize(o.world)
 
 	if err != nil {
@@ -209,6 +209,10 @@ func (e *engine) End() {
 
 func (e *engine) World() api.IWorld {
 	return e.world
+}
+
+func (e *engine) RouteEvents(event api.IEvent) {
+	e.sceneGraph.RouteEvents(event)
 }
 
 func (e *engine) drawStats(fps, ups int, avgRend float64) {
