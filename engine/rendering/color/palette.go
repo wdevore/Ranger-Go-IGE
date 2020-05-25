@@ -31,9 +31,9 @@ func NewPaletteRGB(r, g, b uint8) api.IPalette {
 }
 
 // NewPaletteRGBA constructs an RGB color object with alpha
-func NewPaletteRGBA(r, g, b, a uint8) api.IPalette {
+func NewPaletteRGBA(r, g, b uint8, alpha float32) api.IPalette {
 	o := NewPaletteRGB(r, g, b)
-	o.SetAlpha(float32(a) / 255.0)
+	o.SetAlpha(alpha)
 	return o
 }
 
@@ -43,7 +43,18 @@ func NewPaletteInt64(c uint64) api.IPalette {
 		uint8((c&0xff000000)>>24),
 		uint8((c&0x00ff0000)>>16),
 		uint8((c&0x0000ff00)>>8),
-		uint8(c&0x000000ff))
+		1.0)
+	return o
+}
+
+// NewPaletteInt64WithAlpha constructs an RGB color object a single 64bit int
+// and overlay alpha value
+func NewPaletteInt64WithAlpha(c uint64, alpha float32) api.IPalette {
+	o := NewPaletteRGBA(
+		uint8((c&0xff000000)>>24),
+		uint8((c&0x00ff0000)>>16),
+		uint8((c&0x0000ff00)>>8),
+		alpha)
 	return o
 }
 

@@ -59,6 +59,6 @@
   "Shaders": {
     "UseDefault": true,
     "VertexShaderSrc": "uniform_pvm_vertex.glsl",
-    "FragmentShaderSrc": "basic.fragment.glsl"
+    "FragmentShaderSrc": "full_color_fragment.glsl"
   }
 }

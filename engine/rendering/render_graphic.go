@@ -88,6 +88,11 @@ func (r *RenderGraphic) SetColor(color []float32) {
 	gl.Uniform3fv(r.colorLoc, 1, &color[0])
 }
 
+// SetColor4 sets the shader's vec4 color
+func (r *RenderGraphic) SetColor4(color []float32) {
+	gl.Uniform4fv(r.colorLoc, 1, &color[0])
+}
+
 // Render renders a shape
 //    The signature of glDrawElements was defined back before there were buffer objects;
 //    originally you'd pass an actual pointer to data in a client-side vertex array.

@@ -7,8 +7,8 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
 # Current Tasks and Goals
 * **Done** OpenGL 4.x Core
-* **Done** Raster Font (Slow version)
-* **Done** Raster Font (Faster version)
+* **Done** Pixel Font (Slow version)
+* **Done** Pixel Font (Faster version)
 * **Done** Static shapes: Circle
 * **Done** Dynamic shapes: Line
 * **Done** Space mappings
@@ -25,6 +25,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * Box2D physics (with space ship)
 * Stippling with OpenGL patterns
 * Zones combined with Zoom
+* Bitmap fonts
 * Audio (SFXR 8bit sound)
   * May build GUI using imGui
   * May use: https://github.com/faiface/beep
@@ -37,6 +38,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
   * Dialog
   * Grouping (i.e. Radio buttons)
 * Sprite Textures
+* Custom vector font (needs lower case completion)
 * Vector Fonts via SVG import
 * Joysticks and Gamepads
 * OpenGL ES
@@ -109,3 +111,16 @@ https://github.com/JoshVarga/svgparser
 https://play.golang.org/p/kyfff6Kg1c
 https://github.com/rustyoz/svg
 https://golang.hotexamples.com/examples/github.com.catiepg.svg/-/Parse/golang-parse-function-examples.html
+
+## Bitmap fonts
+https://www.gamedev.net/tutorials/_/technical/opengl/opengl-texture-mapping-an-introduction-r947/
+https://www.opengl.org/archives/resources/code/samples/glut_examples/texfont/texfont.html
+http://plib.sourceforge.net/fnt/index.html
+https://fontforge.org/en-US/
+https://learn.adafruit.com/custom-fonts-for-pyportal-circuitpython-display/conversion
+https://en.wikipedia.org/wiki/Glyph_Bitmap_Distribution_Format .bdf format
+
+## OpenGL examples and source
+https://github.com/McNopper
+https://github.com/McNopper/OpenGL
+https://user.xmission.com/~nate/glut.html

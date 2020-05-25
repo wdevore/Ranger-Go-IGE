@@ -52,9 +52,14 @@ func (r *StaticAtlasNode) SetColor(color api.IPalette) {
 	r.color = color.Array()
 }
 
+// SetAlpha sets the current color's alpha channel 0.0->1.0
+func (r *StaticAtlasNode) SetAlpha(alpha float32) {
+	r.color[3] = alpha
+}
+
 // Draw renders shape
 func (r *StaticAtlasNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
-	renG.SetColor(r.color)
+	renG.SetColor4(r.color)
 	renG.Render(r.shape, model)
 }
