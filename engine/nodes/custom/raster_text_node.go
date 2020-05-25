@@ -95,7 +95,7 @@ func (r *RasterTextNode) Draw(model api.IMatrix4) {
 	// }
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
 
-	renG.SetColor(r.color)
+	renG.SetColor4(r.color)
 
 	// -------------------------------------------
 	// Draw text
