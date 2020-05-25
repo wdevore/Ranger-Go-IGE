@@ -93,7 +93,7 @@ func (r *RasterTextDynoNode) SetVerticalOffset(offset float32) {
 func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.DynamicPixelBufRenderGraphic)
 
-	renG.SetColor(r.color)
+	renG.SetColor4(r.color)
 	s := r.pixelSize
 
 	r.SetDirty(false)
