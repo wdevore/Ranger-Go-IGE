@@ -95,7 +95,6 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 
 	renG.SetColor(r.color)
 	s := r.pixelSize
-	gl.PointSize(s)
 
 	r.SetDirty(false)
 
@@ -112,7 +111,6 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 		bitInvert = 0
 	}
 
-	// fmt.Println("***************************************************")
 	gl.PointSize(s)
 
 	const textBufferOffset = 0
