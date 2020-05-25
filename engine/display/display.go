@@ -208,6 +208,7 @@ func (g *GlfwDisplay) keyCallback(glfwW *glfw.Window, key glfw.Key, scancode int
 			g.polygonMode = !g.polygonMode
 		case glfw.KeyP:
 			if !g.pointMode {
+				// FIXME we need to push/pop gl state in the scenegraph
 				gl.PointSize(5)
 				gl.PolygonMode(gl.FRONT_AND_BACK, gl.POINT)
 			} else {
@@ -227,7 +228,6 @@ func (g *GlfwDisplay) mouseButtonCallback(glfwW *glfw.Window, button glfw.MouseB
 // Mouse wheel events
 func (g *GlfwDisplay) scrollCallback(glfwW *glfw.Window, xoff float64, yoff float64) {
 	// fmt.Println("scrollCallback")
-
 }
 
 // Mouse motion events
@@ -236,7 +236,12 @@ func (g *GlfwDisplay) cursorPosCallback(glfwW *glfw.Window, xpos float64, ypos f
 	event.SetType(api.IOTypeMouseMotion)
 	// event.SetState(t.State)
 	// event.SetWhich(t.Which)
-	event.SetMousePosition(int32(xpos), int32(ypos))
+
+	// Because OpenGL's +Y axis is upwards we need the mouse's +Y movement
+	// to be the same as OpenGL's, which means we need to flip it.
+	dvr := g.engine.World().Properties().Window.DeviceRes
+	event.SetMousePosition(int32(xpos), int32(dvr.Height)-int32(ypos))
+
 	// event.SetMouseRelMovement(t.XRel, t.YRel)
 	g.engine.RouteEvents(event)
 }
