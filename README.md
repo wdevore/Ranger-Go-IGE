@@ -12,9 +12,9 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Static shapes: Circle
 * **Done** Dynamic shapes: Line
 * **Done** Space mappings
-* **Working** add Outline shapes
-* Alpha coloring / transparency
-* Node Dragging
+* **Done** add Outline shapes
+* **Done** Alpha coloring / transparency
+* **Node Dragging**
 * Filters: transform and translate
 * Zoom Node
 * Interpolation
