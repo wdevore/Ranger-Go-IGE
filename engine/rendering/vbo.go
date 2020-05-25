@@ -61,9 +61,11 @@ func (v *VBO) Bind(m api.IMesh) {
 
 	// Static vbo's don't need the backing array once the data has
 	// been copied to the GL buffer.
-	if v.bufferUsage == gl.STATIC_DRAW {
-		m.Discard()
-	}
+	// TODO we may not want to discard the backing data incase this is
+	// needed by other code. For now it is disabled
+	// if v.bufferUsage == gl.STATIC_DRAW {
+	// 	m.Discard()
+	// }
 }
 
 // Update moves any modified vertices to the buffer.
