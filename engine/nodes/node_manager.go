@@ -108,8 +108,8 @@ func (n *nodeManager) configureProjections(world api.IWorld) {
 
 	camera := world.Properties().Camera
 	n.projection.SetProjection(
-		0.0, 0.0,
-		float32(wp.DeviceRes.Height), float32(wp.DeviceRes.Width),
+		0.0, 0.0, // bottom,left
+		float32(wp.DeviceRes.Height), float32(wp.DeviceRes.Width), //top,right
 		camera.Depth.Near, camera.Depth.Far)
 
 	// ------------------------------------------------------------
@@ -120,13 +120,15 @@ func (n *nodeManager) configureProjections(world api.IWorld) {
 	if camera.Centered {
 		offsetX = float32(wp.DeviceRes.Width) / 2.0
 		offsetY = float32(wp.DeviceRes.Height) / 2.0
+		// fmt.Println("NodeManager.configureProjections: center offset: ", offsetX, ",", offsetY)
 	}
 
+	// Note: OpenGL's +Y axis is upwards relative to window device.
 	world.Viewspace().SetTranslate3Comp(offsetX, offsetY, 1.0)
-	// n.viewSpace.SetTranslate3Comp(offsetX, offsetY, 1.0)
+
 	// Rarely would you perform a Scale or Rotation on the view-space.
 	// But you could if you need to.
-	// view.ScaleByComp(2.0, 2.0, 1.0)
+	// world.Viewspace().ScaleByComp(1.0, -1.0, 1.0)
 
 	invVSP := world.InvertedViewspace()
 	invVSP.Set(world.Viewspace())

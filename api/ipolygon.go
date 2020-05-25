@@ -7,11 +7,5 @@ type IPolygon interface {
 
 	SetVertex(x, y float32, index int)
 
-	// Mesh returns the underlying mesh
-	Mesh() IMesh
-
-	// Build
-	Build()
-
 	PointInside(p IPoint) bool
 }

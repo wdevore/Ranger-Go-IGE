@@ -14,7 +14,6 @@ var out = maths.NewTransform()
 func MapDeviceToView(world api.IWorld, dvx, dvy int32, viewPoint api.IPoint) {
 	viewPoint.SetByComp(float32(dvx), float32(dvy))
 	viewPoint.MulPoint(world.InvertedViewspace())
-	// world.InvertedViewspace().TransformCompToPoint(float64(dvx), float64(dvy), viewPoint)
 }
 
 // MapDeviceToNode maps mouse-space device coordinates to local node-space
@@ -26,6 +25,11 @@ func MapDeviceToNode(dvx, dvy int32, node api.INode, localPoint api.IPoint) {
 
 	// downwards from device-space to view-space
 	MapDeviceToView(node.World(), dvx, dvy, tViewPoint)
+
+	// OpenGL's +Y axis is upwards so we either flip the Y axis here
+	// or flip the mouse's +Y axis in cursorPosCallback(...)
+	// dvr := node.World().Properties().Window.DeviceRes
+	// MapDeviceToView(node.World(), dvx, int32(dvr.Height)-dvy, tViewPoint)
 
 	// Upwards from node to world-space (aka view-space)
 	wtn := WorldToNodeTransform(node, nil)
