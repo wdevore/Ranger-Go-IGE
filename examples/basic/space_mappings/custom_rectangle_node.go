@@ -44,10 +44,22 @@ func (c *customRectangleNode) Build(world api.IWorld) error {
 	c.background = world.Atlas().Shape("CenteredSquare")
 
 	c.polygon = geometry.NewPolygon()
-	c.polygon.AddVertex(-0.5, -0.5)
-	c.polygon.AddVertex(-0.5, 0.5)
-	c.polygon.AddVertex(0.5, 0.5)
-	c.polygon.AddVertex(0.5, -0.5)
+
+	// Use the shape's data to setup polygon
+	v := c.background.Vertices(0)
+	// Subtract 1 because the offset always is 1 beyond
+	// Subtract count*2 because each vertex is 6 floats (xyz) foreach
+	// face of which there are 2.
+	o := (c.background.Offset() - 1) - c.background.Count()*2
+	c.polygon.AddVertex(v[0+o], v[1+o])
+	c.polygon.AddVertex(v[3+o], v[4+o])
+	c.polygon.AddVertex(v[6+o], v[7+o])
+	c.polygon.AddVertex(v[9+o], v[10+o])
+
+	// c.polygon.AddVertex(-0.5, -0.5)
+	// c.polygon.AddVertex(-0.5, 0.5)
+	// c.polygon.AddVertex(0.5, 0.5)
+	// c.polygon.AddVertex(0.5, -0.5)
 
 	c.localPosition = geometry.NewPoint()
 

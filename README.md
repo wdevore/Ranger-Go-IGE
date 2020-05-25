@@ -11,7 +11,8 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Raster Font (Faster version)
 * **Done** Static shapes: Circle
 * **Done** Dynamic shapes: Line
-* **Working** Space mappings
+* **Done** Space mappings
+* **Working** add Outline shapes
 * Alpha coloring / transparency
 * Node Dragging
 * Filters: transform and translate

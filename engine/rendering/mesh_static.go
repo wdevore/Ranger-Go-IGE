@@ -74,7 +74,6 @@ func (m *StaticMesh) AddIndex(index int) {
 }
 
 // VerticesUsing returns a selected vertex array
-// FIXME refactor to remove this unneeded method
 func (m *StaticMesh) VerticesUsing(backingArrayIdx int) []float32 {
 	return m.vertices
 }
