@@ -89,9 +89,6 @@ func (r *RasterTextDynoNode) SetVerticalOffset(offset float32) {
 
 // pixelShifts is defined in raster_text_node
 
-// var txv = maths.NewVector3()
-// var iM4 = maths.NewMatrix4()
-
 // Draw renders shape
 func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.DynamicPixelBufRenderGraphic)
@@ -99,12 +96,6 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 	renG.SetColor(r.color)
 	s := r.pixelSize
 	gl.PointSize(s)
-
-	// if !r.IsDirty() {
-	// 	renG.Render(r.shape, iM4)
-	// 	gl.PointSize(1)
-	// 	return
-	// }
 
 	r.SetDirty(false)
 
@@ -125,9 +116,6 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 	gl.PointSize(s)
 
 	const textBufferOffset = 0
-	// for i := textBufferOffset; i < r.shape.MaxSize(); i++ {
-	// 	r.shape.SetVertex2D(0.0, 0.0, i)
-	// }
 
 	i := textBufferOffset
 	for _, c := range r.text {
@@ -150,14 +138,6 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 			for _, shift := range pixelShifts {
 				bit := (g >> shift) & 1
 				if bit == bitInvert {
-					// txv.Set2Components(0.0, 0.0)
-					// r.m4.Set(model) // Reset for this pixel
-					// r.m4.TranslateBy2Comps(gx, gy)
-					// txv.Mul(r.m4)
-					// r.shape.SetVertex2D(txv.X(), txv.Y(), i)
-
-					// r.shape.SetVertex2D(10.0, 10.0, i)
-
 					r.shape.SetVertex2D(gx, gy, i)
 					i++
 				}
@@ -171,9 +151,6 @@ func (r *RasterTextDynoNode) Draw(model api.IMatrix4) {
 	// Update buffer
 	r.shape.SetCount(i)
 	renG.Update(0, r.shape.Count())
-
-	// This goes with the txv approach above but it is slower
-	// renG.Render(r.shape, iM4)
 
 	renG.Render(r.shape, model)
 
