@@ -49,7 +49,7 @@ func (c *customRectangleNode) Build(world api.IWorld) error {
 	v := c.background.Vertices(0)
 
 	// Subtract 1 because the offset always is 1 beyond
-	// Subtract count*2 because each vertex is 6 floats (xyz) foreach
+	// Subtract count*2 because each vertex is 6 floats 2(xyz) foreach
 	// face of which there are 2.
 	o := (c.background.Offset() - 1) - c.background.Count()*2
 
