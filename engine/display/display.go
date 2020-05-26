@@ -12,8 +12,12 @@ import (
 
 // GlfwDisplay glfw window
 type GlfwDisplay struct {
-	engine        api.IEngine
-	window        *glfw.Window
+	engine api.IEngine
+	window *glfw.Window
+
+	mouseButtonDown bool
+	xpos, ypos      float64
+
 	quitTriggered bool
 	polygonMode   bool
 	pointMode     bool
@@ -194,6 +198,12 @@ var event = io.NewEvent()
 
 func (g *GlfwDisplay) keyCallback(glfwW *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
 	// fmt.Println("key pressed ", key)
+	event.SetType(api.IOTypeKeyboard)
+	event.SetKeyCode(uint32(scancode))
+	event.SetKeyScan(uint32(key))
+	event.SetState(uint32(action))
+	event.SetKeyMotif(uint32(mods))
+	g.engine.RouteEvents(event)
 
 	if action == glfw.Press {
 		switch key {
@@ -222,27 +232,50 @@ func (g *GlfwDisplay) keyCallback(glfwW *glfw.Window, key glfw.Key, scancode int
 
 // Mouse button events
 func (g *GlfwDisplay) mouseButtonCallback(glfwW *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey) {
-	// fmt.Println("mouseButtonCallback")
+	// fmt.Println("mouseButtonCallback ", button, ", ", action, ", ", mods)
+	if action == glfw.Press && button == glfw.MouseButton1 {
+		event.SetButton(1)
+		g.mouseButtonDown = true
+		event.SetType(api.IOTypeMouseButtonDown)
+	} else {
+		event.SetButton(0)
+		event.SetType(api.IOTypeMouseButtonUp)
+		g.mouseButtonDown = false
+	}
+	g.xpos, g.ypos = glfwW.GetCursorPos()
+	dvr := g.engine.World().Properties().Window.DeviceRes
+	event.SetMousePosition(int32(g.xpos), int32(dvr.Height)-int32(g.ypos))
+	event.SetState(uint32(action))
+	event.SetKeyMotif(uint32(mods))
+
+	g.engine.RouteEvents(event)
 }
 
 // Mouse wheel events
 func (g *GlfwDisplay) scrollCallback(glfwW *glfw.Window, xoff float64, yoff float64) {
 	// fmt.Println("scrollCallback")
+	event.SetType(api.IOTypeMouseWheel)
+	event.SetMouseRelMovement(int32(xoff), int32(yoff))
+
+	g.engine.RouteEvents(event)
 }
 
 // Mouse motion events
 func (g *GlfwDisplay) cursorPosCallback(glfwW *glfw.Window, xpos float64, ypos float64) {
-	// fmt.Println("cursorPosCallback")
 	event.SetType(api.IOTypeMouseMotion)
-	// event.SetState(t.State)
-	// event.SetWhich(t.Which)
 
+	if g.mouseButtonDown && (g.xpos != xpos || g.ypos != ypos) {
+		event.SetState(1)
+	} else {
+		event.SetState(0)
+	}
+	g.xpos = xpos
+	g.ypos = ypos
 	// Because OpenGL's +Y axis is upwards we need the mouse's +Y movement
 	// to be the same as OpenGL's, which means we need to flip it.
 	dvr := g.engine.World().Properties().Window.DeviceRes
-	event.SetMousePosition(int32(xpos), int32(dvr.Height)-int32(ypos))
+	event.SetMousePosition(int32(g.xpos), int32(dvr.Height)-int32(g.ypos))
 
-	// event.SetMouseRelMovement(t.XRel, t.YRel)
 	g.engine.RouteEvents(event)
 }
 

@@ -4,6 +4,7 @@ import (
 	"unsafe"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
+	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 )
 
 // AtlasShape defines shape element attributes
@@ -14,6 +15,7 @@ type AtlasShape struct {
 	// drawing.
 	offset       int
 	elementCount int
+	vertexIndex  int // offset into backing array
 
 	count int
 
@@ -22,6 +24,12 @@ type AtlasShape struct {
 	atlasObj        api.IAtlasObject
 	backingArrayIdx int
 	inUse           bool
+
+	isOutlineType bool
+
+	polygon       api.IPolygon
+	localPosition api.IPoint
+	pointInside   bool
 }
 
 // NewAtlasShape creates a new vector shape
@@ -39,6 +47,19 @@ func (a *AtlasShape) InUse() bool {
 // SetInUse sets the inuse status
 func (a *AtlasShape) SetInUse(inuse bool) {
 	a.inUse = inuse
+}
+
+// IsOutlineType indicates if the shape is an outline type or solid.
+func (a *AtlasShape) IsOutlineType() bool {
+	return a.isOutlineType
+}
+
+// SetOutlineType sets the outline or fill type
+func (a *AtlasShape) SetOutlineType(outlined bool) {
+	if outlined {
+		a.polygon = geometry.NewPolygon()
+	}
+	a.isOutlineType = outlined
 }
 
 // BackingArrayIdx returns the
@@ -59,6 +80,11 @@ func (a *AtlasShape) Vertices(backingArrayIdx int) []float32 {
 // SetOffset scales offset by size of an uint32
 func (a *AtlasShape) SetOffset(offset int) {
 	a.offset = offset * int(unsafe.Sizeof(uint32(0)))
+}
+
+// Polygon returns the shape's polygon
+func (a *AtlasShape) Polygon() api.IPolygon {
+	return a.polygon
 }
 
 // SetElementOffset sets the EBO offset without considering data-type size
@@ -135,7 +161,25 @@ func (a *AtlasShape) SetVertex2D(x, y float32, index int) {
 	a.atlasObj.SetVertex(x, y, 0.0, index)
 }
 
+// SetVertexIndex sets the current backing array offset
+func (a *AtlasShape) SetVertexIndex(index int) {
+	a.vertexIndex = index
+}
+
+// VertexIndex returns the current backing array offset
+func (a *AtlasShape) VertexIndex() int {
+	return a.vertexIndex
+}
+
 // Update modifies the VBO buffer
 func (a *AtlasShape) Update(offset, vertexCount int) {
 	a.atlasObj.Update(offset, vertexCount)
+}
+
+// PointInside checks if point inside shape's polygon
+func (a *AtlasShape) PointInside(p api.IPoint) bool {
+	if a.polygon != nil {
+		return a.polygon.PointInside(p)
+	}
+	return false
 }

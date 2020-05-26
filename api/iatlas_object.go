@@ -6,9 +6,14 @@ type IAtlasObject interface {
 	AddArray() int
 	AddVertex(x, y, z float32) int
 	SetVertex(x, y, z float32, index int)
+
+	VertexIndex() int
 	AddIndex(index int)
+
 	Begin() int
 	End() int
+
 	Mesh() IMesh
+
 	Update(offset, vertexCount int)
 }

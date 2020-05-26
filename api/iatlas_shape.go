@@ -9,7 +9,11 @@ type IAtlasShape interface {
 	BackingArrayIdx() int
 	SetBackingArrayIdx(idx int)
 
+	IsOutlineType() bool
+	SetOutlineType(outlined bool)
+
 	Vertices(backingArrayIdx int) []float32
+	Polygon() IPolygon
 
 	InUse() bool
 	SetInUse(inuse bool)
@@ -23,6 +27,9 @@ type IAtlasShape interface {
 	SetVertex3D(x, y, z float32, index int)
 	SetVertex2D(x, y float32, index int)
 
+	SetVertexIndex(int)
+	VertexIndex() int
+
 	Name() string
 	SetName(string)
 
@@ -31,4 +38,6 @@ type IAtlasShape interface {
 
 	Count() int
 	SetCount(int)
+
+	PointInside(IPoint) bool
 }

@@ -242,10 +242,6 @@ func (a *staticAtlas) buildCrowBar(atlasObj api.IAtlasObject) api.IAtlasShape {
 	return s
 }
 
-// --------------------------------------------------------------------
-// Outline shapes
-// --------------------------------------------------------------------
-
 func (a *staticAtlas) buildHLine(atlasObj api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape(atlasObj)
 	s.SetName("HLine")
@@ -284,12 +280,20 @@ func (a *staticAtlas) buildVLine(atlasObj api.IAtlasObject) api.IAtlasShape {
 	return s
 }
 
+// --------------------------------------------------------------------
+// Outline shapes
+// --------------------------------------------------------------------
+
 func (a *staticAtlas) buildOutlineCenteredSquare(atlasObj api.IAtlasObject) api.IAtlasShape {
 	s := NewAtlasShape(atlasObj)
 	s.SetName("CenteredOutlineSquare")
 	s.SetPrimitiveMode(gl.LINE_LOOP)
+	s.SetOutlineType(true)
 
 	s.SetOffset(atlasObj.Begin())
+
+	// Capture first index into vertices backing array
+	s.SetVertexIndex(atlasObj.VertexIndex())
 
 	const l float32 = 0.5 // side length
 
@@ -314,8 +318,12 @@ func (a *staticAtlas) buildCenteredOutlineTriangle(atlasObj api.IAtlasObject) ap
 	s := NewAtlasShape(atlasObj)
 	s.SetName("CenteredOutlineTriangle")
 	s.SetPrimitiveMode(gl.LINE_LOOP)
+	s.SetOutlineType(true)
 
 	s.SetOffset(atlasObj.Begin())
+
+	// Capture first index into vertices backing array
+	s.SetVertexIndex(atlasObj.VertexIndex())
 
 	const l float32 = 0.5 // side length
 
@@ -338,6 +346,7 @@ func (a *staticAtlas) buildCenteredOutlineCircle(atlasObj api.IAtlasObject) api.
 	s := NewAtlasShape(atlasObj)
 	s.SetName("Circle12SegmentsOutline")
 	s.SetPrimitiveMode(gl.LINE_LOOP)
+	s.SetOutlineType(true)
 
 	s.SetOffset(atlasObj.Begin())
 
@@ -346,6 +355,9 @@ func (a *staticAtlas) buildCenteredOutlineCircle(atlasObj api.IAtlasObject) api.
 	segments := 12
 	radius := 0.5 // diameter of 1.0
 	step := math.Pi / float64(segments)
+
+	// Capture first index into vertices backing array
+	s.SetVertexIndex(atlasObj.VertexIndex())
 
 	for i := 0.0; i < 2.0*math.Pi; i += step {
 		x := math.Cos(i) * radius

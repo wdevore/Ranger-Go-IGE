@@ -51,6 +51,11 @@ func (a *AtlasObject) SetVertex(x, y, z float32, index int) {
 	a.mesh.SetVertex(x, y, z, index)
 }
 
+// VertexIndex returns the current index count
+func (a *AtlasObject) VertexIndex() int {
+	return a.indexCount
+}
+
 // AddIndex adds an index to the mesh
 func (a *AtlasObject) AddIndex(index int) {
 	a.mesh.AddIndex(index)
