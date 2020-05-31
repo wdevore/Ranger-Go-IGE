@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
+
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/display"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
@@ -27,9 +28,6 @@ type nodeManager struct {
 	projection *display.Projection
 	viewport   *display.Viewport
 
-	// viewSpace    api.IMatrix4
-	// invViewSpace api.IMatrix4
-
 	projLoc int32
 	viewLoc int32
 }
@@ -47,9 +45,6 @@ func NewNodeManager(world api.IWorld) api.INodeManager {
 
 	o.nodStack = newNodeStack()
 	o.transStack = newTransformStack()
-
-	// o.viewSpace = maths.NewMatrix4()
-	// o.invViewSpace = maths.NewMatrix4()
 
 	o.timingTargets = NewNodeList()
 	o.eventTargets = NewNodeList()
