@@ -4,98 +4,102 @@ import (
 	"unsafe"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 )
 
 // AtlasShape defines shape element attributes
+//
 type AtlasShape struct {
-	name          string
+	// ---------------------------------------------------------
+	// VBO vars
+	// ---------------------------------------------------------
+	// Backing array is copied to GL buffer.
+	// If the atlas is static then the backing array is copied only
+	// once. Otherwise the backing array is copied continuously.
+	vertices   []float32
+	bufferSize int
+
+	// ---------------------------------------------------------
+	// EBO vars
+	// ---------------------------------------------------------
+	// Indices are for EBO. They point to entries in VBO buffer
+	// As the vbo is being populated the indices are updated
+	// accordingly.
+	// The indices are set during GL configuration. They reference
+	// vertices in the GL buffer
+	elementIndices []uint32
+	// These
+	indices []uint32
+
+	name string
+	// GL_LINES, GL_LINE_LOOP etc...
 	primitiveMode uint32
-	// Offset is multiplied by the size of an Unsigned Int in preparation for
-	// drawing.
-	offset       int
+
+	// Offset is multiplied by the size of an uint32 in preparation for
+	// calling DrawElements()
+	elementByteOffset int
+	// A Line for example has an element count of 2
 	elementCount int
-	vertexIndex  int // offset into backing array
 
-	count int
-
-	maxSize int
-
-	atlasObj        api.IAtlasObject
-	backingArrayIdx int
-	inUse           bool
-
-	isOutlineType bool
-
-	polygon       api.IPolygon
-	localPosition api.IPoint
-	pointInside   bool
+	count int // Used for vbo updates
 }
 
 // NewAtlasShape creates a new vector shape
-func NewAtlasShape(atlasObj api.IAtlasObject) api.IAtlasShape {
+func NewAtlasShape() api.IAtlasShape {
 	o := new(AtlasShape)
-	o.atlasObj = atlasObj
 	return o
 }
 
-// InUse indicates if the shape is already in use by a node
-func (a *AtlasShape) InUse() bool {
-	return a.inUse
+// SetIndices sets the indices
+func (a *AtlasShape) SetIndices(indices []uint32) {
+	a.indices = indices
 }
 
-// SetInUse sets the inuse status
-func (a *AtlasShape) SetInUse(inuse bool) {
-	a.inUse = inuse
+// Indices returns the indices
+func (a *AtlasShape) Indices() []uint32 {
+	return a.indices
 }
 
-// IsOutlineType indicates if the shape is an outline type or solid.
-func (a *AtlasShape) IsOutlineType() bool {
-	return a.isOutlineType
+// SetBufferSize sets the expected vbo buffer size
+func (a *AtlasShape) SetBufferSize(size int) {
+	a.bufferSize = size
 }
 
-// SetOutlineType sets the outline or fill type
-func (a *AtlasShape) SetOutlineType(outlined bool) {
-	if outlined {
-		a.polygon = geometry.NewPolygon()
-	}
-	a.isOutlineType = outlined
+// BufferSize returns the expected vbo buffer size
+func (a *AtlasShape) BufferSize() int {
+	return a.bufferSize
 }
 
-// BackingArrayIdx returns the
-func (a *AtlasShape) BackingArrayIdx() int {
-	return a.backingArrayIdx
+// SetVertex2D updates a vertex in a backing array
+func (a *AtlasShape) SetVertex2D(x, y float32, index int) {
+	i := index * 3
+	a.vertices[i] = x
+	a.vertices[i+1] = y
 }
 
-// SetBackingArrayIdx set ...
-func (a *AtlasShape) SetBackingArrayIdx(idx int) {
-	a.backingArrayIdx = idx
+// SetVertices sets the backing array
+func (a *AtlasShape) SetVertices(vertices []float32) {
+	a.vertices = vertices
 }
 
 // Vertices returns a selected vertex array from Mesh
-func (a *AtlasShape) Vertices(backingArrayIdx int) []float32 {
-	return a.atlasObj.Mesh().VerticesUsing(backingArrayIdx)
+func (a *AtlasShape) Vertices() []float32 {
+	return a.vertices
 }
 
 // SetOffset scales offset by size of an uint32
 func (a *AtlasShape) SetOffset(offset int) {
-	a.offset = offset * int(unsafe.Sizeof(uint32(0)))
-}
-
-// Polygon returns the shape's polygon
-func (a *AtlasShape) Polygon() api.IPolygon {
-	return a.polygon
+	a.elementByteOffset = offset * int(unsafe.Sizeof(uint32(0)))
 }
 
 // SetElementOffset sets the EBO offset without considering data-type size
 // The value should be in bytes
 func (a *AtlasShape) SetElementOffset(offset int) {
-	a.offset = offset
+	a.elementByteOffset = offset
 }
 
 // Offset returns calculated offset
 func (a *AtlasShape) Offset() int {
-	return a.offset
+	return a.elementByteOffset
 }
 
 // SetElementCount specifies how many elements are need to draw based
@@ -107,16 +111,6 @@ func (a *AtlasShape) SetElementCount(count int) {
 // ElementCount returns how many elements are need to draw
 func (a *AtlasShape) ElementCount() int {
 	return a.elementCount
-}
-
-// SetMaxSize set max size
-func (a *AtlasShape) SetMaxSize(size int) {
-	a.maxSize = size
-}
-
-// MaxSize returns maximum size of count
-func (a *AtlasShape) MaxSize() int {
-	return a.maxSize
 }
 
 // Name returns name
@@ -147,39 +141,4 @@ func (a *AtlasShape) Count() int {
 // SetCount sets total element count
 func (a *AtlasShape) SetCount(c int) {
 	a.count = c
-}
-
-// SetVertex3D sets the atlas object's buffer data
-func (a *AtlasShape) SetVertex3D(x, y, z float32, index int) {
-	a.atlasObj.Mesh().ActivateArray(a.backingArrayIdx)
-	a.atlasObj.SetVertex(x, y, z, index)
-}
-
-// SetVertex2D sets the atlas object's buffer data using a Z = 0
-func (a *AtlasShape) SetVertex2D(x, y float32, index int) {
-	a.atlasObj.Mesh().ActivateArray(a.backingArrayIdx)
-	a.atlasObj.SetVertex(x, y, 0.0, index)
-}
-
-// SetVertexIndex sets the current backing array offset
-func (a *AtlasShape) SetVertexIndex(index int) {
-	a.vertexIndex = index
-}
-
-// VertexIndex returns the current backing array offset
-func (a *AtlasShape) VertexIndex() int {
-	return a.vertexIndex
-}
-
-// Update modifies the VBO buffer
-func (a *AtlasShape) Update(offset, vertexCount int) {
-	a.atlasObj.Update(offset, vertexCount)
-}
-
-// PointInside checks if point inside shape's polygon
-func (a *AtlasShape) PointInside(p api.IPoint) bool {
-	if a.polygon != nil {
-		return a.polygon.PointInside(p)
-	}
-	return false
 }

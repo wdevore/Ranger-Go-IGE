@@ -56,9 +56,3 @@ func (v *VAO) UnUse() {
 	// Note the line "Changing the GL_ARRAY_BUFFER binding changes nothing about vertex attribute 0..."
 	gl.BindVertexArray(0)
 }
-
-// void VAO::draw(int primitiveType, int offset, int count) {
-// 	glBindVertexArray(_vaoId);
-// 	glDrawElements(primitiveType, count, GL_UNSIGNED_INT, (const GLvoid*)(offset));
-// 	glBindVertexArray(0);
-// }

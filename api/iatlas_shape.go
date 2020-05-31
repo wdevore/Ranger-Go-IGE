@@ -5,30 +5,19 @@ type IAtlasShape interface {
 	SetOffset(offset int)
 	SetElementOffset(offset int)
 	Offset() int
+	SetBufferSize(size int)
+	BufferSize() int
 
-	BackingArrayIdx() int
-	SetBackingArrayIdx(idx int)
+	SetIndices(indices []uint32)
+	Indices() []uint32
 
-	IsOutlineType() bool
-	SetOutlineType(outlined bool)
+	SetVertex2D(x, y float32, index int)
 
-	Vertices(backingArrayIdx int) []float32
-	Polygon() IPolygon
-
-	InUse() bool
-	SetInUse(inuse bool)
+	SetVertices(vertices []float32)
+	Vertices() []float32
 
 	SetElementCount(count int)
 	ElementCount() int
-
-	SetMaxSize(size int)
-	MaxSize() int
-
-	SetVertex3D(x, y, z float32, index int)
-	SetVertex2D(x, y float32, index int)
-
-	SetVertexIndex(int)
-	VertexIndex() int
 
 	Name() string
 	SetName(string)
@@ -38,6 +27,4 @@ type IAtlasShape interface {
 
 	Count() int
 	SetCount(int)
-
-	PointInside(IPoint) bool
 }

@@ -1,48 +1,52 @@
 package rendering
 
 import (
-	"strings"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
 // Atlas is a map-collection of vector shapes managed by a vector object
 type Atlas struct {
-	shapes map[string]api.IAtlasShape
+	shapes []api.IAtlasShape
+}
+
+// NewAtlas creates an atlas to be populated
+func NewAtlas() api.IAtlas {
+	o := new(Atlas)
+	o.initialize()
+	return o
 }
 
 // Initialize this embedded object
-func (a *Atlas) Initialize() {
-	a.shapes = make(map[string]api.IAtlasShape)
+func (a *Atlas) initialize() {
+	a.shapes = []api.IAtlasShape{}
 }
 
-// Shape returns a shape by name
-func (a *Atlas) Shape(name string) api.IAtlasShape {
-	return a.shapes[name]
-}
-
-// GetNextShape returns the next available shape by category
-func (a *Atlas) GetNextShape(category string) api.IAtlasShape {
-	var shape api.IAtlasShape = nil
-
-	for name, shp := range a.shapes {
-		cat := strings.Split(name, "-")
-		if cat[0] == category && !shp.InUse() {
-			shp.SetInUse(true)
-			shape = shp
-			break
+// GenerateShape creates a shape, adds it to the atlas
+func (a *Atlas) GenerateShape(atlasName string, primitiveMode uint32, bufferType bool) api.IAtlasShape {
+	// If this shape is already present just return what's in the collection.
+	for _, s := range a.shapes {
+		if s.Name() == atlasName {
+			return s
 		}
 	}
-
-	return shape
+	s := NewAtlasShape()
+	s.SetName(atlasName)
+	s.SetPrimitiveMode(primitiveMode)
+	// s.SetStatic(bufferType)
+	a.shapes = append(a.shapes, s)
+	return s
 }
 
-// Shapes returns all the shapes the atlas contains
-func (a *Atlas) Shapes() map[string]api.IAtlasShape {
+// HasShapes returns true if the atlas contains shapes
+func (a *Atlas) HasShapes() bool {
+	return len(a.shapes) > 0
+}
+
+// Shapes retuns shape collection
+func (a *Atlas) Shapes() []api.IAtlasShape {
 	return a.shapes
 }
 
 // AddShape adds a vector shape to the collection
 func (a *Atlas) AddShape(shape api.IAtlasShape) {
-	a.shapes[shape.Name()] = shape
 }

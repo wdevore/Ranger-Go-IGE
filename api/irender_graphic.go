@@ -3,6 +3,7 @@ package api
 // IRenderGraphic represents a graphic render state
 type IRenderGraphic interface {
 	BufferObjInUse() bool
+	Construct(meshType int, atlas IAtlas)
 
 	Use()
 	UnUse()
@@ -18,9 +19,5 @@ type IRenderGraphic interface {
 	Render(shape IAtlasShape, model IMatrix4)
 	RenderElements(shape IAtlasShape, elementCount, elementOffset int, model IMatrix4)
 
-	Vertices() []float32
-
-	Update(offset, size int)
-	UpdatePreScaled(offset, size int)
-	UpdatePreScaledUsing(offset, size int, vertices []float32)
+	Update(shape IAtlasShape)
 }

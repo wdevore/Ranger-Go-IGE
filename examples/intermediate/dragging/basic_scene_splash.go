@@ -36,9 +36,6 @@ func (s *sceneSplash) Build(world api.IWorld) error {
 	return nil
 }
 
-func (s *sceneSplash) Use() {
-}
-
 // --------------------------------------------------------
 // Transitioning
 // --------------------------------------------------------

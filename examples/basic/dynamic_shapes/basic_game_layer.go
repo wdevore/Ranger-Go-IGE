@@ -37,48 +37,61 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	dvr := world.Properties().Window.DeviceRes
 
-	hline, err := custom.NewStaticAtlasNode("HLine", "HLine", world, g)
+	// -------------------------------------------------------------
+	shline, err := custom.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
 		return err
 	}
-	hline.SetScale(float32(dvr.Width))
-	ghl := hline.(*custom.StaticAtlasNode)
+	shline.SetScale(float32(dvr.Width))
+	ghl := shline.(*custom.StaticHLineNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
-	vline, err := custom.NewStaticAtlasNode("VLine", "VLine", world, g)
+	// -------------------------------------------------------------
+	svline, err := custom.NewStaticVLineNode("VLine", world, g)
 	if err != nil {
 		return err
 	}
-	vline.SetScale(float32(dvr.Height))
-	gvl := vline.(*custom.StaticAtlasNode)
-	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
+	svline.SetScale(float32(dvr.Width))
+	gvl2 := svline.(*custom.StaticVLineNode)
+	gvl2.SetColor(color.NewPaletteInt64(color.LightGray))
 
-	g.sqr, err = custom.NewStaticAtlasNode("Sqr", "CenteredSquare", world, g)
+	// -------------------------------------------------------------
+	g.sqr, err = custom.NewStaticSquareNode("FilledSqr", true, true, world, g)
 	if err != nil {
 		return err
 	}
-	g.sqr.SetScale(100.0)
+	g.sqr.SetScale(100)
 	g.sqr.SetPosition(100.0, 100.0)
-	gb := g.sqr.(*custom.StaticAtlasNode)
-	gb.SetColor(color.NewPaletteInt64(color.LightOrange))
+	gol2 := g.sqr.(*custom.StaticSquareNode)
+	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
-	g.dynoTxt = custom.NewRasterTextDynoNode("DynoTxt", world, g)
+	// -------------------------------------------------------------
+	g.dynoTxt, err = custom.NewDynamicTextNode("DynoTxt", 500, world, g)
+	if err != nil {
+		return err
+	}
 	g.dynoTxt.SetScale(2.0)
 	g.dynoTxt.SetPosition(-100.0, 100.0)
-	gd := g.dynoTxt.(*custom.RasterTextDynoNode)
+	gd := g.dynoTxt.(*custom.DynamicTextNode)
 	gd.SetText("Ranger is a Go!")
 	gd.SetColor(color.NewPaletteInt64(color.LightPink))
 	gd.SetPixelSize(3.0)
 
 	// ---------------------------------------------------------------------
-	g.line = newDynamicLineNode("DynoLin", world, g)
+	g.line, err = newDynamicLineNode("DynoLin", world, g)
+	if err != nil {
+		return err
+	}
 	glc := g.line.(*DynamicLineNode)
 	glc.SetColor(color.NewPaletteInt64(color.White))
 	glc.SetPoint1(100.0, -100.0)
 	glc.SetPoint2(50.0, -50.0)
 
 	// ---------------------------------------------------------------------
-	g.line2 = newDynamicLineNode("DynoLin2", world, g)
+	g.line2, err = newDynamicLineNode("DynoLin2", world, g)
+	if err != nil {
+		return err
+	}
 	glc2 := g.line2.(*DynamicLineNode)
 	glc2.SetColor(color.NewPaletteInt64(color.GreenYellow))
 	glc2.SetPoint1(-100.0, -100.0)

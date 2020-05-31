@@ -132,17 +132,17 @@ func (w *world) Configure() error {
 
 	// Create a graphic that will store Static shapes
 	// pass functor for populating
-	w.staticAtlas = rendering.NewStaticAtlas()
-	renG := rendering.NewRenderGraphic(api.MeshStatic, w.staticAtlas, w.shader)
-	w.AddRenderGraphic(renG)
+	w.staticAtlas = rendering.NewAtlas()
+	renG := rendering.NewRenderGraphic(w.staticAtlas, w.shader)
+	w.AddRenderGraphic(renG, api.StaticRenderGraphic)
 
-	w.dynamicAtlas = rendering.NewDynamicAtlas()
-	renG = rendering.NewRenderGraphic(api.MeshDynamicMulti, w.dynamicAtlas, w.shader)
-	w.AddRenderGraphic(renG)
+	w.pixelAtlas = rendering.NewAtlas()
+	renG = rendering.NewRenderGraphic(w.pixelAtlas, w.shader)
+	w.AddRenderGraphic(renG, api.DynamicPixelBufRenderGraphic)
 
-	w.pixelAtlas = rendering.NewPixelAtlas()
-	renG = rendering.NewRenderGraphic(api.MeshDynamic, w.pixelAtlas, w.shader)
-	w.AddRenderGraphic(renG)
+	w.dynamicAtlas = rendering.NewAtlas()
+	renG = rendering.NewRenderGraphic(w.dynamicAtlas, w.shader)
+	w.AddRenderGraphic(renG, api.DynamicRenderGraphic)
 
 	// Force UseRenderGraphic to UnUse/Use for the first node visited
 	w.activeRenGID = -1
@@ -168,11 +168,10 @@ func (w *world) GenGraphicID() int {
 	return id
 }
 
-func (w *world) AddRenderGraphic(graphic api.IRenderGraphic) int {
+func (w *world) AddRenderGraphic(graphic api.IRenderGraphic, graphicID int) {
 	w.activeRenG = graphic
-	id := w.GenGraphicID()
-	w.renderRepo[id] = graphic
-	return id
+	// id := w.GenGraphicID()
+	w.renderRepo[graphicID] = graphic
 }
 
 func (w *world) GetRenderGraphic(graphicID int) api.IRenderGraphic {
@@ -192,6 +191,26 @@ func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 	}
 
 	return w.activeRenG
+}
+
+func (w *world) PostProcess() {
+	// All atlases are copied to OpenGL via VBO and EBO bindings
+	// which are currently available in
+
+	if w.staticAtlas.HasShapes() {
+		renG := w.renderRepo[api.StaticRenderGraphic]
+		renG.Construct(api.MeshStatic, w.staticAtlas)
+	}
+
+	if w.pixelAtlas.HasShapes() {
+		renG := w.renderRepo[api.DynamicPixelBufRenderGraphic]
+		renG.Construct(api.MeshDynamic, w.pixelAtlas)
+	}
+
+	if w.dynamicAtlas.HasShapes() {
+		renG := w.renderRepo[api.DynamicRenderGraphic]
+		renG.Construct(api.MeshDynamicMulti, w.dynamicAtlas)
+	}
 }
 
 func (w *world) Atlas() api.IAtlas {

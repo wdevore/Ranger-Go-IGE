@@ -41,35 +41,42 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	var err error
 
-	hline, err := custom.NewStaticAtlasNode("HLine", "HLine", world, g)
+	// ---------------------------------------------------------
+	shline, err := custom.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
 		return err
 	}
-	hline.SetScale(float32(dvr.Width))
-	ghl := hline.(*custom.StaticAtlasNode)
+	shline.SetScale(float32(dvr.Width))
+	ghl := shline.(*custom.StaticHLineNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
-	vline, err := custom.NewStaticAtlasNode("VLine", "VLine", world, g)
+	// ---------------------------------------------------------
+	svline, err := custom.NewStaticVLineNode("VLine", world, g)
 	if err != nil {
 		return err
 	}
-	vline.SetScale(float32(dvr.Height))
-	gvl := vline.(*custom.StaticAtlasNode)
+	svline.SetScale(float32(dvr.Width))
+	gvl := svline.(*custom.StaticVLineNode)
 	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
 
-	g.sqr, err = custom.NewStaticAtlasNode("Sqr", "CenteredSquare", world, g)
+	// ---------------------------------------------------------
+	g.sqr, err = custom.NewStaticSquareNode("FilledSqr", true, true, world, g)
 	if err != nil {
 		return err
 	}
 	g.sqr.SetScale(100.0)
-	g.sqr.SetPosition(100.0, 100.0)
-	gb := g.sqr.(*custom.StaticAtlasNode)
-	gb.SetColor(color.NewPaletteInt64(color.LightOrange))
+	g.sqr.SetPosition(110.0, 100.0)
+	gol2 := g.sqr.(*custom.StaticSquareNode)
+	gol2.SetColor(color.NewPaletteInt64(color.LightPurple))
 
-	g.dynoTxt = custom.NewRasterTextDynoNode("DynoTxt", world, g)
+	// ---------------------------------------------------------
+	g.dynoTxt, err = custom.NewDynamicTextNode("Text", 500, world, g)
+	if err != nil {
+		return err
+	}
 	g.dynoTxt.SetScale(2.0)
 	g.dynoTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.dynoTxt.(*custom.RasterTextDynoNode)
+	gd := g.dynoTxt.(*custom.DynamicTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.White))
 	gd.SetPixelSize(1.0)
@@ -85,7 +92,7 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	g.angle -= 1.5
 
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.dynoTxt.(*custom.RasterTextDynoNode)
+	gd := g.dynoTxt.(*custom.DynamicTextNode)
 	gd.SetText(text)
 }
 

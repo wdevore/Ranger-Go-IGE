@@ -12,7 +12,7 @@ type IWorld interface {
 	PropertiesOverride(configFiel string)
 
 	GenGraphicID() int
-	AddRenderGraphic(graphic IRenderGraphic) int
+	AddRenderGraphic(graphic IRenderGraphic, graphicID int)
 	GetRenderGraphic(graphicID int) IRenderGraphic
 	UseRenderGraphic(graphicID int) IRenderGraphic
 
@@ -22,6 +22,7 @@ type IWorld interface {
 	Atlas() IAtlas      // Static atlas
 	DynoAtlas() IAtlas  // DynamicMulti atlas
 	PixelAtlas() IAtlas // Dynamic atlas
+	PostProcess()
 
 	Shader() IShader
 

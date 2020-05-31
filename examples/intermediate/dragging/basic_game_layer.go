@@ -27,67 +27,51 @@ func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INo
 func (g *gameLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
-	dvr := world.Properties().Window.DeviceRes
-
 	var err error
 
-	hline, err := custom.NewStaticAtlasNode("HLine", "HLine", world, g)
+	dvr := world.Properties().Window.DeviceRes
+
+	// ---------------------------------------------------------
+	shline, err := custom.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
 		return err
 	}
-	hline.SetScale(float32(dvr.Width))
-	ghl := hline.(*custom.StaticAtlasNode)
+	shline.SetScale(float32(dvr.Width))
+	ghl := shline.(*custom.StaticHLineNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
-	vline, err := custom.NewStaticAtlasNode("VLine", "VLine", world, g)
+	// ---------------------------------------------------------
+	svline, err := custom.NewStaticVLineNode("VLine", world, g)
 	if err != nil {
 		return err
 	}
-	vline.SetScale(float32(dvr.Height))
-	gvl := vline.(*custom.StaticAtlasNode)
+	svline.SetScale(float32(dvr.Width))
+	gvl := svline.(*custom.StaticVLineNode)
 	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
+
+	// ---------------------------------------------------------
+	tri, err := custom.NewStaticTriangleNode("FilledTri", true, true, world, g)
+	if err != nil {
+		return err
+	}
+	tri.SetScale(100)
+	tri.SetPosition(150.0, 0.0)
+	gtr := tri.(*custom.StaticTriangleNode)
+	gtr.SetColor(color.NewPaletteInt64(color.DeepPink))
+
+	// ---------------------------------------------------------
+	otri, err := custom.NewStaticTriangleNode("OutlineTri", true, false, world, g)
+	if err != nil {
+		return err
+	}
+	otri.SetScale(100)
+	otri.SetPosition(150.0, 0.0)
+	gotr := otri.(*custom.StaticTriangleNode)
+	gotr.SetColor(color.NewPaletteInt64(color.White))
 
 	// Square ----------------------------------------------------
 	g.dragSquare = newDraggableSquare()
 	g.dragSquare.Build(world, g)
-
-	// Circle ----------------------------------------------------
-	circle, err := custom.NewStaticAtlasNode("Circle", "Circle12Segments", world, g)
-	if err != nil {
-		return err
-	}
-	circle.SetScale(100.0)
-	circle.SetPosition(30.0, 80.0)
-	gc := circle.(*custom.StaticAtlasNode)
-	gc.SetColor(color.NewPaletteInt64(color.GoldYellow))
-	gc.SetAlpha(0.5)
-
-	outCircle, err := custom.NewStaticAtlasNode("OutCircle", "Circle12SegmentsOutline", world, g)
-	if err != nil {
-		return err
-	}
-	outCircle.SetScale(100.0)
-	outCircle.SetPosition(30.0, 80.0)
-	gsq := outCircle.(*custom.StaticAtlasNode)
-	gsq.SetColor(color.NewPaletteInt64(color.White))
-
-	// Triangle ----------------------------------------------------
-	tri, err := custom.NewStaticAtlasNode("Triangle", "CenteredTriangle", world, g)
-	if err != nil {
-		return err
-	}
-	tri.SetScale(100.0)
-	tri.SetPosition(55.0, 45.0)
-	gt := tri.(*custom.StaticAtlasNode)
-	gt.SetColor(color.NewPaletteInt64WithAlpha(color.Pink, 0.75))
-	outTri, err := custom.NewStaticAtlasNode("OutTri", "CenteredOutlineTriangle", world, g)
-	if err != nil {
-		return err
-	}
-	outTri.SetScale(100.0)
-	outTri.SetPosition(55.0, 45.0)
-	gsq = outTri.(*custom.StaticAtlasNode)
-	gsq.SetColor(color.NewPaletteInt64(color.White))
 
 	return nil
 }

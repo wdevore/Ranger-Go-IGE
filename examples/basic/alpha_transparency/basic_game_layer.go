@@ -12,7 +12,7 @@ type gameLayer struct {
 	nodes.Node
 
 	angle float64
-	crow  api.INode
+	zbar  api.INode
 }
 
 func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
@@ -31,59 +31,74 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	dvr := world.Properties().Window.DeviceRes
 
-	hline, err := custom.NewStaticAtlasNode("HLine", "HLine", world, g)
+	var err error
+
+	// ---------------------------------------------------------
+	shline, err := custom.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
 		return err
 	}
-	hline.SetScale(float32(dvr.Width))
-	ghl := hline.(*custom.StaticAtlasNode)
+	shline.SetScale(float32(dvr.Width))
+	ghl := shline.(*custom.StaticHLineNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
-	vline, err := custom.NewStaticAtlasNode("VLine", "VLine", world, g)
+	// ---------------------------------------------------------
+	svline, err := custom.NewStaticVLineNode("VLine", world, g)
 	if err != nil {
 		return err
 	}
-	vline.SetScale(float32(dvr.Height))
-	gvl := vline.(*custom.StaticAtlasNode)
+	svline.SetScale(float32(dvr.Width))
+	gvl := svline.(*custom.StaticVLineNode)
 	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
 
-	square, _ := custom.NewStaticAtlasNode("Square", "CenteredSquare", world, g)
+	// ---------------------------------------------------------
+	square, err := custom.NewStaticSquareNode("FilledSqr", true, true, world, g)
+	if err != nil {
+		return err
+	}
 	square.SetScale(100.0)
 	square.SetPosition(90.0, 80.0)
-	gsq := square.(*custom.StaticAtlasNode)
+	gsq := square.(*custom.StaticSquareNode)
 	gsq.SetColor(color.NewPaletteInt64(color.White))
 
-	circle, _ := custom.NewStaticAtlasNode("Circle", "Circle12Segments", world, g)
+	// ---------------------------------------------------------
+	circle, err := custom.NewStaticCircleNode("FilledCirle", true, world, g)
+	if err != nil {
+		return err
+	}
+
 	circle.SetScale(100.0)
 	circle.SetPosition(30.0, 80.0)
-	gc := circle.(*custom.StaticAtlasNode)
+	gc := circle.(*custom.StaticCircleNode)
 	gc.SetColor(color.NewPaletteInt64(color.GoldYellow))
 	gc.SetAlpha(0.5)
 
-	tri, err := custom.NewStaticAtlasNode("Triangle", "CenteredTriangle", world, g)
+	// ---------------------------------------------------------
+	tri, err := custom.NewStaticTriangleNode("FilledTri", true, true, world, g)
 	if err != nil {
 		return err
 	}
 	tri.SetScale(100.0)
 	tri.SetPosition(55.0, 45.0)
-	gt := tri.(*custom.StaticAtlasNode)
+	gt := tri.(*custom.StaticTriangleNode)
 	gt.SetColor(color.NewPaletteInt64WithAlpha(color.Pink, 0.5))
 
-	g.crow, err = custom.NewStaticAtlasNode("Crow", "CrowBar", world, g)
+	// ---------------------------------------------------------
+	g.zbar, err = custom.NewStaticZBarNode("FilledZBar", true, world, g)
 	if err != nil {
 		return err
 	}
-	g.crow.SetScale(100.0)
-	g.crow.SetPosition(100.0, 150.0)
-	gb := g.crow.(*custom.StaticAtlasNode)
-	gb.SetColor(color.NewPaletteInt64WithAlpha(color.DarkBlue, 0.75))
+	g.zbar.SetScale(100)
+	g.zbar.SetPosition(100.0, 150.0)
+	gzr := g.zbar.(*custom.StaticZBarNode)
+	gzr.SetColor(color.NewPaletteInt64WithAlpha(color.DarkBlue, 0.75))
 
 	return nil
 }
 
 // Update updates the time properties of a node.
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
-	g.crow.SetRotation(maths.DegreeToRadians * g.angle)
+	g.zbar.SetRotation(maths.DegreeToRadians * g.angle)
 	g.angle += 1.25
 }
 

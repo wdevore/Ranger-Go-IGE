@@ -13,14 +13,15 @@ type RenderGraphic struct {
 	bufObj api.IBufferObject
 
 	bufferObjInUse bool
+	atlas          api.IAtlas
 }
 
 // NewRenderGraphic creates a new graphic
-func NewRenderGraphic(meshType int, atlas api.IAtlas, shader api.IShader) api.IRenderGraphic {
+func NewRenderGraphic(atlas api.IAtlas, shader api.IShader) api.IRenderGraphic {
 	o := new(RenderGraphic)
+	o.atlas = atlas
 
 	o.bufObj = NewBufferObject()
-	o.bufObj.Construct(meshType, atlas)
 
 	programID := shader.Program()
 
@@ -40,14 +41,15 @@ func NewRenderGraphic(meshType int, atlas api.IAtlas, shader api.IShader) api.IR
 	return o
 }
 
+// Construct ...
+func (r *RenderGraphic) Construct(meshType int, atlas api.IAtlas) {
+	r.bufObj.Construct(meshType, atlas)
+
+}
+
 // BufferObjInUse indicates if this graphic's buffer is activated
 func (r *RenderGraphic) BufferObjInUse() bool {
 	return r.bufferObjInUse
-}
-
-// Vertices returns buffer object's mesh's backing array
-func (r *RenderGraphic) Vertices() []float32 {
-	return r.bufObj.Vertices()
 }
 
 // Use activates this graphic
@@ -108,7 +110,7 @@ func (r *RenderGraphic) SetColor4(color []float32) {
 func (r *RenderGraphic) Render(shape api.IAtlasShape, model api.IMatrix4) {
 
 	gl.UniformMatrix4fv(r.modelLoc, 1, false, &model.Matrix()[0])
-	gl.DrawElements(shape.PrimitiveMode(), int32(shape.Count()), uint32(gl.UNSIGNED_INT), gl.PtrOffset(shape.Offset()))
+	gl.DrawElements(shape.PrimitiveMode(), int32(shape.ElementCount()), uint32(gl.UNSIGNED_INT), gl.PtrOffset(shape.Offset()))
 
 	// TODO evaluate for use
 	// gl.DrawElementsBaseVertex(shape.PrimitiveMode(), int32(shape.Count()), uint32(gl.UNSIGNED_INT), gl.Ptr(&indices[0]), int32(shape.Offset()))
@@ -122,17 +124,6 @@ func (r *RenderGraphic) RenderElements(shape api.IAtlasShape, elementCount, elem
 }
 
 // Update modifies the VBO buffer
-func (r *RenderGraphic) Update(offset, count int) {
-	r.bufObj.Update(offset, count*api.XYZComponentCount)
-}
-
-// UpdatePreScaled expects parameters already pre-scaled by data-type
-func (r *RenderGraphic) UpdatePreScaled(offset, count int) {
-	r.bufObj.UpdatePreScaled(offset, count)
-}
-
-// UpdatePreScaledUsing expects parameters already pre-scaled by data-type
-// and a source buffer
-func (r *RenderGraphic) UpdatePreScaledUsing(offset, size int, vertices []float32) {
-	r.bufObj.UpdatePreScaledUsing(offset, size, vertices)
+func (r *RenderGraphic) Update(shape api.IAtlasShape) {
+	r.bufObj.Update(shape)
 }

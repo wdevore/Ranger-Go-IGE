@@ -21,3 +21,14 @@ const XYZComponentCount int = 3
 const (
 	GLLines = 0
 )
+
+const (
+	// MeshStatic represents static VBO buffers
+	MeshStatic = 0
+	// MeshDynamic represents dynamic single mesh buffers,
+	// for example, PixelBuffer
+	MeshDynamic = 1
+	// MeshDynamicMulti represent dynamic multi mesh buffers,
+	// for example, lines
+	MeshDynamicMulti = 2
+)

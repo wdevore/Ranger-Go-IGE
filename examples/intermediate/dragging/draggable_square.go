@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/misc"
@@ -33,37 +31,41 @@ func (d *draggableSquare) Build(world api.IWorld, parent api.INode) error {
 	d.drag = misc.NewDragState()
 	d.localPosition = geometry.NewPoint()
 
-	d.square, err = custom.NewStaticAtlasNode("Square", "CenteredSquare", world, parent)
+	// ---------------------------------------------------------
+	d.square, err = custom.NewStaticSquareNode("FilledSqr", true, true, world, parent)
+	if err != nil {
+		return err
+	}
 	if err != nil {
 		return err
 	}
 	d.square.SetScale(100.0)
 	d.square.SetPosition(90.0, 80.0)
-	gsq := d.square.(*custom.StaticAtlasNode)
+	gsq := d.square.(*custom.StaticSquareNode)
 	gsq.SetColor(color.NewPaletteInt64(color.LightPurple))
 
-	d.outSquare, err = custom.NewStaticAtlasNode("OutSquare", "CenteredOutlineSquare", world, parent)
+	d.outSquare, err = newCustomRectangleNode("OutlineSqr", true, false, world, parent)
 	if err != nil {
 		return err
 	}
 	d.outSquare.SetScale(100.0)
 	d.outSquare.SetPosition(90.0, 80.0)
-	gsq = d.outSquare.(*custom.StaticAtlasNode)
-	gsq.SetColor(color.NewPaletteInt64(color.White))
+	gosq := d.outSquare.(*customRectangleNode)
+	gosq.SetColor(color.NewPaletteInt64(color.White))
 
 	return nil
 }
 
 func (d *draggableSquare) PointInside(p api.IPoint) bool {
-	gsq := d.square.(*custom.StaticAtlasNode)
-	inside := gsq.PointInside(p)
+	gsq := d.outSquare.(*customRectangleNode)
+	inside := gsq.PointInside()
 	return inside
 }
 
 func (d *draggableSquare) SquareEventHandle(event api.IEvent) bool {
 	if event.GetType() == api.IOTypeMouseMotion {
 		mx, my := event.GetMousePosition()
-		fmt.Println("mx,my: ", mx, ", ", my)
+		// fmt.Println("mx,my: ", mx, ", ", my)
 
 		// Because the Layer and parent Scene have no transformation between
 		// each other we could also pass "g" instead of "g.square".
@@ -74,15 +76,7 @@ func (d *draggableSquare) SquareEventHandle(event api.IEvent) bool {
 		// This gets the local-space coords of the rectangle node.
 		// Note: OpenGL's +Y axis is upward
 		nodes.MapDeviceToNode(mx, my, d.square, d.localPosition)
-		fmt.Println("localPosition: ", d.localPosition)
-
-		inside := d.PointInside(d.localPosition)
-		gsq := d.outSquare.(*custom.StaticAtlasNode)
-		if inside {
-			gsq.SetColor(color.NewPaletteInt64(color.Red))
-		} else {
-			gsq.SetColor(color.NewPaletteInt64(color.White))
-		}
+		// fmt.Println("localPosition: ", d.localPosition)
 
 		if d.drag.IsDragging() && d.PointInside(d.localPosition) {
 			pos := d.square.Position()

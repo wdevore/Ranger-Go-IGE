@@ -45,7 +45,7 @@ func (c *customRectangleNode) Build(world api.IWorld) error {
 	c.SetDirty(true)
 
 	c.color = color.NewPaletteInt64(color.DarkerGray).Array()
-	c.insideColor = color.NewPaletteInt64(color.Red).Array()
+	c.insideColor = color.NewPaletteInt64(color.Orange).Array()
 
 	if c.filled {
 		name := "FilledSquare"
@@ -134,6 +134,11 @@ func (c *customRectangleNode) EnterNode(man api.INodeManager) {
 // ExitNode called when a node is exiting stage
 func (c *customRectangleNode) ExitNode(man api.INodeManager) {
 	man.UnRegisterEventTarget(c)
+}
+
+// PointInside xxx
+func (c *customRectangleNode) PointInside() bool {
+	return c.pointInside
 }
 
 // -----------------------------------------------------

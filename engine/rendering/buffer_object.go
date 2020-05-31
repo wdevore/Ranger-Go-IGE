@@ -1,22 +1,27 @@
 package rendering
 
 import (
-	"log"
+	"unsafe"
 
-	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
 // BufferObject associates an Atlas with a VAO
 type BufferObject struct {
-	atlasObject api.IAtlasObject
-	vao         *VAO
+	vao *VAO
+	vbo *VBO
+	ebo *EBO
+
+	floatSize int
+	uintSize  int
 }
 
 // NewBufferObject creates a new vector object with an associated Mesh
 func NewBufferObject() api.IBufferObject {
-	vo := new(BufferObject)
-	return vo
+	o := new(BufferObject)
+	o.floatSize = int(unsafe.Sizeof(float32(0)))
+	o.uintSize = int(unsafe.Sizeof(uint32(0)))
+	return o
 }
 
 // Construct configures a buffer object
@@ -24,32 +29,54 @@ func (b *BufferObject) Construct(meshType int, atlas api.IAtlas) {
 	b.vao = NewVAO()
 	b.vao.BindStart()
 
-	// The Atlas contains a Mesh and the Mesh contains
-	// VBOs and EBOs
-	// AtlasObject
-	//    Mesh
-	//      VBO,EBO
-	b.atlasObject = newAtlasObject(meshType)
+	b.vbo = NewVBO(meshType)
+	b.ebo = NewEBO()
 
-	// MeshDynamic needs an array added automatically.
-	if meshType == api.MeshDynamic {
-		b.atlasObject.AddArray()
+	// The atlas has shapes and each shape has vertices.
+	// These need to be combined into a single array
+	// and copied into GL Buffer.
+	// At the same time each shape needs to be updated
+	// to adjust offsets and counts for the EBO
+	vertices := []float32{}
+	indices := []uint32{}
+
+	elementOffset := 0
+	indexOffset := uint32(0)
+
+	for _, shape := range atlas.Shapes() {
+		// fmt.Println("Shape: ", shape.Name())
+		// fmt.Println("elementOffset: ", elementOffset)
+		// fmt.Println("indexOffset: ", indexOffset)
+
+		shape.SetElementOffset(elementOffset)
+		elementOffset += len(shape.Indices()) * b.uintSize
+
+		for _, v := range shape.Vertices() {
+			vertices = append(vertices, v)
+		}
+
+		// fmt.Println("vertices: ", vertices, ", Size ", len(vertices))
+
+		for _, i := range shape.Indices() {
+			indices = append(indices, indexOffset+uint32(i))
+		}
+		// fmt.Println("indices: ", indices, ", Size ", len(indices))
+
+		indexOffset = uint32(len(vertices) / api.XYZComponentCount)
 	}
 
-	// Populate atlas with objects
-	atlas.Populate(b.atlasObject)
+	vboBufferSize := len(vertices) * api.XYZComponentCount * b.floatSize
+	eboBufferSize := len(indices) * b.uintSize
 
-	mesh := b.atlasObject.Mesh()
+	if vboBufferSize == 0 || eboBufferSize == 0 {
+		panic("BO.Construct: VBO/EBO buffers are zero")
+	}
 
-	mesh.BindVBO()
-	mesh.BindEBO()
+	b.vbo.Bind(vboBufferSize, vertices)
+
+	b.ebo.Bind(eboBufferSize, indices)
 
 	b.vao.BindComplete()
-}
-
-// Vertices returns internal vertex backing array
-func (b *BufferObject) Vertices() []float32 {
-	return b.atlasObject.Mesh().Vertices()
 }
 
 // Use activates the VAO
@@ -63,29 +90,7 @@ func (b *BufferObject) UnUse() {
 }
 
 // Update modifies the VBO buffer
-func (b *BufferObject) Update(offset, size int) {
-	b.atlasObject.Mesh().Update(offset, size)
-}
-
-// UpdatePreScaled requires prescaled values
-func (b *BufferObject) UpdatePreScaled(offset, size int) {
-	b.atlasObject.Mesh().UpdatePreScaled(offset, size)
-}
-
-// UpdatePreScaledUsing requires a specific size vertex array
-func (b *BufferObject) UpdatePreScaledUsing(offset, size int, vertices []float32) {
-	gl.BindBuffer(gl.ARRAY_BUFFER, b.atlasObject.Mesh().VboID())
-
-	// The last parameter should be a separate buffer
-	// The 'offset' and 'size' are parameters for the destination
-	// buffer and in is bytes
-	// In other words the source buffer is captured as a whole,
-	// the destination buffer is piece-meal based on offset/size
-	gl.BufferSubData(gl.ARRAY_BUFFER, offset, size, gl.Ptr(vertices))
-
-	if errNum := gl.GetError(); errNum != gl.NO_ERROR {
-		log.Fatal("(BufObj)GL Error: ", errNum)
-	}
-
-	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+func (b *BufferObject) Update(shape api.IAtlasShape) {
+	// b.mesh.Update(shape)
+	b.vbo.Update(shape.Offset(), shape.Count(), shape.Vertices())
 }

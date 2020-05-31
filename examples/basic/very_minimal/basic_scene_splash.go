@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 )
 
@@ -31,12 +30,6 @@ func (s *sceneSplash) Build(world api.IWorld) error {
 	newBasicGameLayer("Game Layer", world, s)
 
 	return nil
-}
-
-func (s *sceneSplash) Draw(model api.IMatrix4) {
-	// s.SetPosition(float32(s.angle), 0.0)
-	s.SetRotation(maths.DegreeToRadians * s.angle)
-	s.angle += 2.0
 }
 
 // --------------------------------------------------------

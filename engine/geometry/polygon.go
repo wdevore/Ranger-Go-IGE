@@ -18,7 +18,7 @@ func NewPolygon() api.IPolygon {
 	return o
 }
 
-// AddVertex adds a point to the mesh
+// AddVertex adds a point to the polygon
 func (p *Polygon) AddVertex(x, y float32) {
 	p.vertices = append(p.vertices, NewPointUsing(x, y))
 }

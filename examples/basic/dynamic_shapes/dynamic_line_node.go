@@ -1,11 +1,10 @@
 package main
 
 import (
-	"unsafe"
+	"github.com/go-gl/gl/v4.5-core/gl"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
@@ -15,27 +14,21 @@ type DynamicLineNode struct {
 
 	color []float32
 
-	atlasName          string
-	shape              api.IAtlasShape
-	elementIndexOffset int
-	backingArrayIdx    int
-
-	p1Index int
-	p2Index int
-
-	// VBO update var
-	vboOffset  int
-	countBytes int
+	shape api.IAtlasShape
 }
 
 // NewDynamicLineNode constructs a generic shape node
-func newDynamicLineNode(name string, world api.IWorld, parent api.INode) api.INode {
+func newDynamicLineNode(name string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(DynamicLineNode)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
-	o.Build(world)
-	return o
+
+	if err := o.Build(world); err != nil {
+		return nil, err
+	}
+
+	return o, nil
 }
 
 // Build configures the node
@@ -44,17 +37,30 @@ func (r *DynamicLineNode) Build(world api.IWorld) error {
 
 	r.color = color.NewPaletteInt64(color.Red).Array()
 
-	r.shape = world.DynoAtlas().GetNextShape("Line")
-	r.backingArrayIdx = r.shape.BackingArrayIdx()
+	r.shape = world.DynoAtlas().GenerateShape(r.Name(), gl.LINES, false)
 
-	r.p1Index = 0
-	r.p2Index = 1
-	r.SetVBOOffset(0)
-	// Each line is xyz + xyz = 6 components
-	r.SetCountBytes(rendering.VboElementCountPerLine)
-	r.SetElementOffset(0) // relative to EBO
+	// The shape has been added to the atlas but is hasn't been
+	// populated with this node's backing data.
+	r.populate()
 
 	return nil
+}
+
+func (r *DynamicLineNode) populate() {
+	vertices := []float32{
+		0.0, 0.0, 0.0, // Begin point
+		0.0, 0.0, 0.0, // End point
+	}
+
+	r.shape.SetVertices(vertices)
+
+	indices := []uint32{
+		0, 1,
+	}
+
+	r.shape.SetIndices(indices)
+
+	r.shape.SetElementCount(len(indices))
 }
 
 // SetColor sets line color
@@ -62,50 +68,40 @@ func (r *DynamicLineNode) SetColor(color api.IPalette) {
 	r.color = color.Array()
 }
 
+// SetAlpha sets the current color's alpha channel 0.0->1.0
+func (r *DynamicLineNode) SetAlpha(alpha float32) {
+	r.color[3] = alpha
+}
+
 // SetPoint1 sets point 1 end position
 func (r *DynamicLineNode) SetPoint1(x, y float32) {
-	// r.shape.A
-	r.shape.SetVertex2D(x, y, r.p1Index)
+	r.shape.SetVertex2D(x, y, 0)
 	r.SetDirty(true)
 }
 
 // SetPoint2 sets point 2 end position
 func (r *DynamicLineNode) SetPoint2(x, y float32) {
-	r.shape.SetVertex2D(x, y, r.p2Index)
+	r.shape.SetVertex2D(x, y, 1)
 	r.SetDirty(true)
-}
-
-// SetElementOffset sets EBOs offset requirement--the value is scaled
-// to byte count using sizeof(int32)
-func (r *DynamicLineNode) SetElementOffset(offset int) {
-	r.elementIndexOffset = offset * int(unsafe.Sizeof(int32(0)))
-	r.shape.SetElementOffset(r.elementIndexOffset)
-}
-
-// SetVBOOffset sets
-func (r *DynamicLineNode) SetVBOOffset(offset int) {
-	r.vboOffset = offset * int(unsafe.Sizeof(float32(0)))
-}
-
-// SetCountBytes sets
-func (r *DynamicLineNode) SetCountBytes(count int) {
-	r.countBytes = count * int(unsafe.Sizeof(float32(0)))
 }
 
 // Draw renders shape
 func (r *DynamicLineNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.DynamicRenderGraphic)
+	renG.SetColor4(r.color)
 
-	if r.IsDirty() {
-		// Update buffer
-		bufVertices := r.shape.Vertices(r.backingArrayIdx)
+	r.shape.SetCount(2)
 
-		renG.UpdatePreScaledUsing(r.vboOffset, r.countBytes, bufVertices)
+	// We need to override the element offset because this
+	// buffer is shared between multiple line shapes, so
+	// the offset is effectively 0 for each update. If the buffer
+	// containes more than 1 line then an offset for the other
+	// lines would be valid. But in this version all lines are
+	// sharing.
+	// TODO in the future, when we move to batch processing, things
+	// will be different.
+	r.shape.SetElementOffset(0)
+	renG.Update(r.shape)
 
-		r.SetDirty(false)
-	}
-
-	renG.SetColor(r.color)
-
-	renG.RenderElements(r.shape, r.shape.ElementCount(), r.elementIndexOffset, model)
+	renG.RenderElements(r.shape, r.shape.ElementCount(), 0, model)
 }

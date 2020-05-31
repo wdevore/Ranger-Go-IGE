@@ -31,24 +31,32 @@ func newOverlayLayer(name string, world api.IWorld, parent api.INode) api.INode 
 func (g *overlayLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
-	g.text = custom.NewRasterTextNode("Text", world, g)
+	var err error
+
+	g.text, err = custom.NewDynamicTextNode("Text", 500, world, g)
+	if err != nil {
+		return err
+	}
+	gt := g.text.(*custom.DynamicTextNode)
 	g.text.SetScale(1.25)
-	gt := g.text.(*custom.RasterTextNode)
 	gt.SetText("Ranger")
-	gt.SetPixelSize(15.0)
-	gt.SetColor(color.NewPaletteInt64(color.LightOrange))
+	gt.SetPixelSize(10.0)
+	gt.SetColor(color.NewPaletteInt64(color.Lime))
 
 	if world.Properties().Engine.ShowTimingInfo {
-		g.timing = custom.NewRasterTextNode("TimingInfo", world, g)
+		g.timing, err = custom.NewDynamicTextNode("TimingInfo", 500, world, g)
+		if err != nil {
+			return err
+		}
 		g.timing.SetScale(1.0)
 		// Set position to lower-left corner
 		dvr := world.Properties().Window.DeviceRes
 		g.timing.SetPosition(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0)
 
-		gt = g.timing.(*custom.RasterTextNode)
-		gt.SetText("-")
-		gt.SetPixelSize(2.0)
-		gt.SetColor(color.NewPaletteInt64(color.LightGray))
+		gt2 := g.timing.(*custom.DynamicTextNode)
+		gt2.SetText("-")
+		gt2.SetPixelSize(2.0)
+		gt2.SetColor(color.NewPaletteInt64(color.LightGray))
 	}
 
 	return nil
@@ -61,11 +69,10 @@ func (g *overlayLayer) Update(msPerUpdate, secPerUpdate float64) {
 
 	w := g.World()
 	if w.Properties().Engine.ShowTimingInfo {
-		gt := g.timing.(*custom.RasterTextNode)
+		gt := g.timing.(*custom.DynamicTextNode)
 		s := fmt.Sprintf("f:%d u:%d r:%2.3f", w.Fps(), w.Ups(), w.AvgRender())
 		gt.SetText(s)
 	}
-
 }
 
 // -----------------------------------------------------

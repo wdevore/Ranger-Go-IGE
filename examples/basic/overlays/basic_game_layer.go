@@ -4,6 +4,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
 type gameLayer struct {
@@ -22,9 +23,15 @@ func newBasicGameLayer(name string, world api.IWorld, parent api.INode) api.INod
 func (g *gameLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
-	square, _ := custom.NewStaticAtlasNode("Square", "CenteredSquare", world, g)
-	square.SetScale(100.0)
-	square.SetPosition(100.0, 100.0)
+	// ---------------------------------------------------------
+	osql, err := custom.NewStaticSquareNode("FilledSqr", true, true, world, g)
+	if err != nil {
+		return err
+	}
+	osql.SetScale(100.0)
+	osql.SetPosition(100.0, 100.0)
+	gol2 := osql.(*custom.StaticSquareNode)
+	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	return nil
 }
