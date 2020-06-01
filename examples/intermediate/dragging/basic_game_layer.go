@@ -96,7 +96,7 @@ func (g *gameLayer) ExitNode(man api.INodeManager) {
 // -----------------------------------------------------
 
 func (g *gameLayer) Handle(event api.IEvent) bool {
-	handled := g.dragSquare.SquareEventHandle(event)
+	handled := g.dragSquare.EventHandle(event)
 
 	return handled
 }

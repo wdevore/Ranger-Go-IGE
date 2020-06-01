@@ -14,9 +14,9 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Space mappings
 * **Done** add Outline shapes
 * **Done** Alpha coloring / transparency
-* **Node Dragging**
+* **Done** Node Dragging
+* --*Workng*-- Zoom Node
 * Filters: transform and translate
-* Zoom Node
 * Interpolation
 * Simple motion animations
 * AnchorNode
