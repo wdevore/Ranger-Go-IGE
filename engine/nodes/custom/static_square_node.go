@@ -101,7 +101,7 @@ func (r *StaticSquareNode) populate() {
 	r.shape.SetIndices(indices)
 }
 
-// SetColor sets line color
+// SetColor sets square color
 func (r *StaticSquareNode) SetColor(color api.IPalette) {
 	r.color = color.Array()
 }
