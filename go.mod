@@ -9,5 +9,6 @@ require (
 	github.com/rustyoz/Mtransform v0.0.0-20190224104252-60c8c35a3681 // indirect
 	github.com/rustyoz/genericlexer v0.0.0-20190224115003-eb82fd2987bd // indirect
 	github.com/rustyoz/svg v0.0.0-20200324092435-1ce6eba67a99
+	github.com/tanema/gween v0.0.0-20190613150852-fbc00f26ef8f
 	github.com/wdevore/RangerGo v0.0.0-20200425220557-69cc1f0c41c4
 )
