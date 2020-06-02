@@ -32,7 +32,6 @@ func (b *backgroundNode) Build(world api.IWorld) error {
 	if err != nil {
 		return err
 	}
-	b.background.SetScale(100)
 	gol := b.background.(*custom.StaticSquareNode)
 	gol.SetColor(color.NewPaletteInt64(color.DarkerGray))
 
