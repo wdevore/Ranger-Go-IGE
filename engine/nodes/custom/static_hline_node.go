@@ -37,7 +37,7 @@ func (r *StaticHLineNode) Build(world api.IWorld) error {
 
 	r.color = color.NewPaletteInt64(color.White).Array()
 
-	r.shape = world.Atlas().GenerateShape("HLine", gl.LINES, true)
+	r.shape = world.Atlas().GenerateShape("HLine", gl.LINES)
 
 	// Populated shape
 	r.populate()

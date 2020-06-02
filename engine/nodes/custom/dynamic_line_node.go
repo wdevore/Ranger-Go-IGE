@@ -40,7 +40,7 @@ func (r *DynamicLineNode) Build(world api.IWorld) error {
 
 	// The shape has been added to the atlas but is hasn't been
 	// populated with this node's backing info.
-	r.shape = world.Atlas().GenerateShape("HLine", gl.LINES, true)
+	r.shape = world.Atlas().GenerateShape("HLine", gl.LINES)
 
 	// Populated shape
 	r.populate()

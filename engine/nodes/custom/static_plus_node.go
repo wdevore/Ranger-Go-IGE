@@ -37,7 +37,7 @@ func (r *StaticPlusNode) Build(world api.IWorld) error {
 
 	r.color = color.NewPaletteInt64(color.White).Array()
 
-	r.shape = world.Atlas().GenerateShape("Plus", gl.LINES, true)
+	r.shape = world.Atlas().GenerateShape("Plus", gl.LINES)
 
 	// Populated shape
 	r.populate()

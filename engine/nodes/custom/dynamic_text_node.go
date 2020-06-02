@@ -57,7 +57,7 @@ func (r *DynamicTextNode) Build(world api.IWorld) error {
 	r.inverted = false
 	r.whiteSpaceDistance = 2.0
 
-	r.shape = world.PixelAtlas().GenerateShape("PixelBuffer", gl.POINTS, false)
+	r.shape = world.PixelAtlas().GenerateShape("PixelBuffer", gl.POINTS)
 
 	// The shape has been added to the atlas but is hasn't been
 	// populated with this node's backing data.

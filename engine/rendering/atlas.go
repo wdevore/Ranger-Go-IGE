@@ -22,7 +22,7 @@ func (a *Atlas) initialize() {
 }
 
 // GenerateShape creates a shape, adds it to the atlas
-func (a *Atlas) GenerateShape(atlasName string, primitiveMode uint32, bufferType bool) api.IAtlasShape {
+func (a *Atlas) GenerateShape(atlasName string, primitiveMode uint32) api.IAtlasShape {
 	// If this shape is already present just return what's in the collection.
 	for _, s := range a.shapes {
 		if s.Name() == atlasName {
@@ -32,7 +32,6 @@ func (a *Atlas) GenerateShape(atlasName string, primitiveMode uint32, bufferType
 	s := NewAtlasShape()
 	s.SetName(atlasName)
 	s.SetPrimitiveMode(primitiveMode)
-	// s.SetStatic(bufferType)
 	a.shapes = append(a.shapes, s)
 	return s
 }

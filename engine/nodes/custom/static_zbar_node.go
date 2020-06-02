@@ -41,10 +41,10 @@ func (r *StaticZBarNode) Build(world api.IWorld) error {
 
 	if r.filled {
 		name := "FilledZBar"
-		r.shape = world.Atlas().GenerateShape(name, gl.TRIANGLES, true)
+		r.shape = world.Atlas().GenerateShape(name, gl.TRIANGLES)
 	} else {
 		name := "OutlineZBar"
-		r.shape = world.Atlas().GenerateShape(name, gl.LINE_LOOP, true)
+		r.shape = world.Atlas().GenerateShape(name, gl.LINE_LOOP)
 	}
 
 	// The shape has been added to the atlas but is hasn't been

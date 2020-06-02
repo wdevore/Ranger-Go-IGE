@@ -39,7 +39,7 @@ func (r *StaticPointNode) Build(world api.IWorld) error {
 	r.color = color.NewPaletteInt64(color.White).Array()
 	r.size = 1.0
 
-	r.shape = world.Atlas().GenerateShape("Point", gl.POINTS, true)
+	r.shape = world.Atlas().GenerateShape("Point", gl.POINTS)
 
 	r.populate()
 

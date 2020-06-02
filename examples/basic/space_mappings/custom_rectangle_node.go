@@ -52,13 +52,13 @@ func (c *customRectangleNode) Build(world api.IWorld) error {
 		if c.centered {
 			name = "FilledCenteredSquare"
 		}
-		c.shape = world.Atlas().GenerateShape(name, gl.TRIANGLES, true)
+		c.shape = world.Atlas().GenerateShape(name, gl.TRIANGLES)
 	} else {
 		name := "OutlineSquare"
 		if c.centered {
 			name = "OutlineCenteredSquare"
 		}
-		c.shape = world.Atlas().GenerateShape(name, gl.LINE_LOOP, true)
+		c.shape = world.Atlas().GenerateShape(name, gl.LINE_LOOP)
 	}
 
 	c.localPosition = geometry.NewPoint()

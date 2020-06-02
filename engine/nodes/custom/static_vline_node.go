@@ -37,7 +37,7 @@ func (r *StaticVLineNode) Build(world api.IWorld) error {
 
 	r.color = color.NewPaletteInt64(color.White).Array()
 
-	r.shape = world.Atlas().GenerateShape("VLine", gl.LINES, true)
+	r.shape = world.Atlas().GenerateShape("VLine", gl.LINES)
 
 	r.populate()
 

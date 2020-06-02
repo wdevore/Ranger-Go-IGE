@@ -37,7 +37,7 @@ func (r *DynamicLineNode) Build(world api.IWorld) error {
 
 	r.color = color.NewPaletteInt64(color.Red).Array()
 
-	r.shape = world.DynoAtlas().GenerateShape(r.Name(), gl.LINES, false)
+	r.shape = world.DynoAtlas().GenerateShape(r.Name(), gl.LINES)
 
 	// The shape has been added to the atlas but is hasn't been
 	// populated with this node's backing data.

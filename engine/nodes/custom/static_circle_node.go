@@ -43,10 +43,10 @@ func (r *StaticCircleNode) Build(world api.IWorld) error {
 
 	if r.filled {
 		name := "FilledCircle"
-		r.shape = world.Atlas().GenerateShape(name, gl.TRIANGLE_FAN, true)
+		r.shape = world.Atlas().GenerateShape(name, gl.TRIANGLE_FAN)
 	} else {
 		name := "OutlineCircle"
-		r.shape = world.Atlas().GenerateShape(name, gl.LINE_LOOP, true)
+		r.shape = world.Atlas().GenerateShape(name, gl.LINE_LOOP)
 	}
 
 	// The shape has been added to the atlas but is hasn't been
