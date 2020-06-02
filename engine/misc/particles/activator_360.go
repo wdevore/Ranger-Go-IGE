@@ -4,7 +4,6 @@ import (
 	"math/rand"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 )
 
 // Activator360 activates particles in random directions encompassing
@@ -36,13 +35,15 @@ func (a *Activator360) Activate(particle api.IParticle, center api.IPoint) {
 	lifespan := float32(rand.Float64()) * (a.maxLife * 1000.0)
 	particle.SetLifespan(lifespan)
 
-	color, isColorType := particle.Visual().(api.IPalette)
+	color, isColorType := particle.Visual().(api.IColor)
 
 	if isColorType {
 		// Change the Red color component if the visual supports the IColor type
 		// otherwise the color maintains its current color
-		shade := float32(maths.Clamp(rand.Float64()*32.0*float64(speed), 0, 255)) / 255.0
-		color.SetRed(shade)
+		shade := float32(rand.Float64()*float64(speed)*50) / 255.0
+		c := color.Color()
+		c[0] = shade
+		color.SetColor(c)
 	}
 
 	particle.Reset()
