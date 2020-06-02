@@ -15,16 +15,15 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** add Outline shapes
 * **Done** Alpha coloring / transparency
 * **Done** Node Dragging
-* --*Workng*-- Zoom Node
-* Filters: transform and translate
-* Interpolation
-* Simple motion animations
-* AnchorNode
-* Particles
+* **Done** Zoom Node
+* **Done** Filters: transform and translate
+* --*Workng*-- Particles
 * Animation (tweening) -- Using tanema's library
 * Box2D physics (with space ship)
 * Stippling with OpenGL patterns
 * Zones combined with Zoom
+* Interpolation
+* Simple motion animations
 * Bitmap fonts
 * Audio (SFXR 8bit sound)
   * May build GUI using imGui

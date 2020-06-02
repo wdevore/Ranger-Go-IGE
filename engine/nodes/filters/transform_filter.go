@@ -13,7 +13,10 @@ import (
 type TransformFilter struct {
 	nodes.Node
 
-	// This makes the node an IFilter type
+	// This makes the node an IFilter type.
+	// However, you MUST make sure your filter implements all methods
+	// correctly. node.Visit() makes the assumption that if the node
+	// can't be cast to an IFilter that it must be an INode.
 	Filter
 }
 

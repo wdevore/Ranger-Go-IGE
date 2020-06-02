@@ -2,6 +2,10 @@ package maths
 
 import "math"
 
+var v1 = NewVector()
+var v2 = NewVector()
+var v3 = NewVector()
+
 const (
 	// Epsilon = 0.00001
 	Epsilon = 0.00001 // ~32 bits
