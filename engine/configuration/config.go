@@ -41,6 +41,7 @@ type windowJSON struct {
 	BitsPerPixel int
 	LockToVSync  bool
 	ClearColor   colorJSON
+	ClearStyle   string // "None", "SingleColor", "Checkerboard", "Custom"
 	VirtualRes   dimensionJSON
 	DeviceRes    dimensionJSON
 	FullScreen   bool

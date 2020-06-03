@@ -21,6 +21,7 @@
       "B": 0.5,
       "A": 1.0
     },
+    "ClearStyle": "SingleColor",
     "VirtualRes": {
       "Height": 600,
       "Width": 1000
