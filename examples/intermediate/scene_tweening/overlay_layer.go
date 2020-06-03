@@ -42,7 +42,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	g.viewLocTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
 	gd := g.viewLocTxt.(*custom.DynamicTextNode)
 	gd.SetText("(0,0)")
-	gd.SetColor(color.NewPaletteInt64(color.White))
+	gd.SetColor(color.NewPaletteInt64(color.White).Array())
 	gd.SetPixelSize(1.0)
 
 	if world.Properties().Engine.ShowTimingInfo {
@@ -58,7 +58,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 		gt2 := g.timing.(*custom.DynamicTextNode)
 		gt2.SetText("-")
 		gt2.SetPixelSize(2.0)
-		gt2.SetColor(color.NewPaletteInt64(color.LightOrange))
+		gt2.SetColor(color.NewPaletteInt64(color.LightOrange).Array())
 	}
 
 	// ---------------------------------------------------------

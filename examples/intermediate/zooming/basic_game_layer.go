@@ -71,7 +71,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	g.viewCoords.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
 	gd := g.viewCoords.(*custom.DynamicTextNode)
 	gd.SetText("(0,0)")
-	gd.SetColor(color.NewPaletteInt64(color.GreenYellow))
+	gd.SetColor(color.NewPaletteInt64(color.GreenYellow).Array())
 	gd.SetPixelSize(1.0)
 
 	// ---------------------------------------------------------

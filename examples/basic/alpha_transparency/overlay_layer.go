@@ -42,7 +42,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 		gt2 := g.timing.(*custom.DynamicTextNode)
 		gt2.SetText("-")
 		gt2.SetPixelSize(2.0)
-		gt2.SetColor(color.NewPaletteInt64(color.LightGray))
+		gt2.SetColor(color.NewPaletteInt64(color.LightGray).Array())
 	}
 
 	return nil

@@ -101,7 +101,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	g.dynoTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
 	gd := g.dynoTxt.(*custom.DynamicTextNode)
 	gd.SetText("(0,0)")
-	gd.SetColor(color.NewPaletteInt64(color.White))
+	gd.SetColor(color.NewPaletteInt64(color.White).Array())
 	gd.SetPixelSize(1.0)
 
 	g.viewPoint = geometry.NewPoint()

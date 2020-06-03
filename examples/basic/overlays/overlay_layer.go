@@ -41,7 +41,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	g.text.SetScale(1.25)
 	gt.SetText("Ranger")
 	gt.SetPixelSize(10.0)
-	gt.SetColor(color.NewPaletteInt64(color.Lime))
+	gt.SetColor(color.NewPaletteInt64(color.Lime).Array())
 
 	if world.Properties().Engine.ShowTimingInfo {
 		g.timing, err = custom.NewDynamicTextNode("TimingInfo", 500, world, g)
@@ -56,7 +56,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 		gt2 := g.timing.(*custom.DynamicTextNode)
 		gt2.SetText("-")
 		gt2.SetPixelSize(2.0)
-		gt2.SetColor(color.NewPaletteInt64(color.LightGray))
+		gt2.SetColor(color.NewPaletteInt64(color.LightGray).Array())
 	}
 
 	return nil
