@@ -185,6 +185,11 @@ func (e *engine) loop() {
 			continue
 		}
 
+		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
+		// Finish rendering
+		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
+		e.sceneGraph.PostVisit()
+
 		if renderCnt >= renderMaxCnt {
 			e.world.SetAvgRender(float64(renderElapsedTime) / float64(renderMaxCnt) / 1000.0)
 			renderCnt = 0
@@ -208,11 +213,6 @@ func (e *engine) loop() {
 		}
 
 		// time.Sleep(time.Millisecond * 1)
-
-		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
-		// Finish rendering
-		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
-		e.sceneGraph.PostVisit()
 
 		fpsCnt++
 		previousT = currentT
