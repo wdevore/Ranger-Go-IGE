@@ -9,6 +9,7 @@ type INodeManager interface {
 	SetPreNode(INode)
 	PreVisit()
 	Visit(interpolation float64) bool
+	SetPostNode(INode)
 	PostVisit()
 
 	Update(msPerUpdate, secPerUpdate float64)

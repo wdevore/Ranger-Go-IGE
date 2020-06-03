@@ -12,6 +12,7 @@ type IEngine interface {
 	World() IWorld
 
 	SetPreNode(INode)
+	SetPostNode(INode)
 
 	// PushStart pushes the given node onto the stack as the
 	// first scene to start once the engine's configuration in complete.

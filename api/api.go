@@ -63,3 +63,6 @@ const (
 	// PositionIterations is a resolution adjustment
 	PositionIterations = 3
 )
+
+// TextSetter is a functor for clients to what to notify objects of new text
+type TextSetter func(string)

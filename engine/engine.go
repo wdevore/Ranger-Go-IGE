@@ -10,6 +10,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/display"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
+	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
 const (
@@ -45,6 +47,7 @@ type engine struct {
 	// Debug
 	// -----------------------------------------
 	stepEnabled bool
+	postNode    api.INode
 }
 
 // Construct creates a new Engine
@@ -78,6 +81,26 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 
 	if err != nil {
 		return nil, errors.New("Engine.Construct World Configure error: " + err.Error())
+	}
+
+	// ---------------------------------------------------------
+	if o.world.Properties().Engine.ShowTimingInfo {
+		o.postNode, err = custom.NewDynamicTextNode("TimingInfo", 500, o.world, nil)
+		if err != nil {
+			return nil, err
+		}
+		o.postNode.SetScale(1.0)
+		// Set position to lower-left corner
+		dvr := o.world.Properties().Window.DeviceRes
+		o.postNode.SetPosition(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0)
+
+		gt2 := o.postNode.(api.IDynamicText)
+		gt2.SetText("")
+		gt2.SetPixelSize(2.0)
+		gic := o.postNode.(api.IColor)
+		gic.SetColor(color.NewPaletteInt64(color.LightOrange).Array())
+
+		o.SetPostNode(o.postNode)
 	}
 
 	return o, nil
@@ -173,9 +196,9 @@ func (e *engine) loop() {
 
 		secondCnt += elapsedNano
 		if secondCnt >= second {
-			// if engProps.ShowTimingInfo {
-			// 	e.drawStats(e.world.Fps(), e.world.Ups(), e.world.AvgRender())
-			// }
+			if engProps.ShowTimingInfo {
+				e.drawStats(e.world.Fps(), e.world.Ups(), e.world.AvgRender())
+			}
 
 			e.world.SetFps(fpsCnt)
 			e.world.SetUps(upsCnt)
@@ -202,6 +225,10 @@ func (e *engine) SetPreNode(node api.INode) {
 	e.sceneGraph.SetPreNode(node)
 }
 
+func (e *engine) SetPostNode(node api.INode) {
+	e.sceneGraph.SetPostNode(node)
+}
+
 func (e *engine) PushStart(scene api.INode) {
 	// Post process all Atlases
 	e.world.PostProcess()
@@ -223,6 +250,13 @@ func (e *engine) RouteEvents(event api.IEvent) {
 }
 
 func (e *engine) drawStats(fps, ups int, avgRend float64) {
-	fmt.Printf("fps (%2d), ups (%2d), rend (%2.4f)\n", fps, ups, avgRend)
-	// fmt.Printf("secCnt %d, fpsCnt %d, presC %d\n", secondCnt, fpsCnt, presentElapsedCnt)
+	// fmt.Printf("fps (%2d), ups (%2d), rend (%2.4f)\n", fps, ups, avgRend)
+	if e.postNode != nil {
+		w := e.world
+		if w.Properties().Engine.ShowTimingInfo {
+			gt2 := e.postNode.(api.IDynamicText)
+			s := fmt.Sprintf("f:%d u:%d r:%2.3f", w.Fps(), w.Ups(), w.AvgRender())
+			gt2.SetText(s)
+		}
+	}
 }

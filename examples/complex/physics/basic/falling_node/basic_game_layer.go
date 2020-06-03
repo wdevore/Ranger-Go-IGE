@@ -41,7 +41,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	if err != nil {
 		return err
 	}
-	g.circle.SetScale(10.0)
+	g.circle.SetScale(5.0)
 	g.circle.SetPosition(25.0, 25.0)
 	gol2 := g.circle.(*custom.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
@@ -116,10 +116,39 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 // EnterNode called when a node is entering the stage
 func (g *gameLayer) EnterNode(man api.INodeManager) {
 	man.RegisterTarget(g)
+	man.RegisterEventTarget(g)
 }
 
 // ExitNode called when a node is exiting stage
 func (g *gameLayer) ExitNode(man api.INodeManager) {
 	man.UnRegisterTarget(g)
+	man.UnRegisterEventTarget(g)
 	g.b2World.Destroy()
+}
+
+// -----------------------------------------------------
+// IO events
+// -----------------------------------------------------
+
+func (g *gameLayer) Handle(event api.IEvent) bool {
+	if event.GetType() == api.IOTypeKeyboard {
+		// fmt.Println(event.GetKeyScan())
+		switch event.GetKeyScan() {
+		case 65: // A
+			if event.GetState() == 1 {
+			}
+		case 82: // R
+			if event.GetState() == 1 {
+				x := 25.0
+				y := 25.0
+
+				g.circle.SetPosition(float32(x), float32(y))
+				g.b2Body.SetTransform(box2d.MakeB2Vec2(x, y), 0.0)
+				g.b2Body.SetLinearVelocity(box2d.MakeB2Vec2(0.0, 0.0))
+				g.b2Body.SetAngularVelocity(0.0)
+			}
+		}
+	}
+
+	return false
 }

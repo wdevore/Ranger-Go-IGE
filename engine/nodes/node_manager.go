@@ -26,14 +26,20 @@ type nodeManager struct {
 	timingTargets api.INodeList
 	eventTargets  api.INodeList
 
-	// Used during preVisit
+	// Used during PreVisit
 	preNode api.INode
+
+	// Used during PostVisit
+	postNode api.INode
 
 	projection *display.Projection
 	viewport   *display.Viewport
 
 	projLoc int32
 	viewLoc int32
+
+	preM4  api.IMatrix4
+	postM4 api.IMatrix4
 }
 
 // NewNodeManager constructs a manager for node.
@@ -53,6 +59,8 @@ func NewNodeManager(world api.IWorld) api.INodeManager {
 	o.timingTargets = NewNodeList()
 	o.eventTargets = NewNodeList()
 
+	o.preM4 = maths.NewMatrix4()
+	o.postM4 = maths.NewMatrix4()
 	return o
 }
 
@@ -84,6 +92,9 @@ func (n *nodeManager) Configure() error {
 	// Initialize will make an Identity matrix the current matrix ready to be
 	// placed on the stack on the first save() call.
 	n.transStack.Initialize(identity)
+
+	dvr := n.world.Properties().Window.DeviceRes
+	n.postM4.SetTranslate3Comp(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0, 0.0)
 
 	return nil
 }
@@ -143,13 +154,18 @@ func (n *nodeManager) SetPreNode(node api.INode) {
 	n.preNode = node
 }
 
+func (n *nodeManager) SetPostNode(node api.INode) {
+	n.postNode = node
+}
+
 func (n *nodeManager) PreVisit() {
 	// Custom node activities, for example, clear background
 	// using custom nodes.
 	if n.preNode != nil {
 		nodeRender, isRenderType := n.preNode.(api.IRender)
 		if isRenderType {
-			nodeRender.Draw(nil)
+			n.preNode.Update(0.0, 0.0)
+			nodeRender.Draw(n.preM4)
 		} else {
 			log.Fatalf("NodeManager.PreVisit: oops, PreNode '%s' doesn't implement IRender.Draw method", n.preNode)
 		}
@@ -197,6 +213,16 @@ func (n *nodeManager) Visit(interpolation float64) bool {
 }
 
 func (n *nodeManager) PostVisit() {
+	// Custom node activities, for example, FPS visual
+	if n.postNode != nil {
+		nodeRender, isRenderType := n.postNode.(api.IRender)
+		if isRenderType {
+			n.postNode.Update(0.0, 0.0)
+			nodeRender.Draw(n.postM4)
+		} else {
+			log.Fatalf("NodeManager.PostVisit: oops, PostNode '%s' doesn't implement IRender.Draw method", n.postNode)
+		}
+	}
 }
 
 func (n *nodeManager) PopNode() api.INode {

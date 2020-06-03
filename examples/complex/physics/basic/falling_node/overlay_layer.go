@@ -17,7 +17,6 @@ type overlayLayer struct {
 	underLayPoint  api.IPoint
 	underLayLocTxt api.INode
 
-	timing     api.INode
 	viewLocTxt api.INode
 	viewPoint  api.IPoint
 }
@@ -41,7 +40,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	dvr := world.Properties().Window.DeviceRes
 
 	// ---------------------------------------------------------
-	g.viewLocTxt, err = custom.NewDynamicTextNode("Text", 500, world, g)
+	g.viewLocTxt, err = custom.NewDynamicTextNode("Viewspace", 500, world, g)
 	if err != nil {
 		return err
 	}
@@ -49,11 +48,11 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	g.viewLocTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
 	gd := g.viewLocTxt.(*custom.DynamicTextNode)
 	gd.SetText("(0,0)")
-	gd.SetColor(color.NewPaletteInt64(color.PanSkin))
+	gd.SetColor(color.NewPaletteInt64(color.PanSkin).Array())
 	gd.SetPixelSize(2.0)
 
 	// ---------------------------------------------------------
-	g.underLayLocTxt, err = custom.NewDynamicTextNode("Text", 500, world, g)
+	g.underLayLocTxt, err = custom.NewDynamicTextNode("underlaySpace", 500, world, g)
 	if err != nil {
 		return err
 	}
@@ -61,25 +60,8 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	g.underLayLocTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-60.0))
 	gud := g.underLayLocTxt.(*custom.DynamicTextNode)
 	gud.SetText("(0,0)")
-	gud.SetColor(color.NewPaletteInt64(color.PanSkin))
+	gud.SetColor(color.NewPaletteInt64(color.PanSkin).Array())
 	gud.SetPixelSize(2.0)
-
-	// ---------------------------------------------------------
-	if world.Properties().Engine.ShowTimingInfo {
-		g.timing, err = custom.NewDynamicTextNode("TimingInfo", 500, world, g)
-		if err != nil {
-			return err
-		}
-		g.timing.SetScale(1.0)
-		// Set position to lower-left corner
-		dvr := world.Properties().Window.DeviceRes
-		g.timing.SetPosition(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0)
-
-		gt2 := g.timing.(*custom.DynamicTextNode)
-		gt2.SetText("-")
-		gt2.SetPixelSize(2.0)
-		gt2.SetColor(color.NewPaletteInt64(color.LightOrange))
-	}
 
 	// ---------------------------------------------------------
 	shline, err := custom.NewStaticHLineNode("HLine", world, g)
@@ -114,13 +96,6 @@ func (g *overlayLayer) Update(msPerUpdate, secPerUpdate float64) {
 	text = fmt.Sprintf("G (%d, %d)", int(g.underLayPoint.X()), int(g.underLayPoint.Y()))
 	gd = g.underLayLocTxt.(*custom.DynamicTextNode)
 	gd.SetText(text)
-
-	w := g.World()
-	if w.Properties().Engine.ShowTimingInfo {
-		gt := g.timing.(*custom.DynamicTextNode)
-		s := fmt.Sprintf("f:%d u:%d r:%2.3f", w.Fps(), w.Ups(), w.AvgRender())
-		gt.SetText(s)
-	}
 }
 
 // -----------------------------------------------------

@@ -18,7 +18,8 @@ type DynamicTextNode struct {
 	pixelCount   int
 	pixelBufSize int
 
-	text                 string
+	text string
+
 	pixelSize            float32
 	bottomJustified      bool
 	bottomVerticalOffset float32
@@ -34,7 +35,9 @@ func NewDynamicTextNode(name string, pixelBufSize int, world api.IWorld, parent 
 	o.Initialize(name)
 	o.SetParent(parent)
 	o.pixelBufSize = pixelBufSize
-	parent.AddChild(o)
+	if parent != nil {
+		parent.AddChild(o)
+	}
 
 	if err := o.Build(world); err != nil {
 		return nil, err
@@ -81,6 +84,11 @@ func (r *DynamicTextNode) populate() {
 	r.shape.SetIndices(indices)
 }
 
+// Text returns current text
+func (r *DynamicTextNode) Text() string {
+	return r.text
+}
+
 // SetText sets the text displayed
 func (r *DynamicTextNode) SetText(text string) {
 	r.text = text
@@ -108,9 +116,14 @@ func (r *DynamicTextNode) SetVerticalOffset(offset float32) {
 	r.bottomVerticalOffset = offset
 }
 
-// SetColor sets line color
-func (r *DynamicTextNode) SetColor(color api.IPalette) {
-	r.color = color.Array()
+// SetColor sets color
+func (r *DynamicTextNode) SetColor(color []float32) {
+	r.color = color
+}
+
+// Color gets the current color
+func (r *DynamicTextNode) Color() []float32 {
+	return r.color
 }
 
 // SetAlpha sets the current color's alpha channel 0.0->1.0

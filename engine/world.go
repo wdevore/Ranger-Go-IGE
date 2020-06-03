@@ -131,7 +131,6 @@ func (w *world) Configure() error {
 	w.shader.Use()
 
 	// Create a graphic that will store Static shapes
-	// pass functor for populating
 	w.staticAtlas = rendering.NewAtlas()
 	renG := rendering.NewRenderGraphic(w.staticAtlas, w.shader)
 	w.AddRenderGraphic(renG, api.StaticRenderGraphic)
