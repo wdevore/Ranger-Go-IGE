@@ -6,6 +6,7 @@ type INodeManager interface {
 
 	ClearEnabled(bool)
 
+	SetPreNode(INode)
 	PreVisit()
 	Visit(interpolation float64) bool
 	PostVisit()

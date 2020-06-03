@@ -3,6 +3,7 @@ package nodes
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 
@@ -24,6 +25,9 @@ type nodeManager struct {
 
 	timingTargets api.INodeList
 	eventTargets  api.INodeList
+
+	// Used during preVisit
+	preNode api.INode
 
 	projection *display.Projection
 	viewport   *display.Viewport
@@ -134,7 +138,21 @@ func (n *nodeManager) ClearEnabled(clear bool) {
 	n.clearBackground = clear
 }
 
+func (n *nodeManager) SetPreNode(node api.INode) {
+	n.preNode = node
+}
+
 func (n *nodeManager) PreVisit() {
+	// Custom node activities, for example, clear background
+	// using custom nodes.
+	if n.preNode != nil {
+		nodeRender, isRenderType := n.preNode.(api.IRender)
+		if isRenderType {
+			nodeRender.Draw(nil)
+		} else {
+			log.Fatalf("NodeManager.PreVisit: oops, PreNode '%s' doesn't implement IRender.Draw method", n.preNode)
+		}
+	}
 }
 
 func (n *nodeManager) Visit(interpolation float64) bool {
