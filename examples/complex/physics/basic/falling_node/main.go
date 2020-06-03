@@ -29,25 +29,6 @@ func main() {
 
 	engine.SetPreNode(preNode)
 
-	// ---------------------------------------------------------
-	// if world.Properties().Engine.ShowTimingInfo {
-	// 	postNode, err := custom.NewDynamicTextNode("TimingInfo", 500, world, nil)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	postNode.SetScale(1.0)
-	// 	// Set position to lower-left corner
-	// 	dvr := world.Properties().Window.DeviceRes
-	// 	postNode.SetPosition(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0)
-
-	// 	gt2 := postNode.(*custom.DynamicTextNode)
-	// 	gt2.SetText("Ranger")
-	// 	gt2.SetPixelSize(2.0)
-	// 	gt2.SetColor(color.NewPaletteInt64(color.LightOrange))
-
-	// 	engine.SetPostNode(postNode)
-	// }
-
 	splash := newBasicSplashScene("Splash", nil)
 	err = splash.Build(world)
 	if err != nil {
