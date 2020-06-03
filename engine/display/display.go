@@ -24,6 +24,7 @@ type GlfwDisplay struct {
 
 	clearColor api.IPalette
 	clearMask  uint32
+	clearStyle int // See config.go
 }
 
 // NewDisplay creates a new display
@@ -32,8 +33,39 @@ func NewDisplay(engine api.IEngine) *GlfwDisplay {
 	o.engine = engine
 	o.clearMask = gl.COLOR_BUFFER_BIT
 	o.polygonMode = false
-
+	o.clearStyle = 1 // default to single color
 	return o
+}
+
+// Initialize init GLFW and GL
+func (g *GlfwDisplay) Initialize(world api.IWorld) error {
+	err := g.initGLFW(world)
+
+	if err != nil {
+		return err
+	}
+
+	switch world.Properties().Window.ClearStyle {
+	case "None":
+		g.clearStyle = 0
+	case "SingleColor":
+		g.clearStyle = 1
+	case "Checkerboard":
+		g.clearStyle = 2
+	case "Custom":
+		g.clearStyle = 3
+	}
+
+	err = g.initGL(world)
+
+	if err != nil {
+		return err
+	}
+
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
+	return nil
 }
 
 // Closed checks the window's close status
@@ -62,6 +94,9 @@ func (g *GlfwDisplay) SetClearColor(rc, gc, bc, ac float32) {
 
 // Pre performs pre rendering tasks
 func (g *GlfwDisplay) Pre() {
+	// For some reason NOT calling gl.Clear causes time.Now() to
+	// report large time values. For now clear is called
+	// regardless of any clearing an INode may perform.
 	gl.Clear(g.clearMask)
 }
 
@@ -70,26 +105,6 @@ func (g *GlfwDisplay) Pre() {
 // engine appears frozen.
 func (g *GlfwDisplay) Swap() {
 	g.window.SwapBuffers()
-}
-
-// Initialize init GLFW and GL
-func (g *GlfwDisplay) Initialize(world api.IWorld) error {
-	err := g.initGLFW(world)
-
-	if err != nil {
-		return err
-	}
-
-	err = g.initGL(world)
-
-	if err != nil {
-		return err
-	}
-
-	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
-	return nil
 }
 
 func (g *GlfwDisplay) initGLFW(world api.IWorld) error {

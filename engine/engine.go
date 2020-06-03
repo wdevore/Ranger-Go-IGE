@@ -198,6 +198,10 @@ func (e *engine) loop() {
 	}
 }
 
+func (e *engine) SetPreNode(node api.INode) {
+	e.sceneGraph.SetPreNode(node)
+}
+
 func (e *engine) PushStart(scene api.INode) {
 	// Post process all Atlases
 	e.world.PostProcess()

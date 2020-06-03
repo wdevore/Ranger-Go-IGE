@@ -104,5 +104,10 @@ https://github.com/McNopper/OpenGL
 https://user.xmission.com/~nate/glut.html
 https://www.desultoryquest.com/blog/drawing-anti-aliased-circular-points-using-opengl-slash-webgl/ anti-aliased points
 
+### Shaders
+https://www.geeks3d.com/hacklab/20190225/demo-checkerboard-in-glsl/
+https://stackoverflow.com/questions/4694608/glsl-checkerboard-pattern
+https://thebookofshaders.com/09/
+
 ## Mobile (Android)
 https://github.com/golang/go/wiki/Mobile

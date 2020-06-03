@@ -10,8 +10,8 @@ type IEngine interface {
 
 	// World provides access to the engine's world properties
 	World() IWorld
-	// SetClearColor sets the background clear color
-	// SetClearColor(color color.RGBA)
+
+	SetPreNode(INode)
 
 	// PushStart pushes the given node onto the stack as the
 	// first scene to start once the engine's configuration in complete.

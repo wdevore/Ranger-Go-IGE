@@ -18,7 +18,9 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Zoom Node
 * **Done** Filters: transform and translate
 * **Done** Particles
-* --*Workng*-- Animation (tweening) -- Using tanema's library
+* **Done** Animation (tweening) -- Using tanema's library
+* --*Workng*-- Animation (tweening) -- Scene
+* Shaders with interleved vertex/color, for example, checkboards
 * Box2D physics (with space ship)
 * Stippling with OpenGL patterns
 * Zones combined with Zoom
