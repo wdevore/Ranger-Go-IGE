@@ -32,6 +32,7 @@
     },
     "FullScreen": false,
     "Orientation": "Landscape",
+    "ViewScale": 1.0,
     "Position": {
       "X": 100,
       "Y": 100

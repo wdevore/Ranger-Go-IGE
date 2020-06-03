@@ -46,6 +46,7 @@ type windowJSON struct {
 	DeviceRes    dimensionJSON
 	FullScreen   bool
 	Orientation  string
+	ViewScale    float64
 	Position     int2DCoordJSON
 	Title        string
 }
