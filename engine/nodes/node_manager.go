@@ -76,7 +76,6 @@ func (n *nodeManager) Configure() error {
 	pm := n.projection.Matrix().Matrix()
 	gl.UniformMatrix4fv(n.projLoc, 1, false, &pm[0])
 
-	// vm := n.viewSpace.Matrix()
 	vm := n.world.Viewspace().Matrix()
 	gl.UniformMatrix4fv(n.viewLoc, 1, false, &vm[0])
 
@@ -123,14 +122,16 @@ func (n *nodeManager) configureProjections(world api.IWorld) {
 	}
 
 	// Note: OpenGL's +Y axis is upwards relative to window device.
-	world.Viewspace().SetTranslate3Comp(offsetX, offsetY, 1.0)
+	vpM := world.Viewspace()
+	vpM.SetTranslate3Comp(offsetX, offsetY, 1.0)
 
 	// Rarely would you perform a Scale or Rotation on the view-space.
 	// But you could if you need to.
-	// world.Viewspace().ScaleByComp(1.0, -1.0, 1.0)
+	scale := world.Properties().Window.ViewScale
+	vpM.ScaleByComp(float32(scale), float32(scale), 1.0)
 
 	invVSP := world.InvertedViewspace()
-	invVSP.Set(world.Viewspace())
+	invVSP.Set(vpM)
 	invVSP.Invert()
 }
 
