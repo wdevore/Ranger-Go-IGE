@@ -16,10 +16,14 @@ const (
 	DarkerGray = uint64(0x404040ff)
 	// DarkGray color
 	DarkGray = uint64(0x505050ff)
-	// LightGray color
-	LightGray = uint64(0x646464ff)
 	// Gray color
 	Gray = uint64(0xaaaaaaff)
+	// LightGray color
+	LightGray = uint64(0x646464ff)
+	// LighterGray color
+	LighterGray = uint64(0x848484ff)
+	// LighterGray color
+	LightestGray = uint64(0xa4a4a4ff)
 	// Silver color
 	Silver = uint64(0xddddddff)
 
