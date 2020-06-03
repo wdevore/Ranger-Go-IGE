@@ -13,7 +13,6 @@ import (
 type overlayLayer struct {
 	nodes.Node
 
-	timing     api.INode
 	viewLocTxt api.INode
 	viewPoint  api.IPoint
 }
@@ -45,22 +44,6 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	gd.SetColor(color.NewPaletteInt64(color.White).Array())
 	gd.SetPixelSize(1.0)
 
-	if world.Properties().Engine.ShowTimingInfo {
-		g.timing, err = custom.NewDynamicTextNode("TimingInfo", 500, world, g)
-		if err != nil {
-			return err
-		}
-		g.timing.SetScale(1.0)
-		// Set position to lower-left corner
-		dvr := world.Properties().Window.DeviceRes
-		g.timing.SetPosition(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0)
-
-		gt2 := g.timing.(*custom.DynamicTextNode)
-		gt2.SetText("-")
-		gt2.SetPixelSize(2.0)
-		gt2.SetColor(color.NewPaletteInt64(color.LightOrange).Array())
-	}
-
 	// ---------------------------------------------------------
 	shline, err := custom.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
@@ -89,13 +72,6 @@ func (g *overlayLayer) Update(msPerUpdate, secPerUpdate float64) {
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
 	gd := g.viewLocTxt.(*custom.DynamicTextNode)
 	gd.SetText(text)
-
-	w := g.World()
-	if w.Properties().Engine.ShowTimingInfo {
-		gt := g.timing.(*custom.DynamicTextNode)
-		s := fmt.Sprintf("f:%d u:%d r:%2.3f", w.Fps(), w.Ups(), w.AvgRender())
-		gt.SetText(s)
-	}
 }
 
 // -----------------------------------------------------

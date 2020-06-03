@@ -28,8 +28,6 @@ func (s *sceneSplash) Build(world api.IWorld) error {
 
 	newBasicGameLayer("Game Layer", world, s)
 
-	newOverlayLayer("Overlay Layer", world, s)
-
 	return nil
 }
 

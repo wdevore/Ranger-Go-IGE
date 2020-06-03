@@ -32,8 +32,6 @@ func (s *sceneSplash) Build(world api.IWorld) error {
 		return err
 	}
 
-	newOverlayLayer("Overlay Layer", world, s)
-
 	return nil
 }
 

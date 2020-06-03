@@ -63,7 +63,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	gtr.SetColor(color.NewPaletteInt64WithAlpha(color.DeepPink, 0.5))
 
 	// ---------------------------------------------------------
-	g.viewCoords, err = custom.NewDynamicTextNode("ViewCoords", 200, world, g)
+	g.viewCoords, err = custom.NewDynamicTextNode("ViewCoords", 500, world, g)
 	if err != nil {
 		return err
 	}

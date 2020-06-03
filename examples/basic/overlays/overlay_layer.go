@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
@@ -15,8 +13,6 @@ type overlayLayer struct {
 
 	angle float64
 	text  api.INode
-
-	timing api.INode
 }
 
 func newOverlayLayer(name string, world api.IWorld, parent api.INode) api.INode {
@@ -43,22 +39,6 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	gt.SetPixelSize(10.0)
 	gt.SetColor(color.NewPaletteInt64(color.Lime).Array())
 
-	if world.Properties().Engine.ShowTimingInfo {
-		g.timing, err = custom.NewDynamicTextNode("TimingInfo", 500, world, g)
-		if err != nil {
-			return err
-		}
-		g.timing.SetScale(1.0)
-		// Set position to lower-left corner
-		dvr := world.Properties().Window.DeviceRes
-		g.timing.SetPosition(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0)
-
-		gt2 := g.timing.(*custom.DynamicTextNode)
-		gt2.SetText("-")
-		gt2.SetPixelSize(2.0)
-		gt2.SetColor(color.NewPaletteInt64(color.LightGray).Array())
-	}
-
 	return nil
 }
 
@@ -66,13 +46,6 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 func (g *overlayLayer) Update(msPerUpdate, secPerUpdate float64) {
 	g.text.SetRotation(maths.DegreeToRadians * g.angle)
 	g.angle -= 0.25
-
-	w := g.World()
-	if w.Properties().Engine.ShowTimingInfo {
-		gt := g.timing.(*custom.DynamicTextNode)
-		s := fmt.Sprintf("f:%d u:%d r:%2.3f", w.Fps(), w.Ups(), w.AvgRender())
-		gt.SetText(s)
-	}
 }
 
 // -----------------------------------------------------

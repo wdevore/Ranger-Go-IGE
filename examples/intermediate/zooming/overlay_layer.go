@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
@@ -48,47 +46,5 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	gvl := svline.(*custom.StaticVLineNode)
 	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
 
-	if world.Properties().Engine.ShowTimingInfo {
-		g.timing, err = custom.NewDynamicTextNode("TimingInfo", 500, world, g)
-		if err != nil {
-			return err
-		}
-		g.timing.SetScale(1.0)
-		// Set position to lower-left corner
-		dvr := world.Properties().Window.DeviceRes
-		g.timing.SetPosition(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0)
-
-		gt2 := g.timing.(*custom.DynamicTextNode)
-		gt2.SetText("-")
-		gt2.SetPixelSize(2.0)
-		gt2.SetColor(color.NewPaletteInt64(color.LightGray).Array())
-	}
-
 	return nil
-}
-
-// Update updates the time properties of a node.
-func (g *overlayLayer) Update(msPerUpdate, secPerUpdate float64) {
-
-	w := g.World()
-	if w.Properties().Engine.ShowTimingInfo {
-		gt := g.timing.(*custom.DynamicTextNode)
-		s := fmt.Sprintf("f:%d u:%d r:%2.3f", w.Fps(), w.Ups(), w.AvgRender())
-		gt.SetText(s)
-	}
-
-}
-
-// -----------------------------------------------------
-// Node lifecycles
-// -----------------------------------------------------
-
-// EnterNode called when a node is entering the stage
-func (g *overlayLayer) EnterNode(man api.INodeManager) {
-	man.RegisterTarget(g)
-}
-
-// ExitNode called when a node is exiting stage
-func (g *overlayLayer) ExitNode(man api.INodeManager) {
-	man.UnRegisterTarget(g)
 }
