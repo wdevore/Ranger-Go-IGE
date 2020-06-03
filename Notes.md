@@ -104,6 +104,14 @@ https://github.com/McNopper/OpenGL
 https://user.xmission.com/~nate/glut.html
 https://www.desultoryquest.com/blog/drawing-anti-aliased-circular-points-using-opengl-slash-webgl/ anti-aliased points
 
+### Stippling Dashes
+https://stackoverflow.com/questions/52928678/dashed-line-in-opengl3 stippling
+http://jcgt.org/published/0002/02/08/paper.pdf
+https://stackoverflow.com/questions/43392333/fragment-shader-for-stipple-pattern
+https://community.khronos.org/t/how-to-draw-a-line-stipple-with-es-2-0/72531/7
+Computer graphics through opengl 4.3 pg 782 2nd ed.
+https://html.developreference.com/article/14406767/fragment+shader+for+stipple+pattern
+
 ### Shaders
 https://www.geeks3d.com/hacklab/20190225/demo-checkerboard-in-glsl/
 https://stackoverflow.com/questions/4694608/glsl-checkerboard-pattern

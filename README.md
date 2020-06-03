@@ -19,10 +19,8 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Filters: transform and translate
 * **Done** Particles
 * **Done** Animation (tweening) -- Using tanema's library
-* --*Workng*-- Animation (tweening) -- Scene
-* Shaders with interleved vertex/color, for example, checkboards
-* Box2D physics (with space ship)
-* Stippling with OpenGL patterns
+* **Done** Animation (tweening) -- Scene (manual)
+* --*Workng*-- Box2D physics (with space ship)
 * Zones combined with Zoom
 * Interpolation
 * Simple motion animations
@@ -38,9 +36,12 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
   * Text
   * Dialog
   * Grouping (i.e. Radio buttons)
-* Sprite Textures
+* Shaders with interleved vertex/color, for example, checkboards
+* Sprite Textures (quads)
+* Stippling with OpenGL patterns
 * Custom vector font (needs lower case completion)
 * Vector Fonts via SVG import
+* Scene Transitioning
 * Joysticks and Gamepads
 * OpenGL ES (https://github.com/golang/go/wiki/Mobile)
 
