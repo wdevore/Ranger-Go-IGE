@@ -13,17 +13,13 @@ import (
 type gameLayer struct {
 	nodes.Node
 
-	fallingCirPos    api.IPoint
-	fallingCirNode   api.INode
-	b2FallingCirBody *box2d.B2Body
+	cirPhyComp *cirPhysicsComponent
+	sqrPhyComp *boxPhysicsComponent
+	triPhyComp *triPhysicsComponent
 
-	fallingSqrPos    api.IPoint
-	fallingSqrNode   api.INode
-	b2FallingSqrBody *box2d.B2Body
-
-	fallingTriPos    api.IPoint
-	fallingTriNode   api.INode
-	b2FallingTriBody *box2d.B2Body
+	fallingCirNode api.INode
+	fallingSqrNode api.INode
+	fallingTriNode api.INode
 
 	groundLineNode api.INode
 
@@ -91,18 +87,18 @@ func (g *gameLayer) addGround() error {
 func (g *gameLayer) addCircle() error {
 	var err error
 
-	g.fallingCirPos = geometry.NewPointUsing(0.0, 15.0)
+	fallingCirPos := geometry.NewPointUsing(0.0, 15.0)
 	g.fallingCirNode, err = custom.NewStaticCircleNode("Circle", true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.fallingCirNode.SetScale(3.0)
-	// g.circleNode.SetPosition(100.0, 100.0)
-	g.fallingCirNode.SetPosition(g.fallingCirPos.X(), g.fallingCirPos.Y())
+	g.fallingCirNode.SetPosition(fallingCirPos.X(), fallingCirPos.Y())
 	gol2 := g.fallingCirNode.(*custom.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
-	buildCirclePhysics(g)
+	g.cirPhyComp = newCirPhysicsComponent()
+	g.cirPhyComp.Build(&g.b2World, g.fallingCirNode, fallingCirPos)
 
 	return nil
 }
@@ -110,17 +106,18 @@ func (g *gameLayer) addCircle() error {
 func (g *gameLayer) addSquare() error {
 	var err error
 
-	g.fallingSqrPos = geometry.NewPointUsing(0.0, 10.0)
+	fallingSqrPos := geometry.NewPointUsing(0.0, 10.0)
 	g.fallingSqrNode, err = custom.NewStaticSquareNode("Square", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.fallingSqrNode.SetScale(3.0)
-	g.fallingSqrNode.SetPosition(g.fallingSqrPos.X(), g.fallingSqrPos.Y())
+	g.fallingSqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
 	gol2 := g.fallingSqrNode.(*custom.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.Aqua))
 
-	buildSquarePhysics(g)
+	g.sqrPhyComp = newBoxPhysicsComponent()
+	g.sqrPhyComp.Build(&g.b2World, g.fallingSqrNode, fallingSqrPos)
 
 	return nil
 }
@@ -128,17 +125,18 @@ func (g *gameLayer) addSquare() error {
 func (g *gameLayer) addTri() error {
 	var err error
 
-	g.fallingTriPos = geometry.NewPointUsing(0.0, 5.0)
+	fallingTriPos := geometry.NewPointUsing(0.0, 5.0)
 	g.fallingTriNode, err = custom.NewStaticTriangleNode("Triangle", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.fallingTriNode.SetScale(3.0)
-	g.fallingTriNode.SetPosition(g.fallingTriPos.X(), g.fallingTriPos.Y())
+	g.fallingTriNode.SetPosition(fallingTriPos.X(), fallingTriPos.Y())
 	gol2 := g.fallingTriNode.(*custom.StaticTriangleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.Pink))
 
-	buildTrianglePhysics(g)
+	g.triPhyComp = newTriPhysicsComponent()
+	g.triPhyComp.Build(&g.b2World, g.fallingTriNode, fallingTriPos)
 
 	return nil
 }
@@ -156,27 +154,13 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 }
 
 func (g *gameLayer) UpdateNode(msPerUpdate, secPerUpdate float64) {
-	if g.b2FallingCirBody.IsActive() {
-		pos := g.b2FallingCirBody.GetPosition()
-		g.fallingCirNode.SetPosition(float32(pos.X), float32(pos.Y))
+	g.cirPhyComp.Update(msPerUpdate, secPerUpdate)
 
-		rot := g.b2FallingCirBody.GetAngle()
-		g.fallingCirNode.SetRotation(rot)
+	// -----------------------------------------------------------
+	g.sqrPhyComp.Update(msPerUpdate, secPerUpdate)
 
-		// -----------------------------------------------------------
-		pos = g.b2FallingSqrBody.GetPosition()
-		g.fallingSqrNode.SetPosition(float32(pos.X), float32(pos.Y))
-
-		rot = g.b2FallingSqrBody.GetAngle()
-		g.fallingSqrNode.SetRotation(rot)
-
-		// -----------------------------------------------------------
-		pos = g.b2FallingTriBody.GetPosition()
-		g.fallingTriNode.SetPosition(float32(pos.X), float32(pos.Y))
-
-		rot = g.b2FallingTriBody.GetAngle()
-		g.fallingTriNode.SetRotation(rot)
-	}
+	// -----------------------------------------------------------
+	g.triPhyComp.Update(msPerUpdate, secPerUpdate)
 }
 
 // -----------------------------------------------------
@@ -209,32 +193,9 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 			}
 		case 82: // R
 			if event.GetState() == 1 {
-				x := g.fallingCirPos.X()
-				y := g.fallingCirPos.Y()
-
-				g.fallingCirNode.SetPosition(float32(x), float32(y))
-				g.b2FallingCirBody.SetTransform(box2d.MakeB2Vec2(float64(x), float64(y)), 0.0)
-				g.b2FallingCirBody.SetLinearVelocity(box2d.MakeB2Vec2(0.0, 0.0))
-				g.b2FallingCirBody.SetAngularVelocity(0.0)
-				g.b2FallingCirBody.SetAwake(true)
-
-				x = g.fallingSqrPos.X()
-				y = g.fallingSqrPos.Y()
-
-				g.fallingSqrNode.SetPosition(float32(x), float32(y))
-				g.b2FallingSqrBody.SetTransform(box2d.MakeB2Vec2(float64(x), float64(y)), 0.0)
-				g.b2FallingSqrBody.SetLinearVelocity(box2d.MakeB2Vec2(0.0, 0.0))
-				g.b2FallingSqrBody.SetAngularVelocity(0.0)
-				g.b2FallingSqrBody.SetAwake(true)
-
-				x = g.fallingTriPos.X()
-				y = g.fallingTriPos.Y()
-
-				g.fallingTriNode.SetPosition(float32(x), float32(y))
-				g.b2FallingTriBody.SetTransform(box2d.MakeB2Vec2(float64(x), float64(y)), 0.0)
-				g.b2FallingTriBody.SetLinearVelocity(box2d.MakeB2Vec2(0.0, 0.0))
-				g.b2FallingTriBody.SetAngularVelocity(0.0)
-				g.b2FallingTriBody.SetAwake(true)
+				g.cirPhyComp.Reset()
+				g.sqrPhyComp.Reset()
+				g.triPhyComp.Reset()
 			}
 		}
 	}
@@ -259,107 +220,6 @@ func setupPhysicsWorld(g *gameLayer) {
 
 	// Construct a world object, which will hold and simulate the rigid bodies.
 	g.b2World = box2d.MakeB2World(g.b2Gravity)
-}
-
-func buildSquarePhysics(g *gameLayer) {
-	// -------------------------------------------
-	// A body def used to create bodies
-	bDef := box2d.MakeB2BodyDef()
-	bDef.Type = box2d.B2BodyType.B2_dynamicBody
-
-	// Set the position of the Body
-	px := g.fallingSqrNode.Position().X()
-	py := g.fallingSqrNode.Position().Y()
-	bDef.Position.Set(
-		float64(px),
-		float64(py),
-	)
-	// An instance of a body to contain Fixtures
-	g.b2FallingSqrBody = g.b2World.CreateBody(&bDef)
-
-	// Every Fixture has a shape
-	b2Shape := box2d.MakeB2PolygonShape()
-
-	// Box2D assumes the same is defined in unit-space which
-	// means if the object is defined otherwise we need the object
-	// to return the correct value
-	tcc := g.fallingSqrNode.(*custom.StaticSquareNode)
-	b2Shape.SetAsBoxFromCenterAndAngle(
-		float64(tcc.HalfSide()), float64(tcc.HalfSide()),
-		box2d.B2Vec2{X: 0.0, Y: 0.0}, 0.0)
-
-	fd := box2d.MakeB2FixtureDef()
-	fd.Shape = &b2Shape
-	fd.Density = 1.0
-	g.b2FallingSqrBody.CreateFixtureFromDef(&fd) // attach Fixture to body
-}
-
-func buildTrianglePhysics(g *gameLayer) {
-	// -------------------------------------------
-	// A body def used to create bodies
-	bDef := box2d.MakeB2BodyDef()
-	bDef.Type = box2d.B2BodyType.B2_dynamicBody
-
-	// Set the position of the Body
-	px := g.fallingTriNode.Position().X()
-	py := g.fallingTriNode.Position().Y()
-	bDef.Position.Set(
-		float64(px),
-		float64(py),
-	)
-	// An instance of a body to contain Fixtures
-	g.b2FallingTriBody = g.b2World.CreateBody(&bDef)
-
-	tcc := g.fallingTriNode.(*custom.StaticTriangleNode)
-	// Box2D expects polygon edges to be defined at full length, not
-	// half-side
-	scale := tcc.SideLength()
-	verts := tcc.Vertices()
-
-	vertices := []box2d.B2Vec2{}
-	for i := 0; i < len(verts); i += api.XYZComponentCount {
-		vertices = append(vertices, box2d.B2Vec2{X: float64(verts[i] * scale), Y: float64(verts[i+1] * scale)})
-	}
-	// vertices = append(vertices, box2d.B2Vec2{X: float64(verts[0] * scale), Y: float64(verts[1] * scale)})
-	// vertices = append(vertices, box2d.B2Vec2{X: float64(verts[3] * scale), Y: float64(verts[4] * scale)})
-	// vertices = append(vertices, box2d.B2Vec2{X: float64(verts[6] * scale), Y: float64(verts[7] * scale)})
-
-	// Every Fixture has a shape
-	b2Shape := box2d.MakeB2PolygonShape()
-	b2Shape.Set(vertices, len(verts)/api.XYZComponentCount)
-
-	fd := box2d.MakeB2FixtureDef()
-	fd.Shape = &b2Shape
-	fd.Density = 1.0
-	g.b2FallingTriBody.CreateFixtureFromDef(&fd) // attach Fixture to body
-}
-
-func buildCirclePhysics(g *gameLayer) {
-	// -------------------------------------------
-	// A body def used to create bodies
-	bDef := box2d.MakeB2BodyDef()
-	bDef.Type = box2d.B2BodyType.B2_dynamicBody
-
-	px := g.fallingCirNode.Position().X()
-	py := g.fallingCirNode.Position().Y()
-	bDef.Position.Set(
-		float64(px),
-		float64(py),
-	)
-	// An instance of a body to contain Fixtures
-	g.b2FallingCirBody = g.b2World.CreateBody(&bDef)
-
-	// Every Fixture has a shape
-	circleShape := box2d.MakeB2CircleShape()
-	circleShape.M_p.Set(0.0, 0.0) // Relative to body position
-	tcc := g.fallingCirNode.(*custom.StaticCircleNode)
-	radius := tcc.Radius()
-	circleShape.M_radius = float64(radius)
-
-	fd := box2d.MakeB2FixtureDef()
-	fd.Shape = &circleShape
-	fd.Density = 1.0
-	g.b2FallingCirBody.CreateFixtureFromDef(&fd) // attach Fixture to body
 }
 
 func buildGroundPhysics(g *gameLayer) {
