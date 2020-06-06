@@ -150,6 +150,7 @@ func (n *nodeManager) ClearEnabled(clear bool) {
 	n.clearBackground = clear
 }
 
+// Typically called by your "main" code
 func (n *nodeManager) SetPreNode(node api.INode) {
 	n.preNode = node
 }
