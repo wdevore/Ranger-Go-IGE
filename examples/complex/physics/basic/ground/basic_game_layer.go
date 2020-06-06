@@ -13,9 +13,6 @@ import (
 type gameLayer struct {
 	nodes.Node
 
-	// mapPos   api.IPoint
-	// worldPos api.IPoint
-
 	fallingCirPos    api.IPoint
 	fallingCirNode   api.INode
 	b2FallingCirBody *box2d.B2Body
@@ -51,8 +48,6 @@ func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INo
 func (g *gameLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
-	// g.mapPos = geometry.NewPoint()
-	// g.worldPos = geometry.NewPoint()
 	setupPhysicsWorld(g)
 
 	if err := g.addCircle(); err != nil {
@@ -84,10 +79,8 @@ func (g *gameLayer) addGround() error {
 	if err != nil {
 		return err
 	}
-	g.groundLineNode.SetScale(25.0) // -25, 25
+	g.groundLineNode.SetScale(25.0)
 	g.groundLineNode.SetRotation(maths.DegreeToRadians * 10.0)
-	// g.groundLineNode.SetPosition(76.0+50.0, 0.0)
-	// g.groundLineNode.SetPosition(0.0, -5.0)
 	g.groundLineNode.SetPosition(0.0, 0.0)
 	gl2 := g.groundLineNode.(*custom.StaticHLineNode)
 	gl2.SetColor(color.NewPaletteInt64(color.Yellow))
@@ -183,19 +176,6 @@ func (g *gameLayer) UpdateNode(msPerUpdate, secPerUpdate float64) {
 
 		rot = g.b2FallingTriBody.GetAngle()
 		g.fallingTriNode.SetRotation(rot)
-
-		// g.worldPos.SetByComp(float32(pos.X), float32(pos.Y))
-		// nodes.MapWorldToNode(g.Parent(), g.worldPos, g.mapPos)
-		// fmt.Println("cir: ", pos, " : ", g.mapPos)
-
-		// g.circleNode.SetPosition(float32(pos.X)*0.5, float32(pos.Y)*0.5)
-		// g.circleNode.SetPosition(g.mapPos.X(), g.mapPos.Y())
-
-		// pos = g.b2GroundBody.GetPosition()
-		// g.worldPos.SetByComp(float32(pos.X), float32(pos.Y))
-		// nodes.MapWorldToNode(g.Parent(), g.worldPos, g.mapPos)
-		// // fmt.Println("line: ", pos, " : ", g.mapPos)
-		// g.groundLineNode.SetPosition(g.mapPos.X(), g.mapPos.Y())
 	}
 }
 
@@ -360,16 +340,8 @@ func buildCirclePhysics(g *gameLayer) {
 	bDef := box2d.MakeB2BodyDef()
 	bDef.Type = box2d.B2BodyType.B2_dynamicBody
 
-	// Map node to world-space.
-	// nodes.MapNodeToWorld(g.circleNode, g.mapPos)
-	// nodes.MapNodeToDevice(g.World(), g.circleNode, g.mapPos)
 	px := g.fallingCirNode.Position().X()
 	py := g.fallingCirNode.Position().Y()
-	// fmt.Println(g.mapPos)
-	// bDef.Position.Set(
-	// 	float64(g.mapPos.X()),
-	// 	float64(g.mapPos.Y()),
-	// )
 	bDef.Position.Set(
 		float64(px),
 		float64(py),
@@ -380,11 +352,7 @@ func buildCirclePhysics(g *gameLayer) {
 	// Every Fixture has a shape
 	circleShape := box2d.MakeB2CircleShape()
 	circleShape.M_p.Set(0.0, 0.0) // Relative to body position
-	// Box2D assumes the same is defined in unit-space which
-	// means if the object is defined otherwise we need the object
-	// to return the correct value
 	tcc := g.fallingCirNode.(*custom.StaticCircleNode)
-	// radius := g.circleNode.Scale() / 2
 	radius := tcc.Radius()
 	circleShape.M_radius = float64(radius)
 
@@ -413,7 +381,6 @@ func buildGroundPhysics(g *gameLayer) {
 	g.b2GroundBody = g.b2World.CreateBody(&bDef)
 
 	tln := g.groundLineNode.(*custom.StaticHLineNode)
-	// scale := float64(g.groundLineNode.Scale()) / 2
 	halfLength := float64(tln.HalfLength())
 	groundShape := box2d.MakeB2EdgeShape()
 	groundShape.Set(
