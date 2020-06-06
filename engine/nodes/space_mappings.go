@@ -55,17 +55,23 @@ func MapNodeToNode(sourceNode, destinationNode api.INode, nodePoint api.IPoint, 
 }
 
 // MapNodeToWorld maps node's local origin to world-space
-func MapNodeToWorld(node api.INode, viewPoint api.IPoint) {
+func MapNodeToWorld(node api.INode, point api.IPoint) {
 	ntw := NodeToWorldTransform(node, nil)
-	ntw.TransformCompToPoint(0.0, 0.0, viewPoint)
+	ntw.TransformCompToPoint(0.0, 0.0, point)
+}
+
+// MapWorldToNode maps a world-space coord to a specific node
+func MapWorldToNode(node api.INode, worldPoint, nodePoint api.IPoint) {
+	wtn := WorldToNodeTransform(node, nil) // nodePoint
+	wtn.TransformCompToPoint(worldPoint.X(), worldPoint.Y(), nodePoint)
 }
 
 // MapNodeToDevice maps node local origin to device-space (aka mouse-space)
-func MapNodeToDevice(world api.IWorld, node api.INode, viewPoint api.IPoint) {
+func MapNodeToDevice(world api.IWorld, node api.INode, devicePoint api.IPoint) {
 	ntw := NodeToWorldTransform(node, nil)
-	ntw.TransformCompToPoint(0.0, 0.0, viewPoint)
-	viewPoint.SetByComp(viewPoint.X(), viewPoint.Y())
-	viewPoint.MulPoint(world.Viewspace())
+	ntw.TransformCompToPoint(0.0, 0.0, devicePoint)
+	devicePoint.SetByComp(devicePoint.X(), devicePoint.Y())
+	devicePoint.MulPoint(world.Viewspace())
 
 	// world.ViewSpace().TransformCompToPoint(viewPoint.X(), viewPoint.Y(), viewPoint)
 }
