@@ -94,7 +94,7 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		gt2.SetText("")
 		gt2.SetPixelSize(2.0)
 		gic := o.postNode.(api.IColor)
-		gic.SetColor(color.NewPaletteInt64(color.LightGray).Array())
+		gic.SetColor(color.NewPaletteInt64(color.Peach).Array())
 
 		o.SetPostNode(o.postNode)
 	}
