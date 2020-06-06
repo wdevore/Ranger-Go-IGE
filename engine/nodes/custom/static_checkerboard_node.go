@@ -40,8 +40,8 @@ func NewStaticCheckerboardNode(name string, world api.IWorld, parent api.INode) 
 func (r *StaticCheckerboardNode) Build(world api.IWorld) error {
 	r.Node.Build(world)
 
-	r.evenColor = color.NewPaletteInt64(color.LightestGray).Array() // Lighter
-	r.oddColor = color.NewPaletteInt64(color.LighterGray).Array()   // Darker
+	r.evenColor = color.NewPaletteInt64(color.LightGray).Array()  // Lighter
+	r.oddColor = color.NewPaletteInt64(color.LighterGray).Array() // Darker
 
 	r.m4 = maths.NewMatrix4()
 	r.size = 250
