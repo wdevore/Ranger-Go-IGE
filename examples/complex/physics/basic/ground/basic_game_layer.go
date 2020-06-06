@@ -221,7 +221,6 @@ func setupPhysicsWorld(g *gameLayer) {
 func buildGroundPhysics(g *gameLayer) {
 	// A body def used to create bodies
 	bDef := box2d.MakeB2BodyDef()
-	bDef.Type = box2d.B2BodyType.B2_dynamicBody
 
 	wx := g.groundLineNode.Position().X()
 	wy := g.groundLineNode.Position().Y()
