@@ -150,10 +150,6 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	// It is generally best to keep the time step and iterations fixed.
 	g.b2World.Step(secPerUpdate, api.VelocityIterations, api.PositionIterations)
 
-	g.UpdateNode(msPerUpdate, secPerUpdate)
-}
-
-func (g *gameLayer) UpdateNode(msPerUpdate, secPerUpdate float64) {
 	g.cirPhyComp.Update(msPerUpdate, secPerUpdate)
 
 	// -----------------------------------------------------------
