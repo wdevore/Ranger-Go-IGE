@@ -89,16 +89,12 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		if err != nil {
 			return nil, err
 		}
-		o.postNode.SetScale(1.0)
-		// Set position to lower-left corner
-		dvr := o.world.Properties().Window.DeviceRes
-		o.postNode.SetPosition(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0)
 
 		gt2 := o.postNode.(api.IDynamicText)
 		gt2.SetText("")
 		gt2.SetPixelSize(2.0)
 		gic := o.postNode.(api.IColor)
-		gic.SetColor(color.NewPaletteInt64(color.LightOrange).Array())
+		gic.SetColor(color.NewPaletteInt64(color.LightGray).Array())
 
 		o.SetPostNode(o.postNode)
 	}
