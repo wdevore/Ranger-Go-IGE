@@ -12,7 +12,8 @@ import (
 type StaticSquareNode struct {
 	nodes.Node
 
-	color []float32
+	color    []float32
+	halfSide float32
 
 	shape    api.IAtlasShape
 	centered bool
@@ -66,18 +67,20 @@ func (r *StaticSquareNode) populate() {
 	var vertices []float32
 
 	if r.centered {
+		r.halfSide = 0.5
 		vertices = []float32{
-			-0.5, -0.5, 0.0,
-			0.5, -0.5, 0.0,
-			0.5, 0.5, 0.0,
-			-0.5, 0.5, 0.0,
+			-r.halfSide, -r.halfSide, 0.0,
+			r.halfSide, -r.halfSide, 0.0,
+			r.halfSide, r.halfSide, 0.0,
+			-r.halfSide, r.halfSide, 0.0,
 		}
 	} else {
+		r.halfSide = 1.0
 		vertices = []float32{
 			0.0, 0.0, 0.0,
-			1.0, 0.0, 0.0,
-			1.0, 1.0, 0.0,
-			0.0, 1.0, 0.0,
+			r.halfSide, 0.0, 0.0,
+			r.halfSide, r.halfSide, 0.0,
+			0.0, r.halfSide, 0.0,
 		}
 	}
 
@@ -99,6 +102,11 @@ func (r *StaticSquareNode) populate() {
 	r.shape.SetElementCount(len(indices))
 
 	r.shape.SetIndices(indices)
+}
+
+// HalfSide returns the scaled half side length.
+func (r *StaticSquareNode) HalfSide() float32 {
+	return r.halfSide * r.Scale()
 }
 
 // SetColor sets square color

@@ -14,7 +14,10 @@ import (
 type StaticTriangleNode struct {
 	nodes.Node
 
-	color []float32
+	color    []float32
+	halfSide float32
+
+	vertices []float32
 
 	shape    api.IAtlasShape
 	centered bool
@@ -65,42 +68,52 @@ func (r *StaticTriangleNode) Build(world api.IWorld) error {
 }
 
 func (r *StaticTriangleNode) populate() {
-	var vertices []float32
-
 	const centerOffset = float32(math.Pi / 4 / 10)
+
 	const top = float32(math.Pi / 10)
 
 	if r.centered {
-		vertices = []float32{
-			-0.5, -0.5 + centerOffset, 0.0,
-			0.5, -0.5 + centerOffset, 0.0,
+		r.halfSide = 0.5
+		r.vertices = []float32{
+			-r.halfSide, -r.halfSide + centerOffset, 0.0,
+			r.halfSide, -r.halfSide + centerOffset, 0.0,
 			0.0, 0.314 + centerOffset, 0.0,
 		}
 	} else {
-		vertices = []float32{
+		r.halfSide = 1.0
+		r.vertices = []float32{
 			0.0, 0.0 + centerOffset, 0.0,
-			1.0, 0.0 + centerOffset, 0.0,
+			r.halfSide, 0.0 + centerOffset, 0.0,
 			0.0, top + centerOffset, 0.0,
 		}
 	}
 
-	r.shape.SetVertices(vertices)
+	r.shape.SetVertices(r.vertices)
 
 	var indices []uint32
 
-	if r.filled {
-		indices = []uint32{
-			0, 1, 2,
-		}
-	} else {
-		indices = []uint32{
-			0, 1, 2,
-		}
+	indices = []uint32{
+		0, 1, 2,
 	}
 
 	r.shape.SetElementCount(len(indices))
 
 	r.shape.SetIndices(indices)
+}
+
+// Vertices returns the shape's vertices
+func (r *StaticTriangleNode) Vertices() []float32 {
+	return r.vertices
+}
+
+// SideLength returns the scale length
+func (r *StaticTriangleNode) SideLength() float32 {
+	return r.halfSide * r.Scale() * 2
+}
+
+// HalfSide returns the scaled half side length.
+func (r *StaticTriangleNode) HalfSide() float32 {
+	return r.halfSide * r.Scale()
 }
 
 // SetColor sets line color

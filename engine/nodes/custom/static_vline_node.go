@@ -12,7 +12,8 @@ import (
 type StaticVLineNode struct {
 	nodes.Node
 
-	color []float32
+	color      []float32
+	halfLength float32
 
 	shape api.IAtlasShape
 }
@@ -45,9 +46,11 @@ func (r *StaticVLineNode) Build(world api.IWorld) error {
 }
 
 func (r *StaticVLineNode) populate() {
+	r.halfLength = 0.5 // Or 1.0
+
 	vertices := []float32{
-		0.0, -0.5, 0.0,
-		0.0, 0.5, 0.0,
+		0.0, -r.halfLength, 0.0,
+		0.0, r.halfLength, 0.0,
 	}
 
 	r.shape.SetVertices(vertices)
@@ -59,6 +62,11 @@ func (r *StaticVLineNode) populate() {
 	r.shape.SetIndices(indices)
 
 	r.shape.SetElementCount(len(indices))
+}
+
+// HalfLength returns the scaled half length.
+func (r *StaticVLineNode) HalfLength() float32 {
+	return r.halfLength * r.Scale()
 }
 
 // SetColor sets line color

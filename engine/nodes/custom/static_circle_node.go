@@ -14,7 +14,8 @@ import (
 type StaticCircleNode struct {
 	nodes.Node
 
-	color []float32
+	color  []float32
+	radius float64
 
 	shape  api.IAtlasShape
 	filled bool
@@ -61,7 +62,7 @@ func (r *StaticCircleNode) populate() {
 	var indices []uint32
 
 	segments := 12
-	radius := 0.5 // diameter of 1.0
+	r.radius = 0.5 //1.0 // diameter of 1.0
 	step := math.Pi / float64(segments)
 
 	index := uint32(0)
@@ -77,8 +78,8 @@ func (r *StaticCircleNode) populate() {
 	}
 
 	for i := 0.0; i < 2.0*math.Pi; i += step {
-		x := math.Cos(i) * radius
-		y := math.Sin(i) * radius
+		x := math.Cos(i) * r.radius
+		y := math.Sin(i) * r.radius
 		vertices = append(vertices, float32(x), float32(y), 0.0)
 		indices = append(indices, index)
 		index++
@@ -89,6 +90,11 @@ func (r *StaticCircleNode) populate() {
 	r.shape.SetElementCount(len(indices))
 
 	r.shape.SetIndices(indices)
+}
+
+// Radius gets scaled radius, typically used by box2d.
+func (r *StaticCircleNode) Radius() float32 {
+	return float32(r.radius) * r.Scale()
 }
 
 // SetColor sets line color
