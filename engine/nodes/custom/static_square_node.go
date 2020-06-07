@@ -119,11 +119,6 @@ func (r *StaticSquareNode) SetAlpha(alpha float32) {
 	r.color[3] = alpha
 }
 
-// PointInside checks if point inside shape's polygon
-func (r *StaticSquareNode) PointInside(p api.IPoint) bool {
-	return false
-}
-
 // Draw renders shape
 func (r *StaticSquareNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)

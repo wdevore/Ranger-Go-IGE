@@ -100,11 +100,6 @@ func (r *StaticCheckerboardNode) SetOddAlpha(alpha float32) {
 	r.oddColor[3] = alpha
 }
 
-// PointInside checks if point inside shape's polygon
-func (r *StaticCheckerboardNode) PointInside(p api.IPoint) bool {
-	return false
-}
-
 // SetSize sets the size of a check box
 func (r *StaticCheckerboardNode) SetSize(size float32) {
 	r.size = size

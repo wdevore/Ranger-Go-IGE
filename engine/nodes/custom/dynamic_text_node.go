@@ -131,11 +131,6 @@ func (r *DynamicTextNode) SetAlpha(alpha float32) {
 	r.color[3] = alpha
 }
 
-// PointInside checks if point inside shape's polygon
-func (r *DynamicTextNode) PointInside(p api.IPoint) bool {
-	return false
-}
-
 func (r *DynamicTextNode) reGen() {
 	// Update backing array
 	// -------------------------------------------
