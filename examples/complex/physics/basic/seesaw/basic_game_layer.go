@@ -76,7 +76,7 @@ func (g *gameLayer) addGround() error {
 func (g *gameLayer) addSeesaw() error {
 
 	g.seesawPhyComp = newSeesawPhysicsComponent()
-	g.seesawPhyComp.Build(g.World(), g, &g.b2World, g.seesawPosition)
+	g.seesawPhyComp.Build2(g.World(), g, &g.b2World, g.seesawPosition)
 
 	return nil
 }
