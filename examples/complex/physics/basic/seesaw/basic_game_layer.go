@@ -12,8 +12,8 @@ import (
 type gameLayer struct {
 	nodes.Node
 
-	quadBoxPhyComp  *seesawPhysicsComponent
-	quadBoxPosition api.IPoint
+	seesawPhyComp  *seesawPhysicsComponent
+	seesawPosition api.IPoint
 
 	fallingSqrNode api.INode
 
@@ -42,7 +42,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	setupPhysicsWorld(g)
 
-	g.quadBoxPosition = geometry.NewPointUsing(40.0, 30.0)
+	g.seesawPosition = geometry.NewPointUsing(0.0, 30.0)
 
 	if err := g.addSeesaw(); err != nil {
 		return err
@@ -75,8 +75,8 @@ func (g *gameLayer) addGround() error {
 
 func (g *gameLayer) addSeesaw() error {
 
-	g.quadBoxPhyComp = newQuadBoxPhysicsComponent()
-	g.quadBoxPhyComp.Build(g.World(), g, &g.b2World, g.quadBoxPosition)
+	g.seesawPhyComp = newSeesawPhysicsComponent()
+	g.seesawPhyComp.Build(g.World(), g, &g.b2World, g.seesawPosition)
 
 	return nil
 }
@@ -91,7 +91,7 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	g.b2World.Step(secPerUpdate, api.VelocityIterations, api.PositionIterations)
 
 	// -----------------------------------------------------------
-	g.quadBoxPhyComp.Update(msPerUpdate, secPerUpdate)
+	g.seesawPhyComp.Update(msPerUpdate, secPerUpdate)
 }
 
 // -----------------------------------------------------
@@ -124,7 +124,7 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 			}
 		case 82: // R
 			if event.GetState() == 1 {
-				g.quadBoxPhyComp.Reset()
+				g.seesawPhyComp.Reset()
 			}
 		}
 	}
