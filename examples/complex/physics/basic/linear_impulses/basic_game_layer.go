@@ -31,12 +31,6 @@ type gameLayer struct {
 	b2World   box2d.B2World
 
 	b2GroundBody *box2d.B2Body
-
-	// IO
-	downKeyDown  bool
-	leftKeyDown  bool
-	upKeyDown    bool
-	rightKeyDown bool
 }
 
 func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
@@ -64,6 +58,14 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	}
 
 	if err := g.addLimeSquare(); err != nil {
+		return err
+	}
+
+	if err := g.addPurpleSquare(); err != nil {
+		return err
+	}
+
+	if err := g.addYellowSquare(); err != nil {
 		return err
 	}
 
@@ -140,20 +142,47 @@ func (g *gameLayer) addLimeSquare() error {
 	return nil
 }
 
+func (g *gameLayer) addPurpleSquare() error {
+	var err error
+
+	fallingSqrPos := geometry.NewPointUsing(10.0, 5.0)
+	g.purpleSqrNode, err = custom.NewStaticSquareNode("PurpleSquare", true, true, g.World(), g)
+	if err != nil {
+		return err
+	}
+	g.purpleSqrNode.SetScale(3.0)
+	g.purpleSqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
+	gol2 := g.purpleSqrNode.(*custom.StaticSquareNode)
+	gol2.SetColor(color.NewPaletteInt64(color.LightPurple))
+
+	g.purpleSqrPhyComp = newBoxPhysicsComponent()
+	g.purpleSqrPhyComp.Build(&g.b2World, g.purpleSqrNode, fallingSqrPos)
+	g.purpleSqrPhyComp.EnableGravity(false)
+
+	return nil
+}
+
+func (g *gameLayer) addYellowSquare() error {
+	var err error
+
+	fallingSqrPos := geometry.NewPointUsing(20.0, 5.0)
+	g.yellowSqrNode, err = custom.NewStaticSquareNode("YellowSquare", true, true, g.World(), g)
+	if err != nil {
+		return err
+	}
+	g.yellowSqrNode.SetScale(3.0)
+	g.yellowSqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
+	gol2 := g.yellowSqrNode.(*custom.StaticSquareNode)
+	gol2.SetColor(color.NewPaletteInt64(color.Yellow))
+
+	g.yellowSqrPhyComp = newBoxPhysicsComponent()
+	g.yellowSqrPhyComp.Build(&g.b2World, g.yellowSqrNode, fallingSqrPos)
+
+	return nil
+}
+
 // Update updates the time properties of a node.
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
-	if g.downKeyDown {
-		g.orangeSqrPhyComp.MoveDown()
-	}
-	if g.rightKeyDown {
-		g.orangeSqrPhyComp.MoveRight()
-	}
-	if g.upKeyDown {
-		g.orangeSqrPhyComp.MoveUp()
-	}
-	if g.leftKeyDown {
-		g.orangeSqrPhyComp.MoveLeft()
-	}
 	// Box2D expects a fractional number of dt not ms/frame which is
 	// why I use secPerUpdate.
 
@@ -165,6 +194,8 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	g.orangeSqrPhyComp.Update(msPerUpdate, secPerUpdate)
 	g.blueSqrPhyComp.Update(msPerUpdate, secPerUpdate)
 	g.limeSqrPhyComp.Update(msPerUpdate, secPerUpdate)
+	g.purpleSqrPhyComp.Update(msPerUpdate, secPerUpdate)
+	g.yellowSqrPhyComp.Update(msPerUpdate, secPerUpdate)
 }
 
 // -----------------------------------------------------
@@ -192,31 +223,25 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 	if event.GetType() == api.IOTypeKeyboard {
 		// fmt.Println(event.GetKeyScan())
 		// fmt.Println(event)
-		if event.GetState() == 0 {
-			switch event.GetKeyScan() {
-			case 65: // A = left
-				g.leftKeyDown = false
-			case 87: // W = up
-				g.upKeyDown = false
-			case 68: // D = right
-				g.rightKeyDown = false
-			case 83: // S = down
-				g.downKeyDown = false
-			}
-		}
 
 		if event.GetState() == 1 || event.GetState() == 2 {
 			switch event.GetKeyScan() {
-			case 65: // A = left
-				g.leftKeyDown = true
-			case 87: // W = up
-				g.upKeyDown = true
-			case 68: // D = right
-				g.rightKeyDown = true
-			case 83: // S = down
-				g.downKeyDown = true
+			case 68: // d
+				g.orangeSqrPhyComp.ApplyForce(0.0, 500.0)
+			case 70: // f
+				g.blueSqrPhyComp.ApplyImpulse(0.0, 200.0)
+			case 90: // z
+				g.limeSqrPhyComp.ApplyImpulseToCorner(0.0, 200.0)
+			case 65: // a
+				g.purpleSqrPhyComp.ApplyTorque(150.0)
+			case 83: // s
+				g.yellowSqrPhyComp.ApplyAngularImpulse(50.0)
 			case 82: // R
 				g.orangeSqrPhyComp.Reset()
+				g.blueSqrPhyComp.Reset()
+				g.limeSqrPhyComp.Reset()
+				g.purpleSqrPhyComp.Reset()
+				g.yellowSqrPhyComp.Reset()
 			}
 		}
 	}

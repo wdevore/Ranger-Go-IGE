@@ -15,28 +15,40 @@ func newBoxPhysicsComponent() *boxPhysicsComponent {
 	return o
 }
 
-func (p *boxPhysicsComponent) MoveLeft() {
-	velocity := p.b2Body.GetLinearVelocity()
-	velocity.X = velocity.X - 0.1
-	p.b2Body.SetLinearVelocity(velocity)
+// EnableGravity enables/disables gravity for this component
+func (p *boxPhysicsComponent) EnableGravity(enable bool) {
+	if enable {
+		p.b2Body.SetGravityScale(-9.8)
+	} else {
+		p.b2Body.SetGravityScale(0.0)
+	}
 }
 
-func (p *boxPhysicsComponent) MoveRight() {
-	velocity := p.b2Body.GetLinearVelocity()
-	velocity.X = velocity.X + 0.1
-	p.b2Body.SetLinearVelocity(velocity)
+// ApplyForce applies linear force to box center
+func (p *boxPhysicsComponent) ApplyForce(dirX, dirY float64) {
+	p.b2Body.ApplyForce(box2d.B2Vec2{X: dirX, Y: dirY}, p.b2Body.GetWorldCenter(), true)
 }
 
-func (p *boxPhysicsComponent) MoveUp() {
-	velocity := p.b2Body.GetLinearVelocity()
-	velocity.Y = velocity.Y + 0.1
-	p.b2Body.SetLinearVelocity(velocity)
+// ApplyImpulse applies linear impulse to box center
+func (p *boxPhysicsComponent) ApplyImpulse(dirX, dirY float64) {
+	p.b2Body.ApplyLinearImpulse(box2d.B2Vec2{X: dirX, Y: dirY}, p.b2Body.GetWorldCenter(), true)
 }
 
-func (p *boxPhysicsComponent) MoveDown() {
-	velocity := p.b2Body.GetLinearVelocity()
-	velocity.Y = velocity.Y - 0.1
-	p.b2Body.SetLinearVelocity(velocity)
+// ApplyImpulseToCorner applies linear impulse to 1,1 box corner
+// As the box rotates the 1,1 corner rotates which means impulses
+// could change the rotation to either CW or CCW.
+func (p *boxPhysicsComponent) ApplyImpulseToCorner(dirX, dirY float64) {
+	p.b2Body.ApplyLinearImpulse(box2d.B2Vec2{X: dirX, Y: dirY}, p.b2Body.GetWorldPoint(box2d.B2Vec2{X: 1.0, Y: 1.0}), true)
+}
+
+// ApplyTorque applies torgue to box center
+func (p *boxPhysicsComponent) ApplyTorque(torgue float64) {
+	p.b2Body.ApplyTorque(torgue, true)
+}
+
+// ApplyAngularImpulse applies angular impulse to box center
+func (p *boxPhysicsComponent) ApplyAngularImpulse(impulse float64) {
+	p.b2Body.ApplyAngularImpulse(impulse, true)
 }
 
 func (p *boxPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, position api.IPoint) {
