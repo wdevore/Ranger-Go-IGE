@@ -10,8 +10,8 @@
     "FullScreen": false,
     "Orientation": "Landscape",
     "Position": {
-      "X": 200,
-      "Y": 200
+      "X": 100,
+      "Y": 100
     },
     "Title": "Linear And Impulses"
   }
