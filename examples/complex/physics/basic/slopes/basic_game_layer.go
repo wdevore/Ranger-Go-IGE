@@ -4,6 +4,7 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
+	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
@@ -12,8 +13,8 @@ import (
 type gameLayer struct {
 	nodes.Node
 
-	sqrPhyComp   *boxPhysicsComponent
-	fencePhyComp *fencePhysicsComponent
+	cirPhyComp   *cirPhysicsComponent
+	slopePhyComp *slopePhysicsComponent
 
 	circle api.INode
 
@@ -46,7 +47,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	setupPhysicsWorld(g)
 
-	if err := g.addSquare(); err != nil {
+	if err := g.addCircle(); err != nil {
 		return err
 	}
 
@@ -59,46 +60,41 @@ func (g *gameLayer) Build(world api.IWorld) error {
 }
 
 func (g *gameLayer) addFence() error {
-	position := geometry.NewPoint()
-	g.fencePhyComp = newFencePhysicsComponent()
-	g.fencePhyComp.Build(g.World(), g, &g.b2World, position)
+	initialPos := geometry.NewPointUsing(0.0, 12.5)
+
+	g.slopePhyComp = newFencePhysicsComponent()
+	g.slopePhyComp.Build(g.World(), g, &g.b2World, initialPos, maths.DegreeToRadians*25.0)
+
+	initialPos = geometry.NewPointUsing(-20.0, -5.5)
+	slopePhyComp := newFencePhysicsComponent()
+	slopePhyComp.Build(g.World(), g, &g.b2World, initialPos, -maths.DegreeToRadians*25.0)
 
 	return nil
 }
 
-func (g *gameLayer) addSquare() error {
+func (g *gameLayer) addCircle() error {
 	var err error
 
+	initialPos := geometry.NewPointUsing(5.0, 30.0)
 	// ---------------------------------------------------------
-	g.circle, err = custom.NewStaticCircleNode("Circle", true, world, g)
+	g.circle, err = custom.NewStaticCircleNode("Circle", true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.circle.SetScale(5.0)
-	g.circle.SetPosition(25.0, 25.0)
+	g.circle.SetPosition(initialPos.X(), initialPos.Y())
 	gol2 := g.circle.(*custom.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
-	g.sqrPhyComp = newBoxPhysicsComponent()
-	g.sqrPhyComp.Build(&g.b2World, g.fallingSqrNode, fallingSqrPos)
+	g.cirPhyComp = newCirPhysicsComponent()
+	g.cirPhyComp.Build(&g.b2World, g.circle, initialPos)
 
 	return nil
 }
 
 // Update updates the time properties of a node.
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
-	if g.downKeyDown {
-		g.sqrPhyComp.MoveDown()
-	}
-	if g.rightKeyDown {
-		g.sqrPhyComp.MoveRight()
-	}
-	if g.upKeyDown {
-		g.sqrPhyComp.MoveUp()
-	}
-	if g.leftKeyDown {
-		g.sqrPhyComp.MoveLeft()
-	}
+
 	// Box2D expects a fractional number of dt not ms/frame which is
 	// why I use secPerUpdate.
 
@@ -107,7 +103,7 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	g.b2World.Step(secPerUpdate, api.VelocityIterations, api.PositionIterations)
 
 	// -----------------------------------------------------------
-	g.sqrPhyComp.Update(msPerUpdate, secPerUpdate)
+	g.cirPhyComp.Update(msPerUpdate, secPerUpdate)
 }
 
 // -----------------------------------------------------
@@ -159,7 +155,7 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 			case 83: // S = down
 				g.downKeyDown = true
 			case 82: // R
-				g.sqrPhyComp.Reset()
+				g.cirPhyComp.Reset()
 			}
 		}
 	}
@@ -180,7 +176,7 @@ func setupPhysicsWorld(g *gameLayer) {
 	// |
 	// .--------> +X
 	// Thus gravity is specified as negative for downward motion.
-	// g.b2Gravity = box2d.MakeB2Vec2(0.0, -9.8)
+	g.b2Gravity = box2d.MakeB2Vec2(0.0, -9.8)
 
 	// Construct a world object, which will hold and simulate the rigid bodies.
 	g.b2World = box2d.MakeB2World(g.b2Gravity)
