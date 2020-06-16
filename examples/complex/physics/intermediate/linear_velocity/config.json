@@ -13,9 +13,6 @@
       "X": 100,
       "Y": 100
     },
-    "Title": "Ground floor"
-  },
-  "Camera": {
-    "Centered": true
+    "Title": "Linear velocity"
   }
 }
