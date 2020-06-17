@@ -14,7 +14,8 @@ type gameLayer struct {
 
 	sqrPhyComp *boxPhysicsComponent
 	cirPhyComp *cirPhysicsComponent
-	triPhyComp *triPhysicsComponent
+
+	trackerComp *TrackingComponent
 
 	fencePhyComp *fencePhysicsComponent
 
@@ -59,9 +60,20 @@ func (g *gameLayer) Build(world api.IWorld) error {
 		return err
 	}
 
-	if err := g.addTri(); err != nil {
-		return err
-	}
+	targetSize := 5.0
+
+	g.trackerComp = NewTrackingComponent("TriTrackerComp", g)
+	g.trackerComp.Configure(targetSize, entityTriangle, entityCircle|entityBoundary, &g.b2World)
+	g.trackerComp.SetPosition(0.0, 0.0)
+
+	// Contacts
+	listener := newContactListener()
+	lr := listener.(*contactListener)
+	lr.addListener(g.trackerComp)
+	// lr.addListener(g.boxComp)
+	// lr.addListener(g.circleComp)
+
+	g.b2World.SetContactListener(listener)
 
 	// ---------------------------------------------------------
 	if err := g.addFence(); err != nil {
@@ -117,25 +129,6 @@ func (g *gameLayer) addCircle() error {
 	return nil
 }
 
-func (g *gameLayer) addTri() error {
-	var err error
-
-	fallingTriPos := geometry.NewPointUsing(0.0, 0.0)
-	g.triNode, err = custom.NewStaticTriangleNode("Triangle", true, true, g.World(), g)
-	if err != nil {
-		return err
-	}
-	g.triNode.SetScale(3.0)
-	g.triNode.SetPosition(fallingTriPos.X(), fallingTriPos.Y())
-	gol2 := g.triNode.(*custom.StaticTriangleNode)
-	gol2.SetColor(color.NewPaletteInt64(color.Pink))
-
-	g.triPhyComp = newTriPhysicsComponent()
-	g.triPhyComp.Build(&g.b2World, g.triNode, fallingTriPos)
-
-	return nil
-}
-
 // Update updates the time properties of a node.
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	if g.downKeyDown {
@@ -152,6 +145,12 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	}
 	// Box2D expects a fractional number of dt not ms/frame which is
 	// why I use secPerUpdate.
+	g.trackerComp.Update()
+
+	// Update Ray
+	// gl := g.rayNode.(*custom.LineNode)
+	// bodyPos := g.trackerComp.GetPosition()
+	// gl.SetPoints(bodyPos.X, bodyPos.Y, g.targetPosition.X(), g.targetPosition.Y())
 
 	// Instruct the world to perform a single step of simulation.
 	// It is generally best to keep the time step and iterations fixed.
@@ -160,7 +159,6 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	// -----------------------------------------------------------
 	g.sqrPhyComp.Update(msPerUpdate, secPerUpdate)
 	g.cirPhyComp.Update(msPerUpdate, secPerUpdate)
-	g.triPhyComp.Update(msPerUpdate, secPerUpdate)
 }
 
 // -----------------------------------------------------
