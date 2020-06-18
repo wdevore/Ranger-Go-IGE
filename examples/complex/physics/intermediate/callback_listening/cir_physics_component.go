@@ -4,10 +4,17 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
 type cirPhysicsComponent struct {
 	physicsComponent
+
+	beginContactColor api.IPalette
+	endContactColor   api.IPalette
+
+	categoryBits uint16 // I am a...
+	maskBits     uint16 // I can collide with a...
 }
 
 func newCirPhysicsComponent() *cirPhysicsComponent {
@@ -18,6 +25,9 @@ func newCirPhysicsComponent() *cirPhysicsComponent {
 func (p *cirPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, position api.IPoint) {
 	p.phyNode = node
 	p.position = position
+
+	p.beginContactColor = color.NewPaletteInt64(color.LightPurple)
+	p.endContactColor = color.NewPaletteInt64(color.Orange)
 
 	// A body def used to create bodies
 	bDef := box2d.MakeB2BodyDef()
@@ -42,5 +52,48 @@ func (p *cirPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 	fd := box2d.MakeB2FixtureDef()
 	fd.Shape = &circleShape
 	fd.Density = 1.0
+
+	fd.Filter.CategoryBits = p.categoryBits
+	fd.Filter.MaskBits = p.maskBits
+
 	p.b2Body.CreateFixtureFromDef(&fd) // attach Fixture to body
+}
+
+func (p *cirPhysicsComponent) ConfigureFilter(categoryBits, maskBits uint16) {
+	p.categoryBits = categoryBits
+	p.maskBits = maskBits
+}
+
+// ------------------------------------------------------
+// Physics feedback
+// ------------------------------------------------------
+
+// HandleBeginContact processes BeginContact events
+func (p *cirPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
+	n, ok := nodeA.(*custom.StaticCircleNode)
+
+	if !ok {
+		n, ok = nodeB.(*custom.StaticCircleNode)
+	}
+
+	if ok {
+		n.SetColor(p.beginContactColor)
+	}
+
+	return false
+}
+
+// HandleEndContact processes EndContact events
+func (p *cirPhysicsComponent) HandleEndContact(nodeA, nodeB api.INode) bool {
+	n, ok := nodeA.(*custom.StaticCircleNode)
+
+	if !ok {
+		n, ok = nodeB.(*custom.StaticCircleNode)
+	}
+
+	if ok {
+		n.SetColor(p.endContactColor)
+	}
+
+	return false
 }

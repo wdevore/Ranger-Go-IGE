@@ -12,6 +12,9 @@ type boxPhysicsComponent struct {
 
 	beginContactColor api.IPalette
 	endContactColor   api.IPalette
+
+	categoryBits uint16 // I am a...
+	maskBits     uint16 // I can collide with a...
 }
 
 func newBoxPhysicsComponent() *boxPhysicsComponent {
@@ -80,7 +83,16 @@ func (p *boxPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 	fd := box2d.MakeB2FixtureDef()
 	fd.Shape = &b2Shape
 	fd.Density = 1.0
+
+	fd.Filter.CategoryBits = p.categoryBits
+	fd.Filter.MaskBits = p.maskBits
+
 	p.b2Body.CreateFixtureFromDef(&fd) // attach Fixture to body
+}
+
+func (p *boxPhysicsComponent) ConfigureFilter(categoryBits, maskBits uint16) {
+	p.categoryBits = categoryBits
+	p.maskBits = maskBits
 }
 
 // ------------------------------------------------------

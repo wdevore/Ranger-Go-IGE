@@ -80,9 +80,12 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	lr := listener.(*contactListener)
 	lr.addListener(g.trackerComp)
 	lr.addListener(g.sqrPhyComp)
-	// lr.addListener(g.circleComp)
+	lr.addListener(g.cirPhyComp)
 
 	g.b2World.SetContactListener(listener)
+
+	filter := newFilterListener()
+	g.b2World.SetContactFilter(filter)
 
 	// ---------------------------------------------------------
 	if err := g.addFence(); err != nil {
@@ -95,6 +98,8 @@ func (g *gameLayer) Build(world api.IWorld) error {
 func (g *gameLayer) addFence() error {
 	position := geometry.NewPoint()
 	g.fencePhyComp = newFencePhysicsComponent()
+	g.fencePhyComp.ConfigureFilter(entityBoundary, entityTriangle|entityCircle|entityRectangle)
+
 	g.fencePhyComp.Build(g.World(), g, &g.b2World, position)
 
 	return nil
@@ -114,6 +119,7 @@ func (g *gameLayer) addSquare() error {
 	gol2.SetColor(color.NewPaletteInt64(color.Aqua))
 
 	g.sqrPhyComp = newBoxPhysicsComponent()
+	g.sqrPhyComp.ConfigureFilter(entityRectangle, entityCircle|entityBoundary)
 	g.sqrPhyComp.Build(&g.b2World, g.sqrNode, fallingSqrPos)
 
 	return nil
@@ -127,12 +133,13 @@ func (g *gameLayer) addCircle() error {
 	if err != nil {
 		return err
 	}
-	g.cirNode.SetScale(3.0)
+	g.cirNode.SetScale(5.0)
 	g.cirNode.SetPosition(fallingCirPos.X(), fallingCirPos.Y())
 	gol2 := g.cirNode.(*custom.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	g.cirPhyComp = newCirPhysicsComponent()
+	g.cirPhyComp.ConfigureFilter(entityCircle, entityRectangle|entityTriangle|entityBoundary)
 	g.cirPhyComp.Build(&g.b2World, g.cirNode, fallingCirPos)
 
 	return nil

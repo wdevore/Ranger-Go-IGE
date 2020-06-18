@@ -14,6 +14,9 @@ type fencePhysicsComponent struct {
 	rightLineNode  api.INode
 	topLineNode    api.INode
 	leftLineNode   api.INode
+
+	categoryBits uint16 // I am a...
+	maskBits     uint16 // I can collide with a...
 }
 
 func newFencePhysicsComponent() *fencePhysicsComponent {
@@ -46,6 +49,8 @@ func (p *fencePhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position a
 	p.b2Body = phyWorld.CreateBody(&bDef)
 
 	fd := box2d.MakeB2FixtureDef()
+	fd.Filter.CategoryBits = p.categoryBits
+	fd.Filter.MaskBits = p.maskBits
 
 	// ------------------------------------------------------------
 	// Bottom fixture
@@ -139,4 +144,9 @@ func (p *fencePhysicsComponent) buildNodes(world api.IWorld, parent api.INode) e
 	glv.SetColor(color.NewPaletteInt64(color.Yellow))
 
 	return nil
+}
+
+func (p *fencePhysicsComponent) ConfigureFilter(categoryBits, maskBits uint16) {
+	p.categoryBits = categoryBits
+	p.maskBits = maskBits
 }
