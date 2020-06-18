@@ -4,10 +4,14 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
 type boxPhysicsComponent struct {
 	physicsComponent
+
+	beginContactColor api.IPalette
+	endContactColor   api.IPalette
 }
 
 func newBoxPhysicsComponent() *boxPhysicsComponent {
@@ -44,6 +48,9 @@ func (p *boxPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 	p.phyNode = node
 	p.position = position
 
+	p.beginContactColor = color.NewPaletteInt64(color.LightPurple)
+	p.endContactColor = color.NewPaletteInt64(color.Orange)
+
 	// -------------------------------------------
 	// A body def used to create bodies
 	bDef := box2d.MakeB2BodyDef()
@@ -74,4 +81,38 @@ func (p *boxPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 	fd.Shape = &b2Shape
 	fd.Density = 1.0
 	p.b2Body.CreateFixtureFromDef(&fd) // attach Fixture to body
+}
+
+// ------------------------------------------------------
+// Physics feedback
+// ------------------------------------------------------
+
+// HandleBeginContact processes BeginContact events
+func (p *boxPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
+	n, ok := nodeA.(*custom.StaticSquareNode)
+
+	if !ok {
+		n, ok = nodeB.(*custom.StaticSquareNode)
+	}
+
+	if ok {
+		n.SetColor(p.beginContactColor)
+	}
+
+	return false
+}
+
+// HandleEndContact processes EndContact events
+func (p *boxPhysicsComponent) HandleEndContact(nodeA, nodeB api.INode) bool {
+	n, ok := nodeA.(*custom.StaticSquareNode)
+
+	if !ok {
+		n, ok = nodeB.(*custom.StaticSquareNode)
+	}
+
+	if ok {
+		n.SetColor(p.endContactColor)
+	}
+
+	return false
 }

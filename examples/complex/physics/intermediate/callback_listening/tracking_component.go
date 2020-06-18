@@ -18,6 +18,9 @@ type TrackingComponent struct {
 	visual api.INode
 	b2Body *box2d.B2Body
 
+	beginContactColor api.IPalette
+	endContactColor   api.IPalette
+
 	scale float64
 
 	algorithm         int
@@ -63,10 +66,14 @@ func (t *TrackingComponent) Configure(scale float64, categoryBits, maskBits uint
 	}
 	t.visual.SetID(1001)
 
-	t.visual.SetScale(3.0)
+	t.visual.SetScale(float32(t.scale))
 	t.visual.SetPosition(0.0, 0.0)
 	gol2 := t.visual.(*custom.StaticTriangleNode)
-	gol2.SetColor(color.NewPaletteInt64(color.Pink))
+
+	t.beginContactColor = color.NewPaletteInt64(color.White)
+	t.endContactColor = color.NewPaletteInt64(color.Pink)
+
+	gol2.SetColor(t.endContactColor)
 
 	buildComp(t, b2World)
 
@@ -337,7 +344,7 @@ func (t *TrackingComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
 	}
 
 	if ok {
-		n.SetColor(color.NewPaletteInt64(color.White))
+		n.SetColor(t.beginContactColor)
 	}
 
 	return false
@@ -352,7 +359,7 @@ func (t *TrackingComponent) HandleEndContact(nodeA, nodeB api.INode) bool {
 	}
 
 	if ok {
-		n.SetColor(color.NewPaletteInt64(color.Orange))
+		n.SetColor(t.endContactColor)
 	}
 
 	return false
@@ -380,13 +387,9 @@ func buildComp(t *TrackingComponent, b2World *box2d.B2World) {
 	// An instance of a body to contain Fixture
 	t.b2Body = b2World.CreateBody(&bDef)
 
-	t.visual.SetScale(float32(1.0 * t.scale))
-	gb := t.visual.(*custom.StaticTriangleNode)
-	gb.SetColor(color.NewPaletteInt64(color.Orange))
-
 	// Every Fixture has a shape
 	b2Shape := box2d.MakeB2PolygonShape()
-	b2Shape.Set(vertices, len(verts))
+	b2Shape.Set(vertices, len(vertices))
 
 	fd := box2d.MakeB2FixtureDef()
 	fd.Shape = &b2Shape

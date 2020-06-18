@@ -16,12 +16,15 @@ type gameLayer struct {
 	cirPhyComp *cirPhysicsComponent
 
 	trackerComp *TrackingComponent
+	gamePoint   api.IPoint
 
 	fencePhyComp *fencePhysicsComponent
 
 	sqrNode api.INode
 	cirNode api.INode
 	triNode api.INode
+
+	rayNode api.INode
 
 	// Box 2D system
 	b2Gravity box2d.B2Vec2
@@ -60,7 +63,13 @@ func (g *gameLayer) Build(world api.IWorld) error {
 		return err
 	}
 
-	targetSize := 5.0
+	if err := g.addRay(); err != nil {
+		return err
+	}
+
+	targetSize := 3.5
+
+	g.gamePoint = geometry.NewPoint()
 
 	g.trackerComp = NewTrackingComponent("TriTrackerComp", g)
 	g.trackerComp.Configure(targetSize, entityTriangle, entityCircle|entityBoundary, &g.b2World)
@@ -70,7 +79,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	listener := newContactListener()
 	lr := listener.(*contactListener)
 	lr.addListener(g.trackerComp)
-	// lr.addListener(g.boxComp)
+	lr.addListener(g.sqrPhyComp)
 	// lr.addListener(g.circleComp)
 
 	g.b2World.SetContactListener(listener)
@@ -129,6 +138,19 @@ func (g *gameLayer) addCircle() error {
 	return nil
 }
 
+func (g *gameLayer) addRay() error {
+	var err error
+
+	g.rayNode, err = newDynamicLineNode("DynoLin", g.World(), g)
+	if err != nil {
+		return err
+	}
+	glc := g.rayNode.(*DynamicLineNode)
+	glc.SetColor(color.NewPaletteInt64(color.White))
+
+	return nil
+}
+
 // Update updates the time properties of a node.
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	if g.downKeyDown {
@@ -143,19 +165,19 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	if g.leftKeyDown {
 		g.sqrPhyComp.MoveLeft()
 	}
-	// Box2D expects a fractional number of dt not ms/frame which is
-	// why I use secPerUpdate.
-	g.trackerComp.Update()
-
-	// Update Ray
-	// gl := g.rayNode.(*custom.LineNode)
-	// bodyPos := g.trackerComp.GetPosition()
-	// gl.SetPoints(bodyPos.X, bodyPos.Y, g.targetPosition.X(), g.targetPosition.Y())
 
 	// Instruct the world to perform a single step of simulation.
 	// It is generally best to keep the time step and iterations fixed.
 	g.b2World.Step(secPerUpdate, api.VelocityIterations, api.PositionIterations)
 
+	// Box2D expects a fractional number of dt not ms/frame which is
+	// why I use secPerUpdate.
+	g.trackerComp.Update()
+
+	// Update Ray
+	ray := g.rayNode.(*DynamicLineNode)
+	bodyPos := g.trackerComp.GetPosition()
+	ray.SetPoints(float32(bodyPos.X), float32(bodyPos.Y), g.gamePoint.X(), g.gamePoint.Y())
 	// -----------------------------------------------------------
 	g.sqrPhyComp.Update(msPerUpdate, secPerUpdate)
 	g.cirPhyComp.Update(msPerUpdate, secPerUpdate)
@@ -183,7 +205,8 @@ func (g *gameLayer) ExitNode(man api.INodeManager) {
 // -----------------------------------------------------
 
 func (g *gameLayer) Handle(event api.IEvent) bool {
-	if event.GetType() == api.IOTypeKeyboard {
+	switch event.GetType() {
+	case api.IOTypeKeyboard:
 		// fmt.Println(event.GetKeyScan())
 		// fmt.Println(event)
 		if event.GetState() == 0 {
@@ -211,8 +234,17 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 				g.downKeyDown = true
 			case 82: // R
 				g.sqrPhyComp.Reset()
+			case 70:
+				g.trackerComp.Thrust()
 			}
 		}
+	case api.IOTypeMouseMotion:
+		mx, my := event.GetMousePosition()
+
+		// Map mouse-space to gamelayer space
+		nodes.MapDeviceToNode(mx, my, g, g.gamePoint)
+
+		g.trackerComp.SetTargetPosition(g.gamePoint)
 	}
 
 	return false
