@@ -70,6 +70,7 @@ https://github.com/rustyoz/svg
 https://golang.hotexamples.com/examples/github.com.catiepg.svg/-/Parse/golang-parse-function-examples.html
 
 ## Bitmap fonts
+https://www.cnx-software.com/2020/06/19/fontedit-font-editor-targets-embedded-systems-with-led-lcd-or-e-paper-displays/
 https://www.gamedev.net/tutorials/_/technical/opengl/opengl-texture-mapping-an-introduction-r947/
 https://www.opengl.org/archives/resources/code/samples/glut_examples/texfont/texfont.html
 http://plib.sourceforge.net/fnt/index.html
