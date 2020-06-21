@@ -165,9 +165,9 @@ func (s *StarShipComponent) Reset(x, y float64) {
 
 	motionRange := math.Abs(s.minAxisRange) + math.Abs(s.maxAxisRange)
 	s.b2BodyRightNacel.SetTransform(
-		box2d.MakeB2Vec2(x+float64(s.rightAnchor.X()), y+float64(s.rightAnchor.Y())+motionRange), 0.0)
+		box2d.MakeB2Vec2(x+float64(s.rightAnchor.X()), y+float64(s.rightAnchor.Y())-motionRange), 0.0)
 	s.b2BodyLeftNacel.SetTransform(
-		box2d.MakeB2Vec2(x+float64(s.leftAnchor.X()), y+float64(s.leftAnchor.Y())+motionRange), 0.0)
+		box2d.MakeB2Vec2(x+float64(s.leftAnchor.X()), y+float64(s.leftAnchor.Y())-motionRange), 0.0)
 
 	s.b2BodyHull.SetLinearVelocity(box2d.MakeB2Vec2(0.0, 0.0))
 	s.b2BodyHull.SetAngularVelocity(0.0)
