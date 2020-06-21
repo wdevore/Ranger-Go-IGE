@@ -19,9 +19,15 @@ func newLandPhysicsComponent() *landPhysicsComponent {
 	return o
 }
 
-func (p *landPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, position api.IPoint) {
-	p.phyNode = node
+func (p *landPhysicsComponent) Build(phyWorld *box2d.B2World, parent api.INode, position api.IPoint) {
 	p.position = position
+
+	var err error
+
+	err = p.buildPolygon(parent.World(), parent)
+	if err != nil {
+		panic(err)
+	}
 
 	// A body def used to create bodies
 	bDef := box2d.MakeB2BodyDef()
@@ -72,7 +78,7 @@ func (p *landPhysicsComponent) buildPolygon(world api.IWorld, parent api.INode) 
 	if err != nil {
 		return err
 	}
-	// p.phyNode.SetScale(3.0)
+	p.phyNode.SetScale(2.0)
 	p.phyNode.SetPosition(p.position.X(), p.position.Y())
 	gpol := p.phyNode.(*custom.StaticLineStripNode)
 	gpol.SetColor(color.NewPaletteInt64(color.White))
@@ -80,21 +86,21 @@ func (p *landPhysicsComponent) buildPolygon(world api.IWorld, parent api.INode) 
 	p.phyNode.Build(world)
 
 	vertices := []float32{
-		-30.0, -2.5, 0.0,
-		-25.0, -2.5, 0.0,
-		-20.0, -7.5, 0.0,
-		-10.0, -7.5, 0.0,
-		-10.0, -5.5, 0.0,
-		-5.0, -2.5, 0.0,
-		1.0, -2.5, 0.0,
-		1.5, -1.0, 0.0,
-		7.0, -1.0, 0.0,
-		7.5, -0.0, 0.0,
-		10.5, -0.0, 0.0,
-		11.0, -2.0, 0.0,
-		11.0, -5.0, 0.0,
-		15.0, -10.0, 0.0,
-		20.0, -10.0, 0.0,
+		-30.0, 2.5, 0.0,
+		-25.0, 2.5, 0.0,
+		-20.0, 7.5, 0.0,
+		-10.0, 7.5, 0.0,
+		-10.0, 5.5, 0.0,
+		-5.0, 2.5, 0.0,
+		1.0, 2.5, 0.0,
+		1.5, 1.0, 0.0,
+		7.0, 1.0, 0.0,
+		7.5, 0.0, 0.0,
+		10.5, 0.0, 0.0,
+		11.0, 2.0, 0.0,
+		11.0, 5.0, 0.0,
+		15.0, 10.0, 0.0,
+		20.0, 10.0, 0.0,
 	}
 
 	indices := []uint32{

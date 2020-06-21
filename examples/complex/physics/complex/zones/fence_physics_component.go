@@ -111,7 +111,7 @@ func (p *fencePhysicsComponent) buildNodes(world api.IWorld, parent api.INode) e
 	if err != nil {
 		return err
 	}
-	p.bottomLineNode.SetScale(scale)
+	p.bottomLineNode.SetScale(scale * 2)
 	p.bottomLineNode.SetPosition(0.0, -scale/2)
 	glh := p.bottomLineNode.(*custom.StaticHLineNode)
 	glh.SetColor(color.NewPaletteInt64(color.Yellow))
@@ -121,7 +121,7 @@ func (p *fencePhysicsComponent) buildNodes(world api.IWorld, parent api.INode) e
 		return err
 	}
 	p.rightLineNode.SetScale(scale)
-	p.rightLineNode.SetPosition(scale/2, 0.0)
+	p.rightLineNode.SetPosition(scale, 0.0)
 	glv := p.rightLineNode.(*custom.StaticVLineNode)
 	glv.SetColor(color.NewPaletteInt64(color.Yellow))
 
@@ -129,7 +129,7 @@ func (p *fencePhysicsComponent) buildNodes(world api.IWorld, parent api.INode) e
 	if err != nil {
 		return err
 	}
-	p.topLineNode.SetScale(scale)
+	p.topLineNode.SetScale(scale * 2)
 	p.topLineNode.SetPosition(0.0, scale/2)
 	glh = p.topLineNode.(*custom.StaticHLineNode)
 	glh.SetColor(color.NewPaletteInt64(color.Yellow))
@@ -139,7 +139,7 @@ func (p *fencePhysicsComponent) buildNodes(world api.IWorld, parent api.INode) e
 		return err
 	}
 	p.leftLineNode.SetScale(scale)
-	p.leftLineNode.SetPosition(-scale/2, 0.0)
+	p.leftLineNode.SetPosition(-scale, 0.0)
 	glv = p.leftLineNode.(*custom.StaticVLineNode)
 	glv.SetColor(color.NewPaletteInt64(color.Yellow))
 

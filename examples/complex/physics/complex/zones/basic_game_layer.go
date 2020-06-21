@@ -85,13 +85,13 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	g.trackerComp.EnableGravity(false)
 
 	g.starShipComp = NewStarShipComponent("StarShip", g)
-	g.starShipComp.Configure(5.0, entityStarShip, entityTriangle|entityRectangle|entityBoundary, &g.b2World)
-	g.starShipComp.Reset(10.0, -30.0)
+	g.starShipComp.Configure(5.0, entityStarShip, entityLand|entityTriangle|entityRectangle|entityBoundary, &g.b2World)
+	g.starShipComp.Reset(10.0, -20.0)
 
-	pos := geometry.NewPoint()
-	g.landComp = newLandPhysicsComponent("Land", g)
+	pos := geometry.NewPointUsing(0.0, -30.0)
+	g.landComp = newLandPhysicsComponent()
 	g.landComp.ConfigureFilter(entityLand, entityTriangle|entityStarShip|entityStarShipRight|entityStarShipLeft)
-	g.landComp.Build(&g.b2World, g.sqrNode, pos)
+	g.landComp.Build(&g.b2World, g, pos)
 
 	filter := newFilterListener()
 	g.b2World.SetContactFilter(filter)
@@ -126,7 +126,7 @@ func (g *gameLayer) addSquare() error {
 	g.sqrNode.SetScale(3.0)
 	g.sqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
 	gol2 := g.sqrNode.(*custom.StaticSquareNode)
-	gol2.SetColor(color.NewPaletteInt64(color.Aqua))
+	gol2.SetColor(color.NewPaletteInt64(color.GoldYellow))
 
 	g.sqrPhyComp = newBoxPhysicsComponent()
 	g.sqrPhyComp.ConfigureFilter(entityRectangle, entityStarShip|entityBoundary)

@@ -77,7 +77,7 @@ func NewStarShipComponent(name string, parent api.INode) *StarShipComponent {
 	}
 	o.hullVisual.SetPosition(0.0, 0.0)
 	gol2 := o.hullVisual.(*custom.StaticCircleNode)
-	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
+	gol2.SetColor(color.NewPaletteInt64(color.Aqua))
 
 	o.torqueEnabled = true
 	o.targetingRate = 30.0
@@ -99,7 +99,7 @@ func NewStarShipComponent(name string, parent api.INode) *StarShipComponent {
 	o.rightNacelVisual.SetScale(o.nacelScale)
 	o.rightNacelVisual.SetPosition(0.0, 0.0)
 	grc := o.rightNacelVisual.(*custom.StaticRectangleNode)
-	grc.SetColor(color.NewPaletteInt64(color.LightNavyBlue))
+	grc.SetColor(color.NewPaletteInt64WithAlpha(color.LightNavyBlue, 0.75))
 
 	o.leftNacelVisual, err = custom.NewStaticRectangleNode(
 		-nacelWidthHalfLength, -float32(o.nacelLongLength/2.0),
@@ -111,7 +111,7 @@ func NewStarShipComponent(name string, parent api.INode) *StarShipComponent {
 	o.leftNacelVisual.SetScale(o.nacelScale)
 	o.leftNacelVisual.SetPosition(0.0, 0.0)
 	glc := o.leftNacelVisual.(*custom.StaticRectangleNode)
-	glc.SetColor(color.NewPaletteInt64(color.Lime))
+	glc.SetColor(color.NewPaletteInt64WithAlpha(color.LightNavyBlue, 0.75))
 
 	return o
 }
@@ -298,7 +298,7 @@ func buildMainHull(s *StarShipComponent, b2World *box2d.B2World) {
 
 	fd := box2d.MakeB2FixtureDef()
 	fd.Shape = &b2Shape
-	fd.Density = 0.1
+	fd.Density = 0.2
 
 	fd.UserData = s.hullVisual
 
