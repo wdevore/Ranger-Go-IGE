@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
@@ -201,7 +199,7 @@ func (g *gameLayer) ExitNode(man api.INodeManager) {
 func (g *gameLayer) Handle(event api.IEvent) bool {
 	switch event.GetType() {
 	case api.IOTypeKeyboard:
-		fmt.Println(event.GetKeyScan())
+		// fmt.Println(event.GetKeyScan())
 		// fmt.Println(event)
 		if event.GetState() == 0 {
 			switch event.GetKeyScan() {
