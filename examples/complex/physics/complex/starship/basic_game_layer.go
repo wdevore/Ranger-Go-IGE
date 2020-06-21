@@ -236,9 +236,9 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 				g.sqrPhyComp.Reset()
 				g.starShipComp.Reset(10.0, -30.0)
 			case 262: // right arrow
-				g.starShipComp.EnableYaw(true, -3.0)
+				g.starShipComp.EnableYaw(true, -2.0)
 			case 263: // left arrow
-				g.starShipComp.EnableYaw(true, 3.0)
+				g.starShipComp.EnableYaw(true, 2.0)
 			case 90:
 				g.starShipComp.SetThrust(true)
 			case 70:
