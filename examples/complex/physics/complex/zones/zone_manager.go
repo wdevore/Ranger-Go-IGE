@@ -39,20 +39,18 @@ func (z *zoneManager) Build(world api.IWorld) {
 	gz := z.zoom.(*custom.ZoomNode)
 	gz.SetStepSize(0.05)
 
-	zone := NewZoneCircleNode("RightCircleZone", z.parent.World(), z.zoom, z)
+	zone := NewZoneCircle("RightCircleZone", objectRightZone, z.parent.World(), z.zoom, z)
 	z.zones = append(z.zones, zone)
-	zone.SetID(objectRightZone)
-	gr := zone.(*ZoneCircleNode)
+	gr := zone.(*ZoneCircle)
 	gr.SetTweenRange(1.0, 3.0)
 	gr.SetTweenDuration(1000.0)
 	gr.Configure(12, 13.0, 15.0)
 	gr.RequestNotification(z)
 	gr.SetPosition(30.0, 20.0)
 
-	zone = NewZoneCircleNode("LeftCircleZone", z.parent.World(), z.zoom, z)
+	zone = NewZoneCircle("LeftCircleZone", objectLeftZone, z.parent.World(), z.zoom, z)
 	z.zones = append(z.zones, zone)
-	zone.SetID(objectLeftZone)
-	gr = zone.(*ZoneCircleNode)
+	gr = zone.(*ZoneCircle)
 	gr.SetTweenRange(1.0, 2.0)
 	gr.SetTweenDuration(1000.0)
 	gr.Configure(12, 7.0, 10.0)
@@ -71,7 +69,7 @@ func (z *zoneManager) UpdateCheck(point api.IPoint, msPerUpdate float64) {
 	isFinished := true
 
 	for _, zone := range z.zones {
-		grz := zone.(*ZoneCircleNode)
+		grz := zone.(*ZoneCircle)
 		grz.UpdateCheck(point)
 
 		// Animate only the zone that was enter. The other zone's

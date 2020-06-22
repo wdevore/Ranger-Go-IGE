@@ -20,6 +20,11 @@ const (
 	entityLand          = uint16(1 << 8)
 )
 
+const (
+	objectRightZone = 2000
+	objectLeftZone  = 2001
+)
+
 type gameLayer struct {
 	nodes.Node
 

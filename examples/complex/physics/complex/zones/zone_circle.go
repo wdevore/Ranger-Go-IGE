@@ -1,29 +1,20 @@
 package main
 
 import (
-	"math"
-
 	"github.com/tanema/gween"
 	"github.com/tanema/gween/ease"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
-	"github.com/wdevore/Ranger-Go-IGE/engine/misc"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
+	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
-// ZoneCircleNode is a basic vector circle shape.
-type ZoneCircleNode struct {
-	nodes.Node
+// ZoneCircle is a basic vector circle shape.
+type ZoneCircle struct {
+	innerRadius float32
+	outerRadius float32
 
-	segments int
-
-	innerRadius float64
-	outerRadius float64
-
-	innerCircle api.IPolygon
-	outerCircle api.IPolygon
+	innerCircle api.INode
+	outerCircle api.INode
 
 	innerColor   api.IPalette
 	outerColor   api.IPalette
@@ -31,6 +22,7 @@ type ZoneCircleNode struct {
 
 	zone      api.IZone // CircleZone
 	zoneState int
+	zoneID    int
 
 	tweenEnabled      bool
 	tweenZoomIn       *gween.Tween
@@ -48,104 +40,96 @@ type ZoneCircleNode struct {
 	zoneMan *zoneManager
 }
 
-// NewZoneCircleNode constructs a circle shaped node
-func NewZoneCircleNode(name string, world api.IWorld, parent api.INode, zoneMan *zoneManager) api.INode {
-	o := new(ZoneCircleNode)
+// NewZoneCircle constructs a circle zone
+func NewZoneCircle(name string, id int, world api.IWorld, parent api.INode, zoneMan *zoneManager) *ZoneCircle {
+	o := new(ZoneCircle)
 	o.zoneMan = zoneMan
-	o.Initialize(name)
-	o.SetParent(parent)
-	parent.AddChild(o)
-	o.Build(world)
+	o.zoneID = id
 	return o
 }
 
 // Build configures the node
-func (z *ZoneCircleNode) Build(world api.IWorld) {
-	z.Node.Build(world)
-
+func (z *ZoneCircle) Build(innerRadius, outerRadius float32, position api.IPoint, world api.IWorld, parent api.INode) {
 	z.subscribers = []api.IZoneListener{}
 
 	z.innerColor = color.NewPaletteInt64(color.LightGray)
 	z.outerColor = color.NewPaletteInt64(color.Silver)
 	z.enteredColor = color.NewPaletteInt64(color.LightPurple)
 
-	z.isFinished = true
-}
-
-// Configure circles, if radius is 1 then diameter is 2
-func (z *ZoneCircleNode) Configure(segments int, innerRadius, outerRadius float64) {
-	z.segments = segments // typically 12
-
-	z.zone = misc.NewCircleZone()
-	z.SetRadi(innerRadius, outerRadius)
-
-	step := math.Pi / float64(z.segments)
-
-	z.innerCircle = geometry.NewPolygon()
-	z.outerCircle = geometry.NewPolygon()
-	for i := 0.0; i < 2.0*math.Pi; i += step {
-		ix := math.Cos(i) * z.innerRadius
-		iy := math.Sin(i) * z.innerRadius
-		z.innerCircle.AddVertex(ix, iy)
-		ox := math.Cos(i) * z.outerRadius
-		oy := math.Sin(i) * z.outerRadius
-		z.outerCircle.AddVertex(ox, oy)
+	var err error
+	z.innerCircle, err = custom.NewStaticCircleNode("InnerCircle", true, world, parent)
+	if err != nil {
+		panic(err)
 	}
-	z.innerCircle.Build()
-	z.outerCircle.Build()
+	z.innerCircle.SetScale(innerRadius)
+	z.innerCircle.SetPosition(position.X(), position.Y())
+	gol2 := z.innerCircle.(*custom.StaticCircleNode)
+	gol2.SetColor(z.innerColor)
+
+	z.outerCircle, err = custom.NewStaticCircleNode("OuterCircle", true, world, parent)
+	if err != nil {
+		panic(err)
+	}
+	z.outerCircle.SetScale(outerRadius)
+	z.outerCircle.SetPosition(position.X(), position.Y())
+	gol2 = z.outerCircle.(*custom.StaticCircleNode)
+	gol2.SetColor(z.outerColor)
+
+	z.isFinished = true
 }
 
 // RequestNotification asks for notification when an event on the zone
 // happens. ZoneManager is a subscriber.
-func (z *ZoneCircleNode) RequestNotification(listener api.IZoneListener) {
+func (z *ZoneCircle) RequestNotification(listener api.IZoneListener) {
 	z.subscribers = append(z.subscribers, listener)
 }
 
 // SetTweenRange sets the from and to values
-func (z *ZoneCircleNode) SetTweenRange(from, to float64) {
+func (z *ZoneCircle) SetTweenRange(from, to float64) {
 	z.zoomTo = to
 	z.zoomFrom = from
 }
 
 // SetTweenDuration sets the animation time duration
-func (z *ZoneCircleNode) SetTweenDuration(duration float64) {
+func (z *ZoneCircle) SetTweenDuration(duration float64) {
 	z.duration = duration
 }
 
 // SetPosition sets position of zone
-func (z *ZoneCircleNode) SetPosition(x, y float64) {
-	z.Node.SetPosition(x, y)
-	cr := z.zone.(*misc.CircleZone)
-	cr.SetPosition(x, y)
+func (z *ZoneCircle) SetPosition(x, y float32) {
+	z.innerCircle.SetPosition(x, y)
+	z.outerCircle.SetPosition(x, y)
+	// cr := z.zone.(*misc.CircleZone)
+	// cr.SetPosition(x, y)
 }
 
 // SetRadi sets circle's inner and outer radi
-func (z *ZoneCircleNode) SetRadi(innerRadius, outerRadius float64) {
+func (z *ZoneCircle) SetRadi(innerRadius, outerRadius float32) {
 	z.innerRadius = innerRadius
 	z.outerRadius = outerRadius
-	cr := z.zone.(*misc.CircleZone)
-	cr.SetRadi(innerRadius, outerRadius)
+	cr := z.innerCircle.(*custom.StaticCircleNode)
+	cr.SetScale(z.innerRadius)
 }
 
 // SetSegments sets how many segments on the circle (default = 12)
-func (z *ZoneCircleNode) SetSegments(segments int) {
-	z.segments = segments
+func (z *ZoneCircle) SetSegments(segments int) {
+	// z.segments = segments
 }
 
 // SetInnerColor sets circle's inner color (default = LightGray)
-func (z *ZoneCircleNode) SetInnerColor(color api.IPalette) {
+func (z *ZoneCircle) SetInnerColor(color api.IPalette) {
 	z.innerColor = color
 }
 
 // SetOuterColor sets circle's outer color (default = Silver)
-func (z *ZoneCircleNode) SetOuterColor(color api.IPalette) {
+func (z *ZoneCircle) SetOuterColor(color api.IPalette) {
 	z.outerColor = color
 }
 
 // UpdateCheck forces the zone to update based on a given point
-func (z *ZoneCircleNode) UpdateCheck(point api.IPoint) (state, id int) {
+func (z *ZoneCircle) UpdateCheck(point api.IPoint) (state, id int) {
 	newState, stateChanged := z.zone.Update(point)
-	id = z.ID()
+	id = z.zoneID
 
 	if stateChanged {
 		z.zoneState = newState
@@ -163,7 +147,7 @@ func (z *ZoneCircleNode) UpdateCheck(point api.IPoint) (state, id int) {
 }
 
 // TweenUpdate updates any tweens if enabled
-func (z *ZoneCircleNode) TweenUpdate(msPerUpdate float64) (float64, bool) {
+func (z *ZoneCircle) TweenUpdate(msPerUpdate float64) (float64, bool) {
 	if z.tweenEnabled {
 		switch z.zoneState {
 		case api.CrossStateEntered:
@@ -188,7 +172,7 @@ func (z *ZoneCircleNode) TweenUpdate(msPerUpdate float64) (float64, bool) {
 // IZoneListener implementation
 // ----------------------------------------------------------
 
-func (z *ZoneCircleNode) createTween(state, id int) {
+func (z *ZoneCircle) createTween(state, id int) {
 	// Whenever an tween needs to be created we are animating from a
 	// "begin" value to an "end" value--regardless of zooming In or Out.
 
@@ -209,7 +193,7 @@ func (z *ZoneCircleNode) createTween(state, id int) {
 				z.tweenZoomIn = gween.New(float32(z.zoomFrom), float32(z.zoomTo), float32(z.duration), ease.InOutQuad)
 			}
 		}
-		z.innerColor = rendering.NewPaletteInt64(rendering.Lime)
+		z.innerColor = color.NewPaletteInt64(color.Lime)
 		z.tweenEnabled = true
 		z.zoneMan.SetAnimationActive(true)
 	case api.CrossStateExited:
@@ -222,23 +206,8 @@ func (z *ZoneCircleNode) createTween(state, id int) {
 				z.tweenZoomOut = gween.New(float32(z.zoomTo), float32(z.zoomFrom), float32(z.duration), ease.InOutQuad)
 			}
 		}
-		z.innerColor = rendering.NewPaletteInt64(rendering.LightGray)
+		z.innerColor = color.NewPaletteInt64(color.LightGray)
 		z.tweenEnabled = true
 		z.zoneMan.SetAnimationActive(true)
 	}
-}
-
-// Draw renders shape
-func (z *ZoneCircleNode) Draw(context api.IRenderContext) {
-	if z.IsDirty() {
-		context.TransformPolygon(z.innerCircle)
-		context.TransformPolygon(z.outerCircle)
-		z.SetDirty(false)
-	}
-
-	context.SetDrawColor(z.innerColor)
-	context.RenderPolygon(z.innerCircle, api.CLOSED)
-
-	context.SetDrawColor(z.outerColor)
-	context.RenderPolygon(z.outerCircle, api.CLOSED)
 }
