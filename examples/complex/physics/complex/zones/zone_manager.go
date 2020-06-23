@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 )
@@ -111,7 +109,7 @@ func (z *zoneManager) Notify(state, id int) {
 
 	z.enteredZoneID = id
 
-	fmt.Println("ZM notified: ", z.enteredZoneID)
+	// fmt.Println("ZM notified: ", z.enteredZoneID)
 
 	// Find zone that matches "id"
 	for _, zone := range z.zones {
