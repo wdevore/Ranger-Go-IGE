@@ -20,10 +20,10 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Particles
 * **Done** Animation (tweening) -- Using tanema's library
 * **Done** Animation (tweening) -- Scene (manual)
-* --*Workng*-- Box2D physics (with space ship)
-* Zones combined with Zoom
-* Interpolation
-* Simple motion animations
+* **Done** Box2D physics (with space ship)
+* **Done** Zones combined with Zoom
+* **Done** Interpolation
+* --*Workng*-- Simple motion animations
 * Bitmap fonts
 * Audio (SFXR 8bit sound)
   * May build GUI using imGui

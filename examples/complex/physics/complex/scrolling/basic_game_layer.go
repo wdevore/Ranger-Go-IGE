@@ -243,13 +243,13 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 		zoom := g.zoneMan.GetZoom()
 		gz := zoom.(*custom.ZoomNode)
 		gz.TranslateBy(ray.X(), ray.Y())
-		g.cursorTrack(g.mx, g.my)
 
 	} else {
 		gc := g.scrollRingNode.(*custom.StaticCircleNode)
 		gc.SetColor(color.NewPaletteInt64(color.LightestGray))
 	}
 
+	g.cursorTrack(g.mx, g.my)
 }
 
 // -----------------------------------------------------
