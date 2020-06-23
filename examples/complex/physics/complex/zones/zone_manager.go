@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 )
@@ -11,7 +13,7 @@ import (
 type zoneManager struct {
 	parent api.INode
 
-	zones         []api.INode
+	zones         []*ZoneCircle
 	enteredZoneID int
 
 	// Zooming
@@ -39,23 +41,23 @@ func (z *zoneManager) Build(world api.IWorld) {
 	gz := z.zoom.(*custom.ZoomNode)
 	gz.SetStepSize(0.05)
 
-	zone := NewZoneCircle("RightCircleZone", objectRightZone, z.parent.World(), z.zoom, z)
+	zone := NewZoneCircle("RightCircleZone", objectRightZone, z)
+	// TODO the zone positions should be able to target anchors/markers
+	// defined ON the land
+	zone.Build(20.0, 22.0, z.parent.Position(), z.parent.World(), z.zoom)
 	z.zones = append(z.zones, zone)
-	gr := zone.(*ZoneCircle)
-	gr.SetTweenRange(1.0, 3.0)
-	gr.SetTweenDuration(1000.0)
-	gr.Configure(12, 13.0, 15.0)
-	gr.RequestNotification(z)
-	gr.SetPosition(30.0, 20.0)
+	zone.SetTweenRange(1.0, 3.0)
+	zone.SetTweenDuration(1000.0)
+	zone.RequestNotification(z)
+	zone.SetPosition(30.0, -10.0)
 
-	zone = NewZoneCircle("LeftCircleZone", objectLeftZone, z.parent.World(), z.zoom, z)
+	zone = NewZoneCircle("LeftCircleZone", objectLeftZone, z)
+	zone.Build(13.0, 15.0, z.parent.Position(), z.parent.World(), z.zoom)
 	z.zones = append(z.zones, zone)
-	gr = zone.(*ZoneCircle)
-	gr.SetTweenRange(1.0, 2.0)
-	gr.SetTweenDuration(1000.0)
-	gr.Configure(12, 7.0, 10.0)
-	gr.RequestNotification(z)
-	gr.SetPosition(-30.0, 20.0)
+	zone.SetTweenRange(1.0, 2.0)
+	zone.SetTweenDuration(1000.0)
+	zone.RequestNotification(z)
+	zone.SetPosition(-30.0, -10.0)
 	// gr.SetPosition(0.0, 15.0)
 }
 
@@ -69,16 +71,15 @@ func (z *zoneManager) UpdateCheck(point api.IPoint, msPerUpdate float64) {
 	isFinished := true
 
 	for _, zone := range z.zones {
-		grz := zone.(*ZoneCircle)
-		grz.UpdateCheck(point)
+		zone.UpdateCheck(point)
 
 		// Animate only the zone that was enter. The other zone's
 		// animation is frozen/stopped.
 		if z.enteredZoneID == zone.ID() {
-			z.zoomScale, isFinished = grz.TweenUpdate(msPerUpdate)
+			z.zoomScale, isFinished = zone.TweenUpdate(msPerUpdate)
 			if !isFinished {
 				gz := z.zoom.(*custom.ZoomNode)
-				gz.ScaleTo(float64(z.zoomScale))
+				gz.ScaleTo(float32(z.zoomScale))
 			}
 		}
 	}
@@ -92,7 +93,7 @@ func (z *zoneManager) SetAnimationActive(active bool) {
 	z.animationActive = active
 }
 
-func (z *zoneManager) ZoomScale() float64 {
+func (z *zoneManager) ZoomScale() float32 {
 	gz := z.zoom.(*custom.ZoomNode)
 
 	return gz.ZoomScale()
@@ -110,7 +111,7 @@ func (z *zoneManager) Notify(state, id int) {
 
 	z.enteredZoneID = id
 
-	// fmt.Println("ZM notified: ", z.enteredZoneID)
+	fmt.Println("ZM notified: ", z.enteredZoneID)
 
 	// Find zone that matches "id"
 	for _, zone := range z.zones {

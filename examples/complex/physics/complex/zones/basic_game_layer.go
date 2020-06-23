@@ -49,6 +49,8 @@ type gameLayer struct {
 
 	b2GroundBody *box2d.B2Body
 
+	zoneMan *zoneManager
+
 	// IO
 	downKeyDown  bool
 	leftKeyDown  bool
@@ -72,11 +74,15 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	setupPhysicsWorld(g)
 
-	if err := g.addSquare(); err != nil {
+	g.zoneMan = newZoneManager(g)
+	g.zoneMan.Build(world)
+	zoom := g.zoneMan.GetZoom()
+
+	if err := g.addSquare(zoom); err != nil {
 		return err
 	}
 
-	if err := g.addRay(); err != nil {
+	if err := g.addRay(zoom); err != nil {
 		return err
 	}
 
@@ -84,47 +90,47 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	g.gamePoint = geometry.NewPoint()
 
-	g.trackerComp = NewTrackingComponent("TriTrackerComp", g)
+	g.trackerComp = NewTrackingComponent("TriTrackerComp", zoom)
 	g.trackerComp.Configure(float64(targetSize), entityTriangle, entityStarShip|entityBoundary, &g.b2World)
 	g.trackerComp.SetPosition(0.0, 0.0)
 	g.trackerComp.EnableGravity(false)
 
-	g.starShipComp = NewStarShipComponent("StarShip", g)
+	g.starShipComp = NewStarShipComponent("StarShip", zoom)
 	g.starShipComp.Configure(5.0, entityStarShip, entityLand|entityTriangle|entityRectangle|entityBoundary, &g.b2World)
 	g.starShipComp.Reset(10.0, -20.0)
 
 	pos := geometry.NewPointUsing(0.0, -30.0)
 	g.landComp = newLandPhysicsComponent()
 	g.landComp.ConfigureFilter(entityLand, entityTriangle|entityStarShip|entityStarShipRight|entityStarShipLeft)
-	g.landComp.Build(&g.b2World, g, pos)
+	g.landComp.Build(&g.b2World, zoom, pos)
 
 	filter := newFilterListener()
 	g.b2World.SetContactFilter(filter)
 
 	// ---------------------------------------------------------
-	if err := g.addFence(); err != nil {
+	if err := g.addFence(zoom); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (g *gameLayer) addFence() error {
+func (g *gameLayer) addFence(parent api.INode) error {
 	position := geometry.NewPoint()
 	g.fencePhyComp = newFencePhysicsComponent()
 	g.fencePhyComp.ConfigureFilter(entityBoundary,
 		entityTriangle|entityStarShip|entityStarShipLeft|entityStarShipRight|entityRectangle)
 
-	g.fencePhyComp.Build(g.World(), g, &g.b2World, position)
+	g.fencePhyComp.Build(g.World(), parent, &g.b2World, position)
 
 	return nil
 }
 
-func (g *gameLayer) addSquare() error {
+func (g *gameLayer) addSquare(parent api.INode) error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(0.0, -10.0)
-	g.sqrNode, err = custom.NewStaticSquareNode("Square", true, true, g.World(), g)
+	g.sqrNode, err = custom.NewStaticSquareNode("Square", true, true, g.World(), parent)
 	if err != nil {
 		return err
 	}
@@ -141,10 +147,10 @@ func (g *gameLayer) addSquare() error {
 	return nil
 }
 
-func (g *gameLayer) addRay() error {
+func (g *gameLayer) addRay(parent api.INode) error {
 	var err error
 
-	g.rayNode, err = newDynamicLineNode("DynoLin", g.World(), g)
+	g.rayNode, err = newDynamicLineNode("DynoLin", g.World(), parent)
 	if err != nil {
 		return err
 	}
@@ -185,6 +191,8 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	// -----------------------------------------------------------
 	g.sqrPhyComp.Update(msPerUpdate, secPerUpdate)
 	g.starShipComp.Update()
+
+	g.zoneMan.UpdateCheck(g.starShipComp.Position(), msPerUpdate)
 }
 
 // -----------------------------------------------------

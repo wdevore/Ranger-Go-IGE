@@ -129,6 +129,11 @@ func (s *StarShipComponent) Configure(scale float32, categoryBits, maskBits uint
 	buildStarShip(s, b2World)
 }
 
+// Position gets the Hull's position
+func (s *StarShipComponent) Position() api.IPoint {
+	return s.hullVisual.Position()
+}
+
 // SetPosition sets component's location.
 func (s *StarShipComponent) SetPosition(x, y float64) {
 	s.hullVisual.SetPosition(float32(x), float32(y))
