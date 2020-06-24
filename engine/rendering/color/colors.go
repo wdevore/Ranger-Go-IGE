@@ -94,6 +94,18 @@ const (
 	LightPurple = uint64(0xaaaaffFF)
 
 	// ----------------------------------------------------
+	// Brown hues
+	// ----------------------------------------------------
+	// Chocolate color
+	Chocolate = uint64(0xD2691EFF)
+	// Saddlebrown color
+	Saddlebrown = uint64(0x8B4513FF)
+	// Sienna color
+	Sienna = uint64(0xA0522DFF)
+	// Brown color
+	Brown = uint64(0xA52A2AFF)
+
+	// ----------------------------------------------------
 	// Pantones hues
 	// https://www.pantone.com/color-finder#/pick?pantoneBook=pantoneSolidCoatedV3M2
 	// ----------------------------------------------------
