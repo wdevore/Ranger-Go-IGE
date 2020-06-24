@@ -104,6 +104,8 @@ const (
 	Sienna = uint64(0xA0522DFF)
 	// Brown color
 	Brown = uint64(0xA52A2AFF)
+	// Brick color
+	Brick = uint64(0xC54A4AFF)
 
 	// ----------------------------------------------------
 	// Pantones hues
