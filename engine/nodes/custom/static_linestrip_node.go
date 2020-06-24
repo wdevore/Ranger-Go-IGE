@@ -37,8 +37,7 @@ func NewStaticLineStripNode(name string, world api.IWorld, parent api.INode) (ap
 func (r *StaticLineStripNode) Build(world api.IWorld) error {
 	r.Node.Build(world)
 
-	name := "LineStrip"
-	r.shape = world.Atlas().GenerateShape(name, gl.LINE_STRIP)
+	r.shape = world.Atlas().GenerateShape(r.Name(), gl.LINE_STRIP)
 
 	// The shape has been added to the atlas but is hasn't been
 	// populated with this node's backing data.
