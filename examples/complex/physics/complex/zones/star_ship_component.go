@@ -149,7 +149,7 @@ func (s *StarShipComponent) SetPosition(x, y float64) {
 // EnableGravity enables/disables gravity for this component
 func (s *StarShipComponent) EnableGravity(enable bool) {
 	if enable {
-		s.b2BodyHull.SetGravityScale(-9.8)
+		s.b2BodyHull.SetGravityScale(1.0)
 	} else {
 		s.b2BodyHull.SetGravityScale(0.0)
 	}

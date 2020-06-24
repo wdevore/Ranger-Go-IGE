@@ -106,7 +106,7 @@ func (t *TrackingComponent) GetPosition() box2d.B2Vec2 {
 // EnableGravity enables/disables gravity for this component
 func (t *TrackingComponent) EnableGravity(enable bool) {
 	if enable {
-		t.b2Body.SetGravityScale(-9.8)
+		t.b2Body.SetGravityScale(1.0)
 	} else {
 		t.b2Body.SetGravityScale(0.0)
 	}

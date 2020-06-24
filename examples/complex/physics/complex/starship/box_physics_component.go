@@ -50,7 +50,7 @@ func (p *boxPhysicsComponent) MoveDown() {
 // EnableGravity enables/disables gravity for this component
 func (p *boxPhysicsComponent) EnableGravity(enable bool) {
 	if enable {
-		p.b2Body.SetGravityScale(-9.8)
+		p.b2Body.SetGravityScale(1.0)
 	} else {
 		p.b2Body.SetGravityScale(0.0)
 	}
