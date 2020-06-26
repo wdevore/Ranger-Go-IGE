@@ -51,15 +51,17 @@ func (ps *ParticleSystem) Activate(enable bool) {
 // Update updates all active particles
 func (ps *ParticleSystem) Update(dt float32) {
 	if ps.active {
+		ps.active = false
 		for _, p := range ps.particles {
-			p.Update(dt)
-
 			if !p.IsActive() {
 				if ps.autoTrigger {
 					ps.TriggerOneshot()
 				} else {
 					p.Activate(false) // deactivate particle
 				}
+			} else {
+				p.Evaluate(dt)
+				ps.active = true // Keep ps alive until all died
 			}
 		}
 	}
@@ -67,6 +69,7 @@ func (ps *ParticleSystem) Update(dt float32) {
 
 // TriggerOneshot activates a single particle
 func (ps *ParticleSystem) TriggerOneshot() {
+	ps.active = true
 	// Look for a dead particle to resurrect.
 	for _, p := range ps.particles {
 		if !p.IsActive() {
