@@ -107,7 +107,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	g.trackerComp = NewTrackingComponent("TriTrackerComp", zoom)
 	g.trackerComp.Configure(float64(targetSize),
-		entityTriangle, entityStarShip|entityBoundary,
+		entityTriangle, entityLava|entityStarShip|entityBoundary,
 		&g.b2World)
 	g.trackerComp.SetPosition(-10.0, 10.0)
 	g.trackerComp.EnableGravity(false)

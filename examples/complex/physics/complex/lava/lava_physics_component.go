@@ -68,7 +68,7 @@ func (p *lavaPhysicsComponent) buildLava(
 		particle.Configure(phyWorld, parent,
 			i, scale, color.NewPaletteInt64(color.YellowGreen),
 			pPos)
-		particle.ConfigureFilter(entityLava, entityLava|entityRectangle|entityLand|entityStarShip)
+		particle.ConfigureFilter(entityLava, entityTriangle|entityLava|entityRectangle|entityLand|entityStarShip)
 		particle.Build(phyWorld, pPos)
 		particle.EnableGravity(true)
 
