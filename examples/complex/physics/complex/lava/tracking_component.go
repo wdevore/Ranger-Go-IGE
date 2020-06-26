@@ -235,6 +235,7 @@ func (t *TrackingComponent) Update() {
 	}
 
 	bodyPos := t.b2Body.GetPosition()
+
 	ray := box2d.MakeB2Vec2(float64(t.targetPosition.X())-bodyPos.X, float64(t.targetPosition.Y())-bodyPos.Y)
 	targetAngle := math.Atan2(-ray.X, ray.Y)
 

@@ -109,8 +109,16 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	g.trackerComp.Configure(float64(targetSize),
 		entityTriangle, entityLava|entityStarShip|entityBoundary,
 		&g.b2World)
-	g.trackerComp.SetPosition(10.0, 0.0)
+	g.trackerComp.SetPosition(10.0, -10.0)
 	g.trackerComp.EnableGravity(false)
+
+	// g.gamePoint.SetByComp(450.0, 300.0)
+	// g.trackerComp.SetTargetPosition(g.gamePoint)
+
+	g.mx = 950.0
+	g.my = 300.0
+	g.cursorTrack(g.mx, g.my)
+	g.trackerComp.Thrust()
 
 	g.starShipComp = NewStarShipComponent("StarShip", zoom)
 	g.starShipComp.Configure(5.0, entityStarShip,
@@ -236,6 +244,7 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	// It is generally best to keep the time step and iterations fixed.
 	g.b2World.Step(secPerUpdate, api.VelocityIterations, api.PositionIterations)
 
+	g.cursorTrack(g.mx, g.my)
 	// Box2D expects a fractional number of dt not ms/frame which is
 	// why I use secPerUpdate.
 	g.trackerComp.Update()
@@ -276,7 +285,6 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 		gc.SetColor(color.NewPaletteInt64(color.LightestGray))
 	}
 
-	g.cursorTrack(g.mx, g.my)
 }
 
 // -----------------------------------------------------
@@ -343,7 +351,7 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 				g.starShipComp.EnableYaw(true, 2.0)
 			case 90:
 				g.starShipComp.SetThrust(true)
-			case 70:
+			case 70: // F
 				g.trackerComp.Thrust()
 			case 86:
 				visible := g.scrollRingNode.IsVisible()
