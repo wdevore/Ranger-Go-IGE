@@ -116,7 +116,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	g.starShipComp.Configure(5.0, entityStarShip,
 		entityLava|entityMountain|entityLand|entityTriangle|entityRectangle|entityBoundary,
 		&g.b2World)
-	g.starShipComp.Reset(0.0, 0.0)
+	g.starShipComp.Reset(-15.0, -10.0)
 
 	pos := geometry.NewPointUsing(0.0, -30.0)
 	g.landComp = newLandPhysicsComponent()
@@ -167,7 +167,7 @@ func (g *gameLayer) addLava(parent api.INode) error {
 func (g *gameLayer) addSquare(parent api.INode) error {
 	var err error
 
-	fallingSqrPos := geometry.NewPointUsing(5.0, -10.0)
+	fallingSqrPos := geometry.NewPointUsing(25.0, -10.0)
 	g.sqrNode, err = custom.NewStaticSquareNode("Square", true, true, g.World(), parent)
 	if err != nil {
 		return err
