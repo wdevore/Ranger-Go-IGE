@@ -11,6 +11,5 @@ const (
 type IParticleActivator interface {
 	Activate(particle IParticle, center IPoint)
 
-	SetMaxLifetime(duration float32)
-	SetMaxSpeed(speed float32)
+	SetMaxLifetime(duration float64)
 }

@@ -9,8 +9,8 @@ import (
 // Activator360 activates particles in random directions encompassing
 // 360 degrees
 type Activator360 struct {
-	maxLife  float32
-	maxSpeed float32
+	maxLife  float64
+	maxSpeed float64
 }
 
 // NewActivator360 constructs an activator
@@ -26,16 +26,13 @@ func (a *Activator360) Activate(particle api.IParticle, center api.IPoint) {
 	direction := rand.Float64() * 360.0
 	speed := float32(rand.Float64() * float64(a.maxSpeed))
 
-	particle.SetVelocity(direction, speed)
+	pNode := particle.(api.IParticleNode)
+	pNode.SetVelocity(direction, speed)
 
 	// The location of where the particle is emitted
-	particle.SetPosition(center.X(), center.Y())
+	pNode.SetPosition(center.X(), center.Y())
 
-	// A random lifetime ranging from 0.0 to max_life
-	lifespan := float32(rand.Float64()) * (a.maxLife * 1000.0)
-	particle.SetLifespan(lifespan)
-
-	color, isColorType := particle.Visual().(api.IColor)
+	color, isColorType := pNode.Visual().(api.IColor)
 
 	if isColorType {
 		// Change the Red color component if the visual supports the IColor type
@@ -46,17 +43,16 @@ func (a *Activator360) Activate(particle api.IParticle, center api.IPoint) {
 		color.SetColor(c)
 	}
 
+	// A random lifetime ranging from 0.0 to max_life
+	lifespan := rand.Float64() * (a.maxLife * 1000.0)
+	particle.SetLifespan(float32(lifespan))
+
 	particle.Reset()
 
 	particle.Activate(true)
 }
 
 // SetMaxLifetime sets maximum life a particle live
-func (a *Activator360) SetMaxLifetime(duration float32) {
+func (a *Activator360) SetMaxLifetime(duration float64) {
 	a.maxLife = duration
-}
-
-// SetMaxSpeed set max magnitude
-func (a *Activator360) SetMaxSpeed(speed float32) {
-	a.maxSpeed = speed
 }

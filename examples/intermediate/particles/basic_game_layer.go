@@ -91,7 +91,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 		gptri.SetColor(color.NewPaletteInt64(rendering.Black).Array())
 		gptri.SetVisible(false)
 		gptri.SetScale(10.0)
-		p := particles.NewParticle(ptri)
+		p := particles.NewNodeParticle(ptri)
 		g.particleSystem.AddParticle(p)
 	}
 

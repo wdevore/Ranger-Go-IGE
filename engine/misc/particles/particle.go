@@ -2,92 +2,51 @@ package particles
 
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
-	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 )
 
-// Particle is the base object of a particle system.
+// Particle is the base object of a Particle system.
 type Particle struct {
 	elapsed  float32
 	lifespan float32
-	position api.IPoint
-	velocity api.IVelocity
 
 	active bool
-
-	// Visual representation
-	node api.INode
 }
 
-// NewParticle constructs a new particle
-func NewParticle(visual api.INode) api.IParticle {
+// NewParticle constructs a new Particle
+func NewParticle() api.IParticle {
 	o := new(Particle)
 
 	o.active = false
 	o.elapsed = 0.0
 	o.lifespan = 0.0
-	o.velocity = maths.NewVelocity()
-	o.position = geometry.NewPoint()
-
-	o.node = visual
 
 	return o
 }
 
-// SetPosition sets particles initial position
-func (p *Particle) SetPosition(x, y float32) {
-	p.position.SetByComp(x, y)
-	p.node.SetPosition(x, y)
-}
-
-// GetPosition gets the particle's current position
-func (p *Particle) GetPosition() api.IPoint {
-	return p.position
-}
-
-// SetLifespan sets how long the particle lives
+// SetLifespan sets how long the Particle lives
 func (p *Particle) SetLifespan(duration float32) {
 	p.lifespan = duration
 }
 
-// Visual gets the current INode assigned to this particle
-func (p *Particle) Visual() api.INode {
-	return p.node
-}
-
-// Activate changes the particle's state
+// Activate changes the Particle's state
 func (p *Particle) Activate(active bool) {
 	p.active = active
-	p.node.SetVisible(active)
 }
 
-// IsActive indicates if the particle is alive
+// IsActive indicates if the Particle is alive
 func (p *Particle) IsActive() bool {
 	return p.active
 }
 
-// SetVelocity changes the velocity
-func (p *Particle) SetVelocity(angle float64, speed float32) {
-	p.velocity.SetDirectionByAngle(angle)
-	p.velocity.SetMagnitude(speed)
-}
-
-// Update changes the particle's state based on time
-func (p *Particle) Update(dt float32) {
+// Evaluate changes the Particle's state based on time
+func (p *Particle) Evaluate(dt float32) {
 	p.elapsed += dt
 
 	p.active = p.elapsed < p.lifespan
-
-	// Update particle's position as long as the particle is active.
-	if p.active {
-		p.velocity.ApplyToPoint(p.position)
-		p.node.SetPosition(p.position.X(), p.position.Y())
-	}
 }
 
-// Reset resets the particle
+// Reset resets the Particle
 func (p *Particle) Reset() {
 	p.active = false
 	p.elapsed = 0.0
-	p.node.SetVisible(p.active)
 }
