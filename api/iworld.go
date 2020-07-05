@@ -19,12 +19,17 @@ type IWorld interface {
 	Viewspace() IMatrix4
 	InvertedViewspace() IMatrix4
 
-	Atlas() IAtlas      // Static atlas
-	DynoAtlas() IAtlas  // DynamicMulti atlas
-	PixelAtlas() IAtlas // Dynamic atlas
+	Atlas() IAtlas        // Static atlas
+	DynoAtlas() IAtlas    // DynamicMulti atlas
+	PixelAtlas() IAtlas   // Dynamic atlas
+	TextureAtlas() IAtlas // Texture atlas
+
 	PostProcess()
 
 	Shader() IShader
+
+	TextureShader() IShader
+	TextureManager() ITextureManager
 
 	RasterFont() IRasterFont
 

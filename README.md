@@ -23,7 +23,8 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Box2D physics (with space ship)
 * **Done** Zones combined with Zoom
 * **Done** Interpolation
-* --*Workng*-- Simple motion animations
+* --*Workng*-- Sprite Textures (quads)
+* Simple motion animations
 * Bitmap fonts
 * Audio (SFXR 8bit sound)
   * May build GUI using imGui
@@ -37,7 +38,6 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
   * Dialog
   * Grouping (i.e. Radio buttons)
 * Shaders with interleved vertex/color, for example, checkboards
-* Sprite Textures (quads)
 * Stippling with OpenGL patterns
 * Custom vector font (needs lower case completion)
 * Vector Fonts via SVG import

@@ -13,6 +13,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/fonts"
+	"github.com/wdevore/Ranger-Go-IGE/engine/textures"
 )
 
 // World is the main component of ranger
@@ -20,11 +21,13 @@ type world struct {
 	properties   *configuration.Properties
 	relativePath string
 
-	shader api.IShader
+	defaultShader api.IShader
+	textureShader api.IShader
 
 	staticAtlas  api.IAtlas
 	dynamicAtlas api.IAtlas
 	pixelAtlas   api.IAtlas
+	textureAtlas api.IAtlas
 
 	rasterFont api.IRasterFont
 
@@ -36,6 +39,8 @@ type world struct {
 
 	viewSpace    api.IMatrix4
 	invViewSpace api.IMatrix4
+
+	textureMan api.ITextureManager
 
 	// Debug Info
 	fps        int
@@ -70,40 +75,58 @@ func newWorld(relativePath string) api.IWorld {
 		log.Fatalln("ERROR:", err)
 	}
 
-	shp := o.properties.Shaders
+	shaders := &o.properties.Shaders
 
-	if shp.UseDefault {
-		shp := &o.properties.Shaders
-
-		vertexShaderFile, err := os.Open(dataPath + "/engine/assets/shaders/" + shp.VertexShaderSrc)
+	if shaders.UseDefault {
+		code, err := o.loadShader(dataPath, shaders.VertexShaderSrc)
 		if err != nil {
-			log.Fatalln("ERROR:", err)
+			panic(err)
 		}
+		shaders.VertexShaderCode = *code
 
-		defer vertexShaderFile.Close()
-
-		bytes, err := ioutil.ReadAll(vertexShaderFile)
+		code, err = o.loadShader(dataPath, shaders.FragmentShaderSrc)
 		if err != nil {
-			log.Fatalln("ERROR:", err)
+			panic(err)
 		}
-		shp.VertexShaderCode = string(bytes)
-
-		fragmentShaderFile, err := os.Open(dataPath + "/engine/assets/shaders/" + shp.FragmentShaderSrc)
-		if err != nil {
-			log.Fatalln("ERROR:", err)
-		}
-
-		defer fragmentShaderFile.Close()
-
-		bytes, err = ioutil.ReadAll(fragmentShaderFile)
-		if err != nil {
-			log.Fatalln("ERROR:", err)
-		}
-
-		shp.FragmentShaderCode = string(bytes)
+		shaders.FragmentShaderCode = *code
 	}
 
+	if shaders.UseTextureShader {
+		// Texture shaders
+		code, err := o.loadShader(dataPath, shaders.TextureVertexShaderSrc)
+		if err != nil {
+			panic(err)
+		}
+		shaders.TextureVertexShaderCode = *code
+
+		code, err = o.loadShader(dataPath, shaders.TextureFragmentShaderSrc)
+		if err != nil {
+			panic(err)
+		}
+		shaders.TextureFragmentShaderCode = *code
+	}
+
+	o.textureMan = textures.NewTextureManager()
+
 	return o
+}
+
+func (w *world) loadShader(dataPath, shaderSrc string) (*string, error) {
+	file, err := os.Open(dataPath + "/engine/assets/shaders/" + shaderSrc)
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+
+	bytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	code := string(bytes)
+
+	return &code, nil
 }
 
 func (w *world) Configure() error {
@@ -113,14 +136,14 @@ func (w *world) Configure() error {
 	w.viewSpace = maths.NewMatrix4()
 	w.invViewSpace = maths.NewMatrix4()
 
-	shp := w.properties.Shaders
+	shaderP := w.properties.Shaders
 
 	// ---------------------------------------
 	// Compile shader
 	// ---------------------------------------
-	w.shader = rendering.NewShaderFromCode(shp.VertexShaderCode, shp.FragmentShaderCode)
+	w.defaultShader = rendering.NewShaderFromCode(shaderP.VertexShaderCode, shaderP.FragmentShaderCode)
 
-	err := w.shader.Compile()
+	err := w.defaultShader.Compile()
 
 	if err != nil {
 		fmt.Println("RenderGraphic error: ")
@@ -128,20 +151,35 @@ func (w *world) Configure() error {
 	}
 
 	// Activate shader so we can query it.
-	w.shader.Use()
+	w.defaultShader.Use()
 
 	// Create a graphic that will store Static shapes
 	w.staticAtlas = rendering.NewAtlas()
-	renG := rendering.NewRenderGraphic(w.staticAtlas, w.shader)
+	renG := rendering.NewRenderGraphic(w.staticAtlas, w.defaultShader)
 	w.AddRenderGraphic(renG, api.StaticRenderGraphic)
 
 	w.pixelAtlas = rendering.NewAtlas()
-	renG = rendering.NewRenderGraphic(w.pixelAtlas, w.shader)
+	renG = rendering.NewRenderGraphic(w.pixelAtlas, w.defaultShader)
 	w.AddRenderGraphic(renG, api.DynamicPixelBufRenderGraphic)
 
 	w.dynamicAtlas = rendering.NewAtlas()
-	renG = rendering.NewRenderGraphic(w.dynamicAtlas, w.shader)
+	renG = rendering.NewRenderGraphic(w.dynamicAtlas, w.defaultShader)
 	w.AddRenderGraphic(renG, api.DynamicRenderGraphic)
+
+	// --------------------------------------------------------------
+	// A Texture renderer
+	w.textureShader = rendering.NewShaderFromCode(shaderP.TextureVertexShaderCode, shaderP.TextureFragmentShaderCode)
+
+	err = w.textureShader.Compile()
+
+	if err != nil {
+		fmt.Println("Texture RenderGraphic error: ")
+		panic(err)
+	}
+	w.textureAtlas = rendering.NewAtlas()
+	renG = rendering.NewTextureRenderGraphic(w.textureAtlas, w.textureShader)
+	w.AddRenderGraphic(renG, api.TextureRenderGraphic)
+	// ---------------------------------------------------------------
 
 	// Force UseRenderGraphic to UnUse/Use for the first node visited
 	w.activeRenGID = -1
@@ -193,8 +231,7 @@ func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 }
 
 func (w *world) PostProcess() {
-	// All atlases are copied to OpenGL via VBO and EBO bindings
-	// which are currently available in
+	// All atlases are copied to OpenGL via VBO/TBO and EBO bindings
 
 	if w.staticAtlas.HasShapes() {
 		renG := w.renderRepo[api.StaticRenderGraphic]
@@ -210,6 +247,17 @@ func (w *world) PostProcess() {
 		renG := w.renderRepo[api.DynamicRenderGraphic]
 		renG.Construct(api.MeshDynamicMulti, w.dynamicAtlas)
 	}
+
+	if w.textureAtlas.HasShapes() {
+		renG := w.renderRepo[api.TextureRenderGraphic]
+		// Access image from Texture manager
+		image, err := w.textureMan.AccessTexture(0)
+		if err != nil {
+			panic(err)
+		}
+		notSmooth := false
+		renG.ConstructWithImage(image, notSmooth, w.textureAtlas)
+	}
 }
 
 func (w *world) Atlas() api.IAtlas {
@@ -224,8 +272,20 @@ func (w *world) PixelAtlas() api.IAtlas {
 	return w.pixelAtlas
 }
 
+func (w *world) TextureAtlas() api.IAtlas {
+	return w.textureAtlas
+}
+
 func (w *world) Shader() api.IShader {
-	return w.shader
+	return w.defaultShader
+}
+
+func (w *world) TextureShader() api.IShader {
+	return w.textureShader
+}
+
+func (w *world) TextureManager() api.ITextureManager {
+	return w.textureMan
 }
 
 func (w *world) RasterFont() api.IRasterFont {

@@ -7,30 +7,35 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
-// BufferObject associates an Atlas with a VAO
-type BufferObject struct {
+// TextureBufferObject associates an Atlas with a VAO
+type TextureBufferObject struct {
 	vao *VAO
-	vbo *VBO
+	tbo *TBO
 	ebo *EBO
 
 	floatSize int
 	uintSize  int
 }
 
-// NewBufferObject creates a new vector object with an associated Mesh
-func NewBufferObject() api.IBufferObject {
-	o := new(BufferObject)
+// NewTextureBufferObject creates a new vector object with an associated Mesh
+func NewTextureBufferObject() api.IBufferObject {
+	o := new(TextureBufferObject)
 	o.floatSize = int(unsafe.Sizeof(float32(0)))
 	o.uintSize = int(unsafe.Sizeof(uint32(0)))
 	return o
 }
 
 // Construct configures a buffer object
-func (b *BufferObject) Construct(meshType int, atlas api.IAtlas) {
+func (b *TextureBufferObject) Construct(meshType int, atlas api.IAtlas) {
+}
+
+// ConstructWithImage configures a buffer object
+// meshType is ignored
+func (b *TextureBufferObject) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
 	b.vao = NewVAO()
 	b.vao.BindStart()
 
-	b.vbo = NewVBO(meshType)
+	b.tbo = NewTBO()
 	b.ebo = NewEBO()
 
 	// The atlas has shapes and each shape has vertices.
@@ -59,36 +64,32 @@ func (b *BufferObject) Construct(meshType int, atlas api.IAtlas) {
 		indexOffset = uint32(len(vertices) / api.XYZComponentCount)
 	}
 
-	vboBufferSize := len(vertices) * api.XYZComponentCount * b.floatSize
+	tboBufferSize := len(vertices) * api.XYZWComponentCount * b.floatSize
 	eboBufferSize := len(indices) * b.uintSize
 
-	if vboBufferSize == 0 || eboBufferSize == 0 {
-		panic("BO.Construct: VBO/EBO buffers are zero")
+	if tboBufferSize == 0 || eboBufferSize == 0 {
+		panic("TBO.Construct: TBO/EBO buffers are zero")
 	}
 
-	b.vbo.Bind(vboBufferSize, vertices)
+	b.tbo.BindUsingImage(image, smooth)
 
 	b.ebo.Bind(eboBufferSize, indices)
 
-	b.vao.BindComplete()
-}
-
-// ConstructWithImage note need to rethink the api
-func (b *BufferObject) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
+	b.vao.TextureBindComplete()
 }
 
 // Use activates the VAO
-func (b *BufferObject) Use() {
+func (b *TextureBufferObject) Use() {
+	b.tbo.Use()
 	b.vao.Use()
 }
 
 // UnUse deactivates the VAO
-func (b *BufferObject) UnUse() {
+func (b *TextureBufferObject) UnUse() {
+	b.tbo.UnUse()
 	b.vao.UnUse()
 }
 
-// Update modifies the VBO buffer
-func (b *BufferObject) Update(shape api.IAtlasShape) {
-	// b.mesh.Update(shape)
-	b.vbo.Update(shape.Offset(), shape.Count(), shape.Vertices())
+// Update unused
+func (b *TextureBufferObject) Update(shape api.IAtlasShape) {
 }

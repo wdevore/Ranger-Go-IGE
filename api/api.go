@@ -17,6 +17,9 @@ const (
 // XYZComponentCount indicates how many parts to a vertex
 const XYZComponentCount int = 3
 
+// XYZWComponentCount is a composite of 2D vertex and 2D texture coords
+const XYZWComponentCount int = 4
+
 // OpenGL Object types
 const (
 	GLLines = 0

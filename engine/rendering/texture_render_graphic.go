@@ -7,8 +7,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
-// RenderGraphic a graphic state for rendering against
-type RenderGraphic struct {
+// TextureRenderGraphic a graphic state for texture rendering against
+type TextureRenderGraphic struct {
 	modelLoc int32
 	colorLoc int32
 
@@ -19,12 +19,12 @@ type RenderGraphic struct {
 	atlas          api.IAtlas
 }
 
-// NewRenderGraphic creates a new graphic
-func NewRenderGraphic(atlas api.IAtlas, shader api.IShader) api.IRenderGraphic {
-	o := new(RenderGraphic)
+// NewTextureRenderGraphic creates a new graphic
+func NewTextureRenderGraphic(atlas api.IAtlas, shader api.IShader) api.IRenderGraphic {
+	o := new(TextureRenderGraphic)
 	o.atlas = atlas
 
-	o.bufObj = NewBufferObject()
+	o.bufObj = NewTextureBufferObject()
 	o.shader = shader
 
 	programID := shader.Program()
@@ -34,33 +34,39 @@ func NewRenderGraphic(atlas api.IAtlas, shader api.IShader) api.IRenderGraphic {
 	// ---------------------------------------
 	o.modelLoc = gl.GetUniformLocation(programID, gl.Str("model\x00"))
 	if o.modelLoc < 0 {
-		panic("World: couldn't find 'model' uniform variable")
+		panic("Couldn't find 'model' uniform variable")
 	}
 
-	o.colorLoc = gl.GetUniformLocation(programID, gl.Str("fragColor\x00"))
-	if o.colorLoc < 0 {
-		panic("Couldn't find 'fragColor' uniform variable")
+	// o.colorLoc = gl.GetUniformLocation(programID, gl.Str("fragColor\x00"))
+	// if o.colorLoc < 0 {
+	// 	panic("Couldn't find 'fragColor' uniform variable")
+	// }
+
+	textureLoc := gl.GetUniformLocation(programID, gl.Str("image\x00"))
+	if textureLoc < 0 {
+		panic("Couldn't find 'image' uniform variable")
 	}
+	gl.Uniform1i(textureLoc, 0) // set it manually
 
 	return o
 }
 
 // Construct ...
-func (r *RenderGraphic) Construct(meshType int, atlas api.IAtlas) {
-	r.bufObj.Construct(meshType, atlas)
+func (r *TextureRenderGraphic) Construct(meshType int, atlas api.IAtlas) {
 }
 
 // ConstructWithImage ...
-func (r *RenderGraphic) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
+func (r *TextureRenderGraphic) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
+	r.bufObj.ConstructWithImage(image, smooth, atlas)
 }
 
 // BufferObjInUse indicates if this graphic's buffer is activated
-func (r *RenderGraphic) BufferObjInUse() bool {
+func (r *TextureRenderGraphic) BufferObjInUse() bool {
 	return r.bufferObjInUse
 }
 
 // Use activates this graphic
-func (r *RenderGraphic) Use() {
+func (r *TextureRenderGraphic) Use() {
 	if !r.bufferObjInUse {
 		r.bufObj.Use()
 		r.shader.Use()
@@ -69,19 +75,19 @@ func (r *RenderGraphic) Use() {
 }
 
 // UnUse deactivates this graphic
-func (r *RenderGraphic) UnUse() {
+func (r *TextureRenderGraphic) UnUse() {
 	r.bufObj.UnUse()
 	r.bufferObjInUse = false
 }
 
 // UnUseBufferObj deactivates buffer
-func (r *RenderGraphic) UnUseBufferObj() {
+func (r *TextureRenderGraphic) UnUseBufferObj() {
 	r.bufObj.UnUse()
 	r.bufferObjInUse = false
 }
 
 // UseBufferObj activates buffer
-func (r *RenderGraphic) UseBufferObj() {
+func (r *TextureRenderGraphic) UseBufferObj() {
 	if !r.bufferObjInUse {
 		r.bufObj.Use()
 		r.bufferObjInUse = true
@@ -89,18 +95,18 @@ func (r *RenderGraphic) UseBufferObj() {
 }
 
 // BufferObj returns internal buffer object
-func (r *RenderGraphic) BufferObj() api.IBufferObject {
+func (r *TextureRenderGraphic) BufferObj() api.IBufferObject {
 	return r.bufObj
 }
 
 // SetColor sets the shader's color
-func (r *RenderGraphic) SetColor(color []float32) {
-	gl.Uniform3fv(r.colorLoc, 1, &color[0])
+func (r *TextureRenderGraphic) SetColor(color []float32) {
+	// gl.Uniform3fv(r.colorLoc, 1, &color[0])
 }
 
 // SetColor4 sets the shader's vec4 color
-func (r *RenderGraphic) SetColor4(color []float32) {
-	gl.Uniform4fv(r.colorLoc, 1, &color[0])
+func (r *TextureRenderGraphic) SetColor4(color []float32) {
+	// gl.Uniform4fv(r.colorLoc, 1, &color[0])
 }
 
 // Render renders a shape
@@ -115,7 +121,7 @@ func (r *RenderGraphic) SetColor4(color []float32) {
 //    2nd parm = how many elements to draw
 //    fmt.Println("count: ", int32(shape.Count()), ", ", shape.Offset())
 //    Count = # of vertices to render
-func (r *RenderGraphic) Render(shape api.IAtlasShape, model api.IMatrix4) {
+func (r *TextureRenderGraphic) Render(shape api.IAtlasShape, model api.IMatrix4) {
 	gl.UniformMatrix4fv(r.modelLoc, 1, false, &model.Matrix()[0])
 	gl.DrawElements(shape.PrimitiveMode(), int32(shape.ElementCount()), uint32(gl.UNSIGNED_INT), gl.PtrOffset(shape.Offset()))
 
@@ -124,13 +130,13 @@ func (r *RenderGraphic) Render(shape api.IAtlasShape, model api.IMatrix4) {
 }
 
 // RenderElements renders the specificied # of elemens from the shape's vertices
-func (r *RenderGraphic) RenderElements(shape api.IAtlasShape, elementCount, elementOffset int, model api.IMatrix4) {
+func (r *TextureRenderGraphic) RenderElements(shape api.IAtlasShape, elementCount, elementOffset int, model api.IMatrix4) {
 	// fmt.Println(elementCount, ", ", elementOffset)
 	gl.UniformMatrix4fv(r.modelLoc, 1, false, &model.Matrix()[0])
 	gl.DrawElements(shape.PrimitiveMode(), int32(elementCount), uint32(gl.UNSIGNED_INT), gl.PtrOffset(elementOffset))
 }
 
 // Update modifies the VBO buffer
-func (r *RenderGraphic) Update(shape api.IAtlasShape) {
+func (r *TextureRenderGraphic) Update(shape api.IAtlasShape) {
 	r.bufObj.Update(shape)
 }

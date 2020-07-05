@@ -8,6 +8,9 @@ const (
 
 	// DynamicPixelBufRenderGraphic generic pixel buffer render setup
 	DynamicPixelBufRenderGraphic = 2
+
+	// TextureRenderGraphic is used for texture quads
+	TextureRenderGraphic = 3
 )
 
 // IRender is the visual interface for drawing

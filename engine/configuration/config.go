@@ -71,13 +71,18 @@ type fontJSON struct {
 }
 
 type shadersJSON struct {
-	UseDefault        bool
-	VertexShaderSrc   string
-	FragmentShaderSrc string
+	UseDefault               bool
+	VertexShaderSrc          string
+	FragmentShaderSrc        string
+	TextureVertexShaderSrc   string
+	TextureFragmentShaderSrc string
 
 	// These properties are populated dynamically
-	VertexShaderCode   string
-	FragmentShaderCode string
+	UseTextureShader          bool
+	VertexShaderCode          string
+	FragmentShaderCode        string
+	TextureVertexShaderCode   string
+	TextureFragmentShaderCode string
 }
 
 // Properties reflects config.json

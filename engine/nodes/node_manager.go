@@ -69,16 +69,18 @@ func (n *nodeManager) Configure() error {
 
 	n.configureProjections(n.world)
 
+	// -------------------------------------------------------
+	// Default Shader
 	programID := n.world.Shader().Program()
 
 	n.projLoc = gl.GetUniformLocation(programID, gl.Str("projection\x00"))
 	if n.projLoc < 0 {
-		return errors.New("SplashScene: couldn't find 'projection' uniform variable")
+		return errors.New("NodeManager: couldn't find 'projection' uniform variable")
 	}
 
 	n.viewLoc = gl.GetUniformLocation(programID, gl.Str("view\x00"))
 	if n.viewLoc < 0 {
-		return errors.New("SplashScene: couldn't find 'view' uniform variable")
+		return errors.New("NodeManager: couldn't find 'view' uniform variable")
 	}
 
 	pm := n.projection.Matrix().Matrix()
@@ -86,6 +88,25 @@ func (n *nodeManager) Configure() error {
 
 	vm := n.world.Viewspace().Matrix()
 	gl.UniformMatrix4fv(n.viewLoc, 1, false, &vm[0])
+	// -------------------------------------------------------
+
+	// -------------------------------------------------------
+	// Texture Shader
+	programID = n.world.TextureShader().Program()
+
+	projLoc := gl.GetUniformLocation(programID, gl.Str("projection\x00"))
+	if projLoc < 0 {
+		return errors.New("NodeManager: couldn't find 'projection' uniform variable")
+	}
+
+	viewLoc := gl.GetUniformLocation(programID, gl.Str("view\x00"))
+	if viewLoc < 0 {
+		return errors.New("NodeManager: couldn't find 'view' uniform variable")
+	}
+
+	gl.UniformMatrix4fv(projLoc, 1, false, &pm[0])
+	gl.UniformMatrix4fv(viewLoc, 1, false, &vm[0])
+	// -------------------------------------------------------
 
 	identity := maths.NewMatrix4()
 

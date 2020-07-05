@@ -1,9 +1,12 @@
 package api
 
+import "image"
+
 // IRenderGraphic represents a graphic render state
 type IRenderGraphic interface {
 	BufferObjInUse() bool
 	Construct(meshType int, atlas IAtlas)
+	ConstructWithImage(image *image.NRGBA, smooth bool, atlas IAtlas)
 
 	Use()
 	UnUse()
