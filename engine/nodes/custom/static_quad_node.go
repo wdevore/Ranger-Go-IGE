@@ -49,10 +49,15 @@ func (r *StaticQuadNode) populate() {
 	// These 2D vertices are interleaved with 2D texture coords
 	vertices := []float32{
 		// Pos    // Tex
-		0.0, 0.0, 0.0, 0.0, // CCW
-		1.0, 0.0, 1.0, 0.0,
-		1.0, 1.0, 1.0, 1.0,
-		0.0, 1.0, 0.0, 1.0,
+		//x  y    z    w
+		// 0.0, 0.0, 0.0, 0.0, // CCW
+		// 1.0, 0.0, 1.0, 0.0,
+		// 1.0, 1.0, 1.0, 1.0,
+		// 0.0, 1.0, 0.0, 1.0,
+		-0.5, -0.5, 0.0, 0.0, // CCW
+		0.5, -0.5, 1.0, 0.0,
+		0.5, 0.5, 1.0, 1.0,
+		-0.5, 0.5, 0.0, 1.0,
 	}
 
 	r.shape.SetVertices(vertices)
@@ -60,6 +65,8 @@ func (r *StaticQuadNode) populate() {
 	indices := []uint32{
 		0, 1, 2,
 		0, 2, 3,
+		// 0, 2, 4,
+		// 0, 4, 6,
 	}
 
 	r.shape.SetIndices(indices)
@@ -80,7 +87,7 @@ func (r *StaticQuadNode) SetAlpha(alpha float32) {
 // Draw renders shape
 func (r *StaticQuadNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.TextureRenderGraphic)
-	renG.SetColor4(r.color)
+	// renG.SetColor4(r.color)
 	// Render texture on quad
 	renG.Render(r.shape, model)
 }

@@ -33,6 +33,10 @@ func (v *VBO) VboID() uint32 {
 	return v.vboID
 }
 
+// Use bind vertex array to Id
+func (v *VBO) Use() {
+}
+
 // SetDrawUsage changes buffer usage style between static or dynamic.
 // This MUST be called prior to Bind() call.
 func (v *VBO) SetDrawUsage(meshType int) {

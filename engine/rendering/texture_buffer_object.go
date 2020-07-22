@@ -10,6 +10,7 @@ import (
 // TextureBufferObject associates an Atlas with a VAO
 type TextureBufferObject struct {
 	vao *VAO
+	vbo *VBO
 	tbo *TBO
 	ebo *EBO
 
@@ -35,6 +36,7 @@ func (b *TextureBufferObject) ConstructWithImage(image *image.NRGBA, smooth bool
 	b.vao = NewVAO()
 	b.vao.BindStart()
 
+	b.vbo = NewVBO(api.MeshStatic)
 	b.tbo = NewTBO()
 	b.ebo = NewEBO()
 
@@ -64,24 +66,28 @@ func (b *TextureBufferObject) ConstructWithImage(image *image.NRGBA, smooth bool
 		indexOffset = uint32(len(vertices) / api.XYZComponentCount)
 	}
 
-	tboBufferSize := len(vertices) * api.XYZWComponentCount * b.floatSize
+	vboBufferSize := len(vertices) * api.XYZWComponentCount * b.floatSize
 	eboBufferSize := len(indices) * b.uintSize
 
-	if tboBufferSize == 0 || eboBufferSize == 0 {
-		panic("TBO.Construct: TBO/EBO buffers are zero")
+	if vboBufferSize == 0 || eboBufferSize == 0 {
+		panic("VBO.Construct: VBO/EBO buffers are zero")
 	}
 
-	b.tbo.BindUsingImage(image, smooth)
+	// b.vbo.Bind(vboBufferSize, vertices)
+	b.tbo.BindTextureVbo(vertices, b.vbo.VboID())
 
 	b.ebo.Bind(eboBufferSize, indices)
 
-	b.vao.TextureBindComplete()
+	b.tbo.BindUsingImage(image, smooth)
+
+	// b.vao.TextureBindComplete()
+	b.vao.UnUse()
 }
 
 // Use activates the VAO
 func (b *TextureBufferObject) Use() {
-	b.tbo.Use()
 	b.vao.Use()
+	b.tbo.Use()
 }
 
 // UnUse deactivates the VAO

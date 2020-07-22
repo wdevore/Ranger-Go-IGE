@@ -110,23 +110,9 @@ func (r *TextureRenderGraphic) SetColor4(color []float32) {
 }
 
 // Render renders a shape
-//    The signature of glDrawElements was defined back before there were buffer objects;
-//    originally you'd pass an actual pointer to data in a client-side vertex array.
-//    When device-side buffers were introduced, this function was extended to support them
-//    as well, by shoehorning a buffer offset into the address argument.
-//    Because we are using VBOs we need to awkwardly cast the offset value into a
-//    pointer to void.
-//    If we weren't using VBOs then we would use client-side addresses: &_mesh->indices[offset]
-//    indices := b.atlasObject.Mesh().Indices()
-//    2nd parm = how many elements to draw
-//    fmt.Println("count: ", int32(shape.Count()), ", ", shape.Offset())
-//    Count = # of vertices to render
 func (r *TextureRenderGraphic) Render(shape api.IAtlasShape, model api.IMatrix4) {
 	gl.UniformMatrix4fv(r.modelLoc, 1, false, &model.Matrix()[0])
 	gl.DrawElements(shape.PrimitiveMode(), int32(shape.ElementCount()), uint32(gl.UNSIGNED_INT), gl.PtrOffset(shape.Offset()))
-
-	// TODO evaluate for use
-	// gl.DrawElementsBaseVertex(shape.PrimitiveMode(), int32(shape.Count()), uint32(gl.UNSIGNED_INT), gl.Ptr(&indices[0]), int32(shape.Offset()))
 }
 
 // RenderElements renders the specificied # of elemens from the shape's vertices

@@ -42,12 +42,11 @@ func (g *gameLayer) Build(world api.IWorld) error {
 }
 
 func (g *gameLayer) addTexture(world api.IWorld) {
-
 	imNode, err := custom.NewStaticQuadNode("CTypeShip", world, g)
 	if err != nil {
 		panic(err)
 	}
-	imNode.SetScale(10)
+	imNode.SetScale(50)
 	imNode.SetPosition(-100.0, 100.0)
 	gzr := imNode.(*custom.StaticQuadNode)
 	gzr.SetColor(color.NewPaletteInt64(color.Black))

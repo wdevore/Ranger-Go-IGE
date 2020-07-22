@@ -1,5 +1,9 @@
 # Ranger-Go-IGE
 
+## Working task
+When switching between rendergraphics we need to consider both the shader and Vao. Some nodes only need switch one or the other or maybe both.
+Each RG should know what to "use" prior to rendering. It should also know if it is already in use and not re-use redundantly.
+
 ## Notes
 The are two config files: one for the engine itself and the other for each game.
  
@@ -70,6 +74,7 @@ https://github.com/rustyoz/svg
 https://golang.hotexamples.com/examples/github.com.catiepg.svg/-/Parse/golang-parse-function-examples.html
 
 ## Bitmap fonts
+https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Text_Rendering_02
 https://www.cnx-software.com/2020/06/19/fontedit-font-editor-targets-embedded-systems-with-led-lcd-or-e-paper-displays/
 https://www.gamedev.net/tutorials/_/technical/opengl/opengl-texture-mapping-an-introduction-r947/
 https://www.opengl.org/archives/resources/code/samples/glut_examples/texfont/texfont.html
@@ -100,6 +105,7 @@ You should now have a bitmap strike to work with. Go to Generate Fonts; on the l
 https://libgdx.badlogicgames.com/tools.html
 
 ## OpenGL examples and source
+https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/4.1.textures/textures.cpp
 https://github.com/faiface/glhf
 https://github.com/McNopper
 https://github.com/McNopper/OpenGL

@@ -12,4 +12,4 @@ void main()
     // is passed to the shader as a vec4. Weird.
     // vec4(fragColor) * 
     color = texture(image, TexCoords);
-}
+} // Note: 450-core requires a blank line at EOF

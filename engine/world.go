@@ -255,8 +255,8 @@ func (w *world) PostProcess() {
 		if err != nil {
 			panic(err)
 		}
-		notSmooth := false
-		renG.ConstructWithImage(image, notSmooth, w.textureAtlas)
+		smooth := false
+		renG.ConstructWithImage(image, smooth, w.textureAtlas)
 	}
 }
 
