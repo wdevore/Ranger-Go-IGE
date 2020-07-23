@@ -68,8 +68,8 @@ func (r *TextureRenderGraphic) BufferObjInUse() bool {
 // Use activates this graphic
 func (r *TextureRenderGraphic) Use() {
 	if !r.bufferObjInUse {
-		r.bufObj.Use()
 		r.shader.Use()
+		r.bufObj.Use()
 		r.bufferObjInUse = true
 	}
 }
