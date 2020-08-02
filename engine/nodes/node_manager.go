@@ -72,6 +72,7 @@ func (n *nodeManager) Configure() error {
 	// -------------------------------------------------------
 	// Default Shader
 	programID := n.world.Shader().Program()
+	n.world.Shader().Use()
 
 	n.projLoc = gl.GetUniformLocation(programID, gl.Str("projection\x00"))
 	if n.projLoc < 0 {
@@ -93,6 +94,7 @@ func (n *nodeManager) Configure() error {
 	// -------------------------------------------------------
 	// Texture Shader
 	programID = n.world.TextureShader().Program()
+	n.world.TextureShader().Use()
 
 	projLoc := gl.GetUniformLocation(programID, gl.Str("projection\x00"))
 	if projLoc < 0 {
