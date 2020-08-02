@@ -31,6 +31,8 @@ func (c *Projection) Matrix() api.IMatrix4 {
 // SetProjection sets orthographic frustum dimensions
 func (c *Projection) SetProjection(bottom, left, top, right, near, far float32) {
 
+	c.near = near
+	c.far = far
 	c.bottom = bottom
 	c.left = left
 	c.top = top
@@ -38,16 +40,16 @@ func (c *Projection) SetProjection(bottom, left, top, right, near, far float32) 
 	c.Width = right - left
 	c.Height = top - bottom
 
-	c.matrix.SetToOrtho(0.0, c.Width, 0.0, c.Height, near, far)
+	c.matrix.SetToOrtho(c.left, c.right, c.bottom, c.top, near, far)
 }
 
 // SetCenteredProjection centers the projection and adjusts for aspect ratio.
-func (c *Projection) SetCenteredProjection() {
+func (c *Projection) SetCenteredProjection(near, far float32) {
 	// Adjust for aspect ratio
 	left := -c.Width / 2.0 / c.ratioCorrection
 	right := c.Width / 2.0 / c.ratioCorrection
 	bottom := -c.Height / 2.0 / c.ratioCorrection
 	top := c.Height / 2.0 / c.ratioCorrection
 
-	c.matrix.SetToOrtho(left, right, bottom, top, 0.1, 100.0)
+	c.matrix.SetToOrtho(left, right, bottom, top, near, far)
 }
