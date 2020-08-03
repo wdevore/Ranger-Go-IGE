@@ -78,13 +78,13 @@ func newWorld(relativePath string) api.IWorld {
 	shaders := &o.properties.Shaders
 
 	if shaders.UseDefault {
-		code, err := o.loadShader(dataPath, shaders.VertexShaderSrc)
+		code, err := o.loadShaderSource(dataPath, shaders.VertexShaderSrc)
 		if err != nil {
 			panic(err)
 		}
 		shaders.VertexShaderCode = *code
 
-		code, err = o.loadShader(dataPath, shaders.FragmentShaderSrc)
+		code, err = o.loadShaderSource(dataPath, shaders.FragmentShaderSrc)
 		if err != nil {
 			panic(err)
 		}
@@ -93,13 +93,13 @@ func newWorld(relativePath string) api.IWorld {
 
 	if shaders.UseTextureShader {
 		// Texture shaders
-		code, err := o.loadShader(dataPath, shaders.TextureVertexShaderSrc)
+		code, err := o.loadShaderSource(dataPath, shaders.TextureVertexShaderSrc)
 		if err != nil {
 			panic(err)
 		}
 		shaders.TextureVertexShaderCode = *code
 
-		code, err = o.loadShader(dataPath, shaders.TextureFragmentShaderSrc)
+		code, err = o.loadShaderSource(dataPath, shaders.TextureFragmentShaderSrc)
 		if err != nil {
 			panic(err)
 		}
@@ -111,7 +111,7 @@ func newWorld(relativePath string) api.IWorld {
 	return o
 }
 
-func (w *world) loadShader(dataPath, shaderSrc string) (code *string, err error) {
+func (w *world) loadShaderSource(dataPath, shaderSrc string) (code *string, err error) {
 	file, err := os.Open(dataPath + "/engine/assets/shaders/" + shaderSrc)
 	if err != nil {
 		return nil, err
