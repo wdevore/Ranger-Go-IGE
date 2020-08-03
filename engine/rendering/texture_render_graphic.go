@@ -28,6 +28,7 @@ func NewTextureRenderGraphic(atlas api.IAtlas, shader api.IShader) api.IRenderGr
 	o.shader = shader
 
 	programID := shader.Program()
+	shader.Use()
 
 	// ---------------------------------------
 	// Query shader
@@ -36,17 +37,6 @@ func NewTextureRenderGraphic(atlas api.IAtlas, shader api.IShader) api.IRenderGr
 	if o.modelLoc < 0 {
 		panic("Couldn't find 'model' uniform variable")
 	}
-
-	// o.colorLoc = gl.GetUniformLocation(programID, gl.Str("fragColor\x00"))
-	// if o.colorLoc < 0 {
-	// 	panic("Couldn't find 'fragColor' uniform variable")
-	// }
-
-	textureLoc := gl.GetUniformLocation(programID, gl.Str("image\x00"))
-	if textureLoc < 0 {
-		panic("Couldn't find 'image' uniform variable")
-	}
-	gl.Uniform1i(textureLoc, 0) // set it manually
 
 	return o
 }

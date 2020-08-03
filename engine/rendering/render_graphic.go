@@ -28,6 +28,7 @@ func NewRenderGraphic(atlas api.IAtlas, shader api.IShader) api.IRenderGraphic {
 	o.shader = shader
 
 	programID := shader.Program()
+	shader.Use()
 
 	// ---------------------------------------
 	// Query shader

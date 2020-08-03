@@ -31,7 +31,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	// g.addBar(world)
 
-	_, err := world.TextureManager().LoadTexture("../../assets/ctype0001.png")
+	_, err := world.TextureManager().LoadTexture("../../assets/ctype0001.png", true)
 	if err != nil {
 		panic(err)
 	}
@@ -46,8 +46,8 @@ func (g *gameLayer) addTexture(world api.IWorld) {
 	if err != nil {
 		panic(err)
 	}
-	imNode.SetScale(50)
-	imNode.SetPosition(-100.0, 100.0)
+	imNode.SetScale(100)
+	imNode.SetPosition(0.0, 0.0)
 	gzr := imNode.(*custom.StaticQuadNode)
 	gzr.SetColor(color.NewPaletteInt64(color.Black))
 }

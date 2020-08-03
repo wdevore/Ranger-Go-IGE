@@ -24,8 +24,8 @@ func NewTextureManager() api.ITextureManager {
 	return o
 }
 
-func (t *textureManager) LoadTexture(image string) (int, error) {
-	rgb, err := loadImage(image)
+func (t *textureManager) LoadTexture(image string, flipped bool) (int, error) {
+	rgb, err := loadImage(image, flipped)
 	if err != nil {
 		return 0, err
 	}
@@ -52,7 +52,7 @@ func (t *textureManager) AccessTexture(index int) (image *image.NRGBA, err error
 	return image, nil
 }
 
-func loadImage(path string) (*image.NRGBA, error) {
+func loadImage(path string, flipped bool) (*image.NRGBA, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -64,9 +64,32 @@ func loadImage(path string) (*image.NRGBA, error) {
 	}
 
 	bounds := img.Bounds()
+
 	nrgba := image.NewNRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
+
 	// Transfer data to image
 	draw.Draw(nrgba, nrgba.Bounds(), img, bounds.Min, draw.Src)
+
+	if flipped {
+		r := image.Rect(0, 0, bounds.Dx(), bounds.Dy())
+		flippedImg := image.NewNRGBA(r)
+
+		// Flip horizontally or around Y-axis
+		// for j := 0; j < nrgba.Bounds().Dy(); j++ {
+		// 	for i := 0; i < nrgba.Bounds().Dx(); i++ {
+		// 		flippedImg.Set(bounds.Dx()-i, j, nrgba.At(i, j))
+		// 	}
+		// }
+
+		// Flip vertically or around the X-axis
+		for j := 0; j < nrgba.Bounds().Dy(); j++ {
+			for i := 0; i < nrgba.Bounds().Dx(); i++ {
+				flippedImg.Set(i, bounds.Dy()-j, nrgba.At(i, j))
+			}
+		}
+
+		return flippedImg, nil
+	}
 
 	return nrgba, nil
 }

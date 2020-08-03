@@ -44,22 +44,6 @@ func (v *VAO) BindComplete() {
 	gl.BindVertexArray(0) // UnUse
 }
 
-// TextureBindComplete setups vertex-array-ptr
-func (v *VAO) TextureBindComplete() {
-	// Count == (xyzw=4) * sizeof(float32)=4 == 16 thus each
-	// vertex is 16 bytes
-	stride := int32(api.XYZWComponentCount) * int32(unsafe.Sizeof(float32(0)))
-	// stride := 8 * int32(unsafe.Sizeof(float32(0)))
-
-	// We can link the attribute position with the data in the vertexData array
-	gl.VertexAttribPointer(positionIndex, int32(api.XYZWComponentCount), gl.FLOAT, false, stride, gl.PtrOffset(0))
-	// gl.VertexAttribPointer(0, 2, gl.FLOAT, false, stride, gl.PtrOffset(0))
-
-	gl.EnableVertexAttribArray(0)
-
-	gl.BindVertexArray(0) // UnUse
-}
-
 // Use bind vertex array to Id
 func (v *VAO) Use() {
 	gl.BindVertexArray(v.vaoID)
