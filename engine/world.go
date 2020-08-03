@@ -111,7 +111,7 @@ func newWorld(relativePath string) api.IWorld {
 	return o
 }
 
-func (w *world) loadShader(dataPath, shaderSrc string) (*string, error) {
+func (w *world) loadShader(dataPath, shaderSrc string) (code *string, err error) {
 	file, err := os.Open(dataPath + "/engine/assets/shaders/" + shaderSrc)
 	if err != nil {
 		return nil, err
@@ -124,9 +124,10 @@ func (w *world) loadShader(dataPath, shaderSrc string) (*string, error) {
 		return nil, err
 	}
 
-	code := string(bytes)
+	bytes = append(bytes, 0)
+	sCode := string(bytes)
 
-	return &code, nil
+	return &sCode, nil
 }
 
 func (w *world) Configure() error {

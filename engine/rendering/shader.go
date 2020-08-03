@@ -84,6 +84,7 @@ func fetch(vertexSrc, fragmentSrc string) (vCode, fCode string, err error) {
 	if err != nil {
 		return "", "", err
 	}
+	bytes = append(bytes, 0)
 
 	vCode = string(bytes)
 
@@ -95,6 +96,7 @@ func fetch(vertexSrc, fragmentSrc string) (vCode, fCode string, err error) {
 	if err != nil {
 		return "", "", err
 	}
+	bytes = append(bytes, 0)
 
 	fCode = string(bytes)
 
