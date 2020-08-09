@@ -135,3 +135,7 @@ func (r *RenderGraphic) RenderElements(shape api.IAtlasShape, elementCount, elem
 func (r *RenderGraphic) Update(shape api.IAtlasShape) {
 	r.bufObj.Update(shape)
 }
+
+// UpdateTexture modifies the VBO buffer
+func (r *RenderGraphic) UpdateTexture(coords *[]float32) {
+}

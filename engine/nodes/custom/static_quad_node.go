@@ -8,7 +8,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
-// StaticQuadNode is a generic texture ready node
+// StaticQuadNode is a generic texture ready node. You would use it
+// to display 2D textures.
 type StaticQuadNode struct {
 	nodes.Node
 
@@ -37,7 +38,7 @@ func (r *StaticQuadNode) Build(world api.IWorld) error {
 
 	r.color = color.NewPaletteInt64(color.White).Array()
 
-	r.shape = world.TextureAtlas().GenerateShape("TextureQuad", gl.TRIANGLES)
+	r.shape = world.ShapeAtlas().GenerateShape("TextureQuad", gl.TRIANGLES)
 
 	// Populate shape
 	r.populate()

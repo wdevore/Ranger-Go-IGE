@@ -155,15 +155,15 @@ func (w *world) Configure() error {
 	w.defaultShader.Use()
 
 	// Create a graphic that will store Static shapes
-	w.staticAtlas = rendering.NewAtlas()
+	w.staticAtlas = rendering.NewShapeAtlas()
 	renG := rendering.NewRenderGraphic(w.staticAtlas, w.defaultShader)
 	w.AddRenderGraphic(renG, api.StaticRenderGraphic)
 
-	w.pixelAtlas = rendering.NewAtlas()
+	w.pixelAtlas = rendering.NewShapeAtlas()
 	renG = rendering.NewRenderGraphic(w.pixelAtlas, w.defaultShader)
 	w.AddRenderGraphic(renG, api.DynamicPixelBufRenderGraphic)
 
-	w.dynamicAtlas = rendering.NewAtlas()
+	w.dynamicAtlas = rendering.NewShapeAtlas()
 	renG = rendering.NewRenderGraphic(w.dynamicAtlas, w.defaultShader)
 	w.AddRenderGraphic(renG, api.DynamicRenderGraphic)
 
@@ -177,7 +177,7 @@ func (w *world) Configure() error {
 		fmt.Println("Texture RenderGraphic error: ")
 		panic(err)
 	}
-	w.textureAtlas = rendering.NewAtlas()
+	w.textureAtlas = rendering.NewShapeAtlas()
 	renG = rendering.NewTextureRenderGraphic(w.textureAtlas, w.textureShader)
 	w.AddRenderGraphic(renG, api.TextureRenderGraphic)
 	// ---------------------------------------------------------------
@@ -250,14 +250,14 @@ func (w *world) PostProcess() {
 	}
 
 	if w.textureAtlas.HasShapes() {
-		renG := w.renderRepo[api.TextureRenderGraphic]
-		// Access image from Texture manager
-		image, err := w.textureMan.AccessTexture(0)
-		if err != nil {
-			panic(err)
-		}
-		smooth := false
-		renG.ConstructWithImage(image, smooth, w.textureAtlas)
+		// renG := w.renderRepo[api.TextureRenderGraphic]
+		// // Access image from Texture manager
+		// image, err := w.textureMan.AccessTexture(0)
+		// if err != nil {
+		// 	panic(err)
+		// }
+		// smooth := false
+		// renG.ConstructWithImage(image, smooth, w.textureAtlas)
 	}
 }
 
@@ -273,7 +273,7 @@ func (w *world) PixelAtlas() api.IAtlas {
 	return w.pixelAtlas
 }
 
-func (w *world) TextureAtlas() api.IAtlas {
+func (w *world) ShapeAtlas() api.IAtlas {
 	return w.textureAtlas
 }
 

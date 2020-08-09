@@ -23,4 +23,5 @@ type IRenderGraphic interface {
 	RenderElements(shape IAtlasShape, elementCount, elementOffset int, model IMatrix4)
 
 	Update(shape IAtlasShape)
+	UpdateTexture(coords *[]float32)
 }

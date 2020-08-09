@@ -33,7 +33,7 @@ func (t *TBO) TboID() uint32 {
 
 // Use bind vertex array to Id
 func (t *TBO) Use() {
-	// activate the texture unit first before binding
+	// activate the texture unit first before binding. There can be up to 16
 	gl.ActiveTexture(gl.TEXTURE0)
 	gl.BindTexture(gl.TEXTURE_2D, t.tboID)
 }

@@ -81,3 +81,10 @@ func (v *VBO) Update(offset, count int, vertices []float32) {
 	gl.BufferSubData(gl.ARRAY_BUFFER, offset*v.floatSize, count*v.floatSize*api.XYZComponentCount, gl.Ptr(vertices))
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
+
+// Update moves any modified data to the buffer.
+func (v *VBO) UpdateTexture(data []float32) {
+	gl.BindBuffer(gl.ARRAY_BUFFER, v.vboID)
+	gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(data)*4, gl.Ptr(data))
+	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+}

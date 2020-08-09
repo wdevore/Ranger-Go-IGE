@@ -22,7 +22,7 @@ func main() {
 	// Load any textures we need
 	// ------------------------------------------------------------
 	textureMan := world.TextureManager()
-	textureMan.AddAtlas("StarShip", "../../../assets/images/atlas/", "starship_texture_manifest.json")
+	textureMan.AddAtlas("StarShip", "../../../", "assets/images/atlas/starship_texture_manifest.json")
 
 	// ------------------------------------------------------------
 	// Set a custom background clear effect

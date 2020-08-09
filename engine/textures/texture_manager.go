@@ -1,11 +1,8 @@
 package textures
 
 import (
-	"errors"
 	"image"
-	"image/draw"
 	_ "image/png" // For 'png' images
-	"os"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
@@ -14,82 +11,41 @@ type textureManager struct {
 	// Images and sprite sheets (aka texture atlases)
 	images []*image.NRGBA
 
+	atlases []api.ITextureAtlas
+
 	index int
 }
 
-// NewTextureManager creates a texture manager
+// NewTextureManager creates a texture manager that contains
+// TextureAtlas(s)
 func NewTextureManager() api.ITextureManager {
 	o := new(textureManager)
-
+	o.atlases = []api.ITextureAtlas{}
 	return o
 }
 
-func (t *textureManager) LoadTexture(image string, flipped bool) (int, error) {
-	rgb, err := loadImage(image, flipped)
-	if err != nil {
-		return 0, err
-	}
+func (t *textureManager) AddAtlas(name, relativePath, textureManifest string) {
+	// Open manifest to get texture file name
+	ta := NewTextureAtlas(name, textureManifest)
+	ta.Build(relativePath)
 
-	t.images = append(t.images, rgb)
-
-	idx := t.index
-	t.index++
-
-	return idx, nil
+	t.atlases = append(t.atlases, ta)
 }
 
-func (t *textureManager) AccessTexture(index int) (image *image.NRGBA, err error) {
-	if index > len(t.images) {
-		return nil, errors.New("TextureManager: Index out of range")
-	}
-
-	image = t.images[index]
-
-	if image == nil {
-		return nil, errors.New("TextureManager: Image not in collection")
-	}
-
-	return image, nil
+func (t *textureManager) GetSTCoords(atlas, index int) *[]float32 {
+	return t.atlases[atlas].TextureSTCoordsByIndex(index)
 }
 
-func loadImage(path string, flipped bool) (*image.NRGBA, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
+func (t *textureManager) GetAtlasByIndex(index int) api.ITextureAtlas {
+	return t.atlases[index]
+}
 
-	img, _, err := image.Decode(file)
-	if err != nil {
-		return nil, err
-	}
-
-	bounds := img.Bounds()
-
-	nrgba := image.NewNRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
-
-	// Transfer data to image
-	draw.Draw(nrgba, nrgba.Bounds(), img, bounds.Min, draw.Src)
-
-	if flipped {
-		r := image.Rect(0, 0, bounds.Dx(), bounds.Dy())
-		flippedImg := image.NewNRGBA(r)
-
-		// Flip horizontally or around Y-axis
-		// for j := 0; j < nrgba.Bounds().Dy(); j++ {
-		// 	for i := 0; i < nrgba.Bounds().Dx(); i++ {
-		// 		flippedImg.Set(bounds.Dx()-i, j, nrgba.At(i, j))
-		// 	}
-		// }
-
-		// Flip vertically or around the X-axis
-		for j := 0; j < nrgba.Bounds().Dy(); j++ {
-			for i := 0; i < nrgba.Bounds().Dx(); i++ {
-				flippedImg.Set(i, bounds.Dy()-j, nrgba.At(i, j))
-			}
+func (t *textureManager) GetAtlasByName(name string) api.ITextureAtlas {
+	for _, ta := range t.atlases {
+		if ta.Name() == name {
+			return ta
 		}
-
-		return flippedImg, nil
 	}
 
-	return nrgba, nil
+	return nil
 }

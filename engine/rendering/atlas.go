@@ -4,25 +4,25 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
-// Atlas is a map-collection of vector shapes managed by a vector object
-type Atlas struct {
+// ShapeAtlas is a map-collection of vector shapes managed by a vector object
+type ShapeAtlas struct {
 	shapes []api.IAtlasShape
 }
 
-// NewAtlas creates an atlas to be populated
-func NewAtlas() api.IAtlas {
-	o := new(Atlas)
+// NewShapeAtlas creates an atlas to be populated
+func NewShapeAtlas() api.IAtlas {
+	o := new(ShapeAtlas)
 	o.initialize()
 	return o
 }
 
 // Initialize this embedded object
-func (a *Atlas) initialize() {
+func (a *ShapeAtlas) initialize() {
 	a.shapes = []api.IAtlasShape{}
 }
 
 // GenerateShape creates a shape, adds it to the atlas
-func (a *Atlas) GenerateShape(atlasName string, primitiveMode uint32) api.IAtlasShape {
+func (a *ShapeAtlas) GenerateShape(atlasName string, primitiveMode uint32) api.IAtlasShape {
 	// If this shape is already present just return what's in the collection.
 	for _, s := range a.shapes {
 		if s.Name() == atlasName {
@@ -37,15 +37,15 @@ func (a *Atlas) GenerateShape(atlasName string, primitiveMode uint32) api.IAtlas
 }
 
 // HasShapes returns true if the atlas contains shapes
-func (a *Atlas) HasShapes() bool {
+func (a *ShapeAtlas) HasShapes() bool {
 	return len(a.shapes) > 0
 }
 
 // Shapes retuns shape collection
-func (a *Atlas) Shapes() []api.IAtlasShape {
+func (a *ShapeAtlas) Shapes() []api.IAtlasShape {
 	return a.shapes
 }
 
 // AddShape adds a vector shape to the collection
-func (a *Atlas) AddShape(shape api.IAtlasShape) {
+func (a *ShapeAtlas) AddShape(shape api.IAtlasShape) {
 }
