@@ -87,7 +87,7 @@ func (b *TextureBufferObject) ConstructWithImage(image *image.NRGBA, smooth bool
 // Use activates the VAO
 func (b *TextureBufferObject) Use() {
 	b.vao.Use()
-	b.tbo.Use()
+	b.tbo.Use(0)
 }
 
 // UnUse deactivates the VAO

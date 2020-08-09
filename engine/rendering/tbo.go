@@ -32,9 +32,9 @@ func (t *TBO) TboID() uint32 {
 }
 
 // Use bind vertex array to Id
-func (t *TBO) Use() {
-	// activate the texture unit first before binding. There can be up to 16
-	gl.ActiveTexture(gl.TEXTURE0)
+func (t *TBO) Use(textureIndex int) {
+	// activate the texture unit first before binding. There can be anywhere from 8 to 32
+	gl.ActiveTexture(indexToTextureID(textureIndex))
 	gl.BindTexture(gl.TEXTURE_2D, t.tboID)
 }
 
@@ -46,7 +46,7 @@ func (t *TBO) UnUse() {
 // Bind binds the pixels to buffer
 // *image.NRGBA has a .Pix() that returns the []uint8 array.
 func (t *TBO) Bind(width, height int32, smooth bool, pixels []uint8) {
-	t.Use()
+	t.Use(0)
 
 	gl.PixelStorei(gl.UNPACK_ALIGNMENT, 1)
 
@@ -64,7 +64,7 @@ func (t *TBO) Bind(width, height int32, smooth bool, pixels []uint8) {
 
 // BindUsingImage binds the image to buffer
 func (t *TBO) BindUsingImage(image *image.NRGBA, smooth bool) {
-	t.Use()
+	t.Use(0)
 
 	gl.PixelStorei(gl.UNPACK_ALIGNMENT, 1)
 
@@ -155,4 +155,77 @@ func (t *TBO) delete() {
 	mainthread.CallNonBlock(func() {
 		gl.DeleteTextures(1, &t.tboID)
 	})
+}
+
+func indexToTextureID(index int) (textID uint32) {
+	textID = gl.TEXTURE0
+
+	switch index {
+	case 0:
+		textID = gl.TEXTURE0
+	case 1:
+		textID = gl.TEXTURE1
+	case 2:
+		textID = gl.TEXTURE2
+	case 3:
+		textID = gl.TEXTURE3
+	case 4:
+		textID = gl.TEXTURE4
+	case 5:
+		textID = gl.TEXTURE5
+	case 6:
+		textID = gl.TEXTURE6
+	case 7:
+		textID = gl.TEXTURE7
+	case 8:
+		textID = gl.TEXTURE8
+	case 9:
+		textID = gl.TEXTURE9
+	case 10:
+		textID = gl.TEXTURE10
+	case 11:
+		textID = gl.TEXTURE11
+	case 12:
+		textID = gl.TEXTURE12
+	case 13:
+		textID = gl.TEXTURE13
+	case 14:
+		textID = gl.TEXTURE14
+	case 15:
+		textID = gl.TEXTURE15
+	case 16:
+		textID = gl.TEXTURE16
+	case 17:
+		textID = gl.TEXTURE17
+	case 18:
+		textID = gl.TEXTURE18
+	case 19:
+		textID = gl.TEXTURE19
+	case 20:
+		textID = gl.TEXTURE20
+	case 21:
+		textID = gl.TEXTURE21
+	case 22:
+		textID = gl.TEXTURE22
+	case 23:
+		textID = gl.TEXTURE23
+	case 24:
+		textID = gl.TEXTURE24
+	case 25:
+		textID = gl.TEXTURE25
+	case 26:
+		textID = gl.TEXTURE26
+	case 27:
+		textID = gl.TEXTURE27
+	case 28:
+		textID = gl.TEXTURE28
+	case 29:
+		textID = gl.TEXTURE29
+	case 30:
+		textID = gl.TEXTURE30
+	case 31:
+		textID = gl.TEXTURE31
+	}
+
+	return textID
 }

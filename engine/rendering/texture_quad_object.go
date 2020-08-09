@@ -64,7 +64,7 @@ func (b *textureQuadObject) ConstructWithImage(image *image.NRGBA, smooth bool, 
 // Use activates the VAO
 func (b *textureQuadObject) Use() {
 	b.vao.Use()
-	b.tbo.Use()
+	b.tbo.Use(0)
 }
 
 // UnUse deactivates the VAO
