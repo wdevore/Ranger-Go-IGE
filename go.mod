@@ -13,4 +13,5 @@ require (
 	github.com/rustyoz/svg v0.0.0-20200324092435-1ce6eba67a99
 	github.com/tanema/gween v0.0.0-20190613150852-fbc00f26ef8f
 	github.com/wdevore/RangerGo v0.0.0-20200425220557-69cc1f0c41c4
+	golang.org/x/image v0.0.0-20200801110659-972c09e46d76
 )
