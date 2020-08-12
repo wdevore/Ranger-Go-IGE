@@ -107,7 +107,3 @@ func (d *DynamicTextureNode) SelectCoordsByIndex(index int) {
 	renG := d.World().GetRenderGraphic(api.TextureRenderGraphic)
 	renG.UpdateTexture(coords)
 }
-
-// SelectCoordsByName ...
-func (d *DynamicTextureNode) SelectCoordsByName(name string) {
-}
