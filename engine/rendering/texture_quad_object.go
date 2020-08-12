@@ -81,20 +81,29 @@ func (b *textureQuadObject) Update(shape api.IAtlasShape) {
 func (b *textureQuadObject) TextureUpdate(coords *[]float32) {
 	vertices := b.shape.Vertices()
 	c := *coords
-	stride := 4
+	// stride := 4
 
-	i := 2
-	vertices[i] = c[0]
-	vertices[i+1] = c[1]
-	i += stride
-	vertices[i] = c[2]
-	vertices[i+1] = c[3]
-	i += stride
-	vertices[i] = c[4]
-	vertices[i+1] = c[5]
-	i += stride
-	vertices[i] = c[6]
-	vertices[i+1] = c[7]
+	vertices[2] = c[0]
+	vertices[3] = c[1]
+	vertices[6] = c[2]
+	vertices[7] = c[3]
+	vertices[10] = c[4]
+	vertices[11] = c[5]
+	vertices[14] = c[6]
+	vertices[15] = c[7]
+
+	// i := 2
+	// vertices[i] = c[0]
+	// vertices[i+1] = c[1]
+	// i += stride
+	// vertices[i] = c[2]
+	// vertices[i+1] = c[3]
+	// i += stride
+	// vertices[i] = c[4]
+	// vertices[i+1] = c[5]
+	// i += stride
+	// vertices[i] = c[6]
+	// vertices[i+1] = c[7]
 
 	b.vbo.UpdateTexture(vertices)
 }
