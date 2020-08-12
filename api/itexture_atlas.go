@@ -12,4 +12,6 @@ type ITextureAtlas interface {
 	TextureXYCoords(name string) *[]int
 	TextureSTCoords(name string) *[]float32
 	TextureSTCoordsByIndex(idx int) *[]float32
+	SetLayer(float32)
+	Layer() float32
 }

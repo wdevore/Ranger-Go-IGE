@@ -38,7 +38,10 @@ type textureAtlas struct {
 	name          string
 	manifest      string
 	width, height int64
-	atlas         *image.NRGBA
+
+	atlas *image.NRGBA
+
+	layer float32
 
 	manifestJ images.TextureManifestJSON
 }
@@ -48,7 +51,6 @@ func NewTextureAtlas(name, manifest string) api.ITextureAtlas {
 	o := new(textureAtlas)
 	o.name = name
 	o.manifest = manifest
-
 	return o
 }
 
@@ -85,6 +87,7 @@ func (t *textureAtlas) Build(relativePath string) {
 	}
 
 	t.atlas = image
+	t.layer = t.manifestJ.Layer
 }
 
 // AtlasImage returns image atlas
@@ -95,6 +98,16 @@ func (t *textureAtlas) AtlasImage() *image.NRGBA {
 // Name returns atlas name
 func (t *textureAtlas) Name() string {
 	return t.name
+}
+
+// SetLayer sets the 3D texture.z
+func (t *textureAtlas) SetLayer(id float32) {
+	t.layer = id
+}
+
+// Layer gets the 3D texture.z
+func (t *textureAtlas) Layer() float32 {
+	return t.layer
 }
 
 // TextureXYCoords returns the assigned coords of named sub texture to tile.
@@ -164,62 +177,3 @@ func (t *textureAtlas) loadImage(path string, flipped bool) (*image.NRGBA, error
 
 	return nrgba, nil
 }
-
-// Build setups the atlas based on manifest
-// func (t *textureAtlas) build(relativePath string) {
-// 	dataPath, err := filepath.Abs(relativePath)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	manifestFile, err := os.Open(dataPath + "/" + t.manifest)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	defer manifestFile.Close()
-
-// 	lines := []string{}
-
-// 	scanner := bufio.NewScanner(manifestFile)
-// 	for scanner.Scan() {
-// 		lines = append(lines, scanner.Text())
-// 	}
-
-// 	textureFile := lines[0]
-
-// 	/// Use TextureManager to access image
-// 	textureImgFile := dataPath + "/" + textureFile
-// 	fmt.Println("TextureAtlas: loading " + textureImgFile)
-
-// 	t.atlas, err = t.loadImage(textureImgFile, true)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	s := strings.Split(lines[1], "x")
-// 	t.width, _ = strconv.ParseInt(s[0], 10, 64)
-// 	t.height, _ = strconv.ParseInt(s[1], 10, 64)
-
-// 	for i := 2; i < len(lines); i++ {
-// 		s = strings.Split(lines[i], "|")
-
-// 		ts := NewSubTexture(s[0])
-
-// 		coords := strings.Split(s[1], ":")
-
-// 		for _, coord := range coords {
-// 			xy := strings.Split(coord, ",")
-// 			x, _ := strconv.ParseInt(xy[0], 10, 64)
-// 			y, _ := strconv.ParseInt(xy[1], 10, 64)
-
-// 			// Scale x,y to fit texture space
-// 			sc := float32(x) / float32(t.width)
-// 			tc := float32(y) / float32(t.height)
-// 			// fmt.Println(sc, ",", tc)
-// 			ts.textureCoords = append(ts.textureCoords, &textureCoord{s: sc, t: tc})
-// 		}
-
-// 		t.subTextures = append(t.subTextures, ts)
-// 	}
-// }

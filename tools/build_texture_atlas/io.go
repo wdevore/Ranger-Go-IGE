@@ -61,6 +61,7 @@ func writeAsJSONFile(textureManifest, textureAtlasFile string, width, height int
 	jOut := images.TextureManifestJSON{}
 	jOut.Width = width
 	jOut.Height = height
+	jOut.Layer = 0.0
 	jOut.OutputPNG = textureAtlasFile
 
 	tiles := []*images.TextureTileJSON{}

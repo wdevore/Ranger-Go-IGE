@@ -12,5 +12,6 @@ type TextureManifestJSON struct {
 	OutputPNG string
 	Width     int
 	Height    int
+	Layer     float32
 	Tiles     []*TextureTileJSON
 }

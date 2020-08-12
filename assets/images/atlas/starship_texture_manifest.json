@@ -2,6 +2,7 @@
   "OutputPNG": "starship_texture_atlas.png",
   "Width": 1024,
   "Height": 1024,
+  "Layer": 0.0,
   "Tiles": [
     {
       "Name": "0001",
