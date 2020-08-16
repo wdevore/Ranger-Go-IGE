@@ -38,6 +38,13 @@ func NewTextureRenderGraphic(atlas api.IAtlas, shader api.IShader) api.IRenderGr
 		panic("Couldn't find 'model' uniform variable")
 	}
 
+	o.colorLoc = gl.GetUniformLocation(programID, gl.Str("fragColor\x00"))
+	if o.colorLoc < 0 {
+		panic("Couldn't find 'fragColor' uniform variable")
+	}
+
+	gl.Uniform1i(gl.GetUniformLocation(programID, gl.Str("texture1\x00")), 0)
+
 	return o
 }
 
@@ -47,7 +54,7 @@ func (r *TextureRenderGraphic) Construct(meshType int, atlas api.IAtlas) {
 
 // ConstructWithImage ...
 func (r *TextureRenderGraphic) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
-	r.bufObj.ConstructWithImage(image, smooth, atlas)
+	r.bufObj.ConstructWithImage(image, 0, smooth, atlas)
 }
 
 // BufferObjInUse indicates if this graphic's buffer is activated
@@ -95,6 +102,7 @@ func (r *TextureRenderGraphic) SetColor(color []float32) {
 
 // SetColor4 currently textures are mixed with vertex colors
 func (r *TextureRenderGraphic) SetColor4(color []float32) {
+	gl.Uniform4fv(r.colorLoc, 1, &color[0])
 }
 
 // Render renders a shape

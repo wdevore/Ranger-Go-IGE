@@ -21,13 +21,15 @@ type world struct {
 	properties   *configuration.Properties
 	relativePath string
 
-	defaultShader api.IShader
-	textureShader api.IShader
+	defaultShader  api.IShader
+	textureShader  api.IShader
+	texture2Shader api.IShader
 
-	staticAtlas  api.IAtlas
-	dynamicAtlas api.IAtlas
-	pixelAtlas   api.IAtlas
-	textureAtlas api.IAtlas
+	staticAtlas   api.IAtlas
+	dynamicAtlas  api.IAtlas
+	pixelAtlas    api.IAtlas
+	textureAtlas  api.IAtlas
+	texture2Atlas api.IAtlas
 
 	rasterFont api.IRasterFont
 
@@ -106,6 +108,22 @@ func newWorld(relativePath string) api.IWorld {
 		shaders.TextureFragmentShaderCode = *code
 	}
 
+	// if shaders.UseFontShader {
+	// 	if shaders.FontVertexShaderSrc != "" {
+	// 		code, err := o.loadShaderSource(dataPath, shaders.FontVertexShaderSrc)
+	// 		if err != nil {
+	// 			panic(err)
+	// 		}
+	// 		shaders.FontVertexShaderCode = *code
+	// 	}
+
+	// 	code, err := o.loadShaderSource(dataPath, shaders.FontFragmentShaderSrc)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	shaders.FontFragmentShaderCode = *code
+	// }
+
 	o.textureMan = textures.NewTextureManager()
 
 	return o
@@ -147,7 +165,7 @@ func (w *world) Configure() error {
 	err := w.defaultShader.Compile()
 
 	if err != nil {
-		fmt.Println("RenderGraphic error: ")
+		fmt.Println("Default Shader compile error: ")
 		panic(err)
 	}
 
@@ -174,13 +192,28 @@ func (w *world) Configure() error {
 	err = w.textureShader.Compile()
 
 	if err != nil {
-		fmt.Println("Texture RenderGraphic error: ")
+		fmt.Println("Texture Shader compile error: ")
 		panic(err)
 	}
 	w.textureAtlas = rendering.NewShapeAtlas()
 	renG = rendering.NewTextureRenderGraphic(w.textureAtlas, w.textureShader)
 	w.AddRenderGraphic(renG, api.TextureRenderGraphic)
 	// ---------------------------------------------------------------
+
+	// --------------------------------------------------------------
+	// A Font renderer
+	w.texture2Shader = rendering.NewShaderFromCode(shaderP.TextureVertexShaderCode, shaderP.TextureFragmentShaderCode)
+
+	err = w.texture2Shader.Compile()
+
+	if err != nil {
+		fmt.Println("texture2Shader Shader compile error: ")
+		panic(err)
+	}
+	w.texture2Atlas = rendering.NewShapeAtlas()
+	renG = rendering.NewTexture2RenderGraphic(w.texture2Atlas, w.texture2Shader)
+	w.AddRenderGraphic(renG, api.Texture2RenderGraphic)
+	// --------------------------------------------------------------
 
 	// Force UseRenderGraphic to UnUse/Use for the first node visited
 	w.activeRenGID = -1
@@ -275,6 +308,10 @@ func (w *world) PixelAtlas() api.IAtlas {
 
 func (w *world) ShapeAtlas() api.IAtlas {
 	return w.textureAtlas
+}
+
+func (w *world) Texture2Atlas() api.IAtlas {
+	return w.texture2Atlas
 }
 
 func (w *world) Shader() api.IShader {

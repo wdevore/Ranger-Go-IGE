@@ -64,6 +64,9 @@
     "FragmentShaderSrc": "full_color_fragment.glsl",
     "UseTextureShader": true,
     "TextureVertexShaderSrc": "texture.vertex.glsl",
-    "TextureFragmentShaderSrc": "texture.fragment.glsl"
+    "TextureFragmentShaderSrc": "texture.fragment.glsl",
+    "UseFontShader": true,
+    "FontVertexShaderSrc": "texture_font.vertex.glsl",
+    "FontFragmentShaderSrc": "texture_font.fragment.glsl"
   }
 }

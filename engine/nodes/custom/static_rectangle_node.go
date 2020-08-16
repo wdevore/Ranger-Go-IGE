@@ -92,7 +92,7 @@ func (r *StaticRectangleNode) populate(minX, minY, maxX, maxY float32) {
 }
 
 // Vertices returns the shape's vertices
-func (r *StaticRectangleNode) Vertices() []float32 {
+func (r *StaticRectangleNode) Vertices() *[]float32 {
 	return r.shape.Vertices()
 }
 

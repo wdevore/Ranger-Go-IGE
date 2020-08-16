@@ -46,7 +46,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	}
 	g.viewLocTxt.SetScale(1.0)
 	g.viewLocTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.viewLocTxt.(*custom.DynamicTextNode)
+	gd := g.viewLocTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.PanSkin).Array())
 	gd.SetPixelSize(2.0)
@@ -58,7 +58,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	}
 	g.underLayLocTxt.SetScale(1.0)
 	g.underLayLocTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-60.0))
-	gud := g.underLayLocTxt.(*custom.DynamicTextNode)
+	gud := g.underLayLocTxt.(*custom.DynamicPixelTextNode)
 	gud.SetText("(0,0)")
 	gud.SetColor(color.NewPaletteInt64(color.PanSkin).Array())
 	gud.SetPixelSize(2.0)
@@ -90,11 +90,11 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 // Update updates the time properties of a node.
 func (g *overlayLayer) Update(msPerUpdate, secPerUpdate float64) {
 	text := fmt.Sprintf("V (%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.viewLocTxt.(*custom.DynamicTextNode)
+	gd := g.viewLocTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText(text)
 
 	text = fmt.Sprintf("G (%d, %d)", int(g.underLayPoint.X()), int(g.underLayPoint.Y()))
-	gd = g.underLayLocTxt.(*custom.DynamicTextNode)
+	gd = g.underLayLocTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText(text)
 }
 

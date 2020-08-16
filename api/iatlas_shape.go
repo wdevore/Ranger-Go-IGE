@@ -14,7 +14,7 @@ type IAtlasShape interface {
 	SetVertex2D(x, y float32, index int)
 
 	SetVertices(vertices []float32)
-	Vertices() []float32
+	Vertices() *[]float32
 
 	SetElementCount(count int)
 	ElementCount() int

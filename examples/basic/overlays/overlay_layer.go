@@ -33,7 +33,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	if err != nil {
 		return err
 	}
-	gt := g.text.(*custom.DynamicTextNode)
+	gt := g.text.(*custom.DynamicPixelTextNode)
 	g.text.SetScale(1.25)
 	gt.SetText("Ranger")
 	gt.SetPixelSize(10.0)

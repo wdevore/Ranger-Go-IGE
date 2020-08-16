@@ -316,8 +316,8 @@ func buildRightNacel(s *StarShipComponent, b2World *box2d.B2World) {
 	vertices := []box2d.B2Vec2{}
 	verts := sr.Vertices()
 
-	for i := 0; i < len(verts); i += api.XYZComponentCount {
-		vertices = append(vertices, box2d.B2Vec2{X: float64(verts[i] * scale), Y: float64(verts[i+1] * scale)})
+	for i := 0; i < len(*verts); i += api.XYZComponentCount {
+		vertices = append(vertices, box2d.B2Vec2{X: float64((*verts)[i] * scale), Y: float64((*verts)[i+1] * scale)})
 	}
 
 	b2Shape.Set(vertices, len(vertices))
@@ -393,8 +393,8 @@ func buildLeftNacel(s *StarShipComponent, b2World *box2d.B2World) {
 	vertices := []box2d.B2Vec2{}
 	verts := sr.Vertices()
 
-	for i := 0; i < len(verts); i += api.XYZComponentCount {
-		vertices = append(vertices, box2d.B2Vec2{X: float64(verts[i] * scale), Y: float64(verts[i+1] * scale)})
+	for i := 0; i < len(*verts); i += api.XYZComponentCount {
+		vertices = append(vertices, box2d.B2Vec2{X: float64((*verts)[i] * scale), Y: float64((*verts)[i+1] * scale)})
 	}
 
 	b2Shape.Set(vertices, len(vertices))

@@ -99,7 +99,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	}
 	g.dynoTxt.SetScale(2.0)
 	g.dynoTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.dynoTxt.(*custom.DynamicTextNode)
+	gd := g.dynoTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.White).Array())
 	gd.SetPixelSize(1.0)
@@ -125,7 +125,7 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	g.greenSqr.SetPosition(posX, 0.0)
 
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.dynoTxt.(*custom.DynamicTextNode)
+	gd := g.dynoTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText(text)
 }
 

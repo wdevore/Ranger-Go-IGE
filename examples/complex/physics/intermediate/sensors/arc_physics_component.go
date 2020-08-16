@@ -51,8 +51,8 @@ func (p *arcPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 	verts := tcc.Vertices()
 
 	vertices := []box2d.B2Vec2{}
-	for i := 0; i < len(verts); i += api.XYZComponentCount {
-		vertices = append(vertices, box2d.B2Vec2{X: float64(verts[i] * scale), Y: float64(verts[i+1] * scale)})
+	for i := 0; i < len(*verts); i += api.XYZComponentCount {
+		vertices = append(vertices, box2d.B2Vec2{X: float64((*verts)[i] * scale), Y: float64((*verts)[i+1] * scale)})
 	}
 
 	// Every Fixture has a shape

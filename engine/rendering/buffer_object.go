@@ -48,7 +48,7 @@ func (b *BufferObject) Construct(meshType int, atlas api.IAtlas) {
 		shape.SetElementOffset(elementOffset)
 		elementOffset += len(shape.Indices()) * b.uintSize
 
-		for _, v := range shape.Vertices() {
+		for _, v := range *shape.Vertices() {
 			vertices = append(vertices, v)
 		}
 
@@ -74,7 +74,7 @@ func (b *BufferObject) Construct(meshType int, atlas api.IAtlas) {
 }
 
 // ConstructWithImage note need to rethink the api
-func (b *BufferObject) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
+func (b *BufferObject) ConstructWithImage(image *image.NRGBA, textureIndex uint32, smooth bool, atlas api.IAtlas) {
 }
 
 // Use activates the VAO

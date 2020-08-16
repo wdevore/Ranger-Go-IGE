@@ -82,8 +82,8 @@ func (a *AtlasShape) SetVertices(vertices []float32) {
 }
 
 // Vertices returns a selected vertex array from Mesh
-func (a *AtlasShape) Vertices() []float32 {
-	return a.vertices
+func (a *AtlasShape) Vertices() *[]float32 {
+	return &a.vertices
 }
 
 // SetOffset scales offset by size of an uint32

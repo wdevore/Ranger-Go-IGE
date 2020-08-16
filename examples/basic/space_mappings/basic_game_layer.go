@@ -80,7 +80,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	}
 	g.mousePosTxt.SetScale(2.0)
 	g.mousePosTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.mousePosTxt.(*custom.DynamicTextNode)
+	gd := g.mousePosTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.White).Array())
 	gd.SetPixelSize(1.0)
@@ -91,7 +91,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	}
 	g.localRecPosTxt.SetScale(2.0)
 	g.localRecPosTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-60.0))
-	gd = g.localRecPosTxt.(*custom.DynamicTextNode)
+	gd = g.localRecPosTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.GoldYellow).Array())
 	gd.SetPixelSize(1.0)
@@ -109,13 +109,13 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	}
 
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.mousePosTxt.(*custom.DynamicTextNode)
+	gd := g.mousePosTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText(text)
 
 	glp := g.sqr.(*customRectangleNode)
 	lp := glp.LocalPosition()
 	text = fmt.Sprintf("(%7.3f, %7.3f)", lp.X(), lp.Y())
-	gd = g.localRecPosTxt.(*custom.DynamicTextNode)
+	gd = g.localRecPosTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText(text)
 }
 

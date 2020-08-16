@@ -33,7 +33,7 @@ func (b *textureQuadObject) Construct(meshType int, atlas api.IAtlas) {
 
 // ConstructWithImage configures a buffer object
 // meshType is ignored
-func (b *textureQuadObject) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
+func (b *textureQuadObject) ConstructWithImage(image *image.NRGBA, textureIndex uint32, smooth bool, atlas api.IAtlas) {
 	b.vao = NewVAO()
 	b.vao.BindStart()
 
@@ -45,7 +45,7 @@ func (b *textureQuadObject) ConstructWithImage(image *image.NRGBA, smooth bool, 
 	vertices := b.shape.Vertices()
 	indices := b.shape.Indices()
 
-	vboBufferSize := len(vertices) * api.XYZWComponentCount * b.floatSize
+	vboBufferSize := len(*vertices) * api.XYZWComponentCount * b.floatSize
 	eboBufferSize := len(indices) * b.uintSize
 
 	if vboBufferSize == 0 || eboBufferSize == 0 {
@@ -56,7 +56,7 @@ func (b *textureQuadObject) ConstructWithImage(image *image.NRGBA, smooth bool, 
 
 	b.ebo.Bind(eboBufferSize, indices)
 
-	b.tbo.BindUsingImage(image, smooth)
+	b.tbo.BindUsingImage(image, textureIndex, smooth)
 
 	b.vao.UnUse()
 }
@@ -83,14 +83,14 @@ func (b *textureQuadObject) TextureUpdate(coords *[]float32) {
 	c := *coords
 	// stride := 4
 
-	vertices[2] = c[0]
-	vertices[3] = c[1]
-	vertices[6] = c[2]
-	vertices[7] = c[3]
-	vertices[10] = c[4]
-	vertices[11] = c[5]
-	vertices[14] = c[6]
-	vertices[15] = c[7]
+	(*vertices)[2] = c[0]
+	(*vertices)[3] = c[1]
+	(*vertices)[6] = c[2]
+	(*vertices)[7] = c[3]
+	(*vertices)[10] = c[4]
+	(*vertices)[11] = c[5]
+	(*vertices)[14] = c[6]
+	(*vertices)[15] = c[7]
 
 	// i := 2
 	// vertices[i] = c[0]

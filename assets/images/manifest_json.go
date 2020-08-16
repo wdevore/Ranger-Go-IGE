@@ -13,5 +13,6 @@ type TextureManifestJSON struct {
 	Width     int
 	Height    int
 	Layer     float32
+	Count     int
 	Tiles     []*TextureTileJSON
 }

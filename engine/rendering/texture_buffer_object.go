@@ -34,7 +34,7 @@ func (b *TextureBufferObject) Construct(meshType int, atlas api.IAtlas) {
 
 // ConstructWithImage configures a buffer object
 // meshType is ignored
-func (b *TextureBufferObject) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
+func (b *TextureBufferObject) ConstructWithImage(image *image.NRGBA, textureIndex uint32, smooth bool, atlas api.IAtlas) {
 	b.vao = NewVAO()
 	b.vao.BindStart()
 
@@ -57,7 +57,7 @@ func (b *TextureBufferObject) ConstructWithImage(image *image.NRGBA, smooth bool
 		shape.SetElementOffset(elementOffset)
 		elementOffset += len(shape.Indices()) * b.uintSize
 
-		for _, v := range shape.Vertices() {
+		for _, v := range *shape.Vertices() {
 			b.verticesAndCoords = append(b.verticesAndCoords, v)
 		}
 
@@ -75,11 +75,11 @@ func (b *TextureBufferObject) ConstructWithImage(image *image.NRGBA, smooth bool
 		panic("VBO.Construct: VBO/EBO buffers are zero")
 	}
 
-	b.tbo.BindTextureVbo2(b.verticesAndCoords, b.vbo.VboID())
+	b.tbo.BindTextureVbo2(&b.verticesAndCoords, b.vbo.VboID())
 
 	b.ebo.Bind(eboBufferSize, indices)
 
-	b.tbo.BindUsingImage(image, smooth)
+	b.tbo.BindUsingImage(image, textureIndex, smooth)
 
 	b.vao.UnUse()
 }
@@ -117,5 +117,5 @@ func (b *TextureBufferObject) TextureUpdate(coords *[]float32) {
 	b.verticesAndCoords[i] = c[6]
 	b.verticesAndCoords[i+1] = c[7]
 
-	b.vbo.UpdateTexture(b.verticesAndCoords)
+	b.vbo.UpdateTexture(&b.verticesAndCoords)
 }

@@ -39,7 +39,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	}
 	g.viewLocTxt.SetScale(2.0)
 	g.viewLocTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.viewLocTxt.(*custom.DynamicTextNode)
+	gd := g.viewLocTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.White).Array())
 	gd.SetPixelSize(1.0)
@@ -70,7 +70,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 // Update updates the time properties of a node.
 func (g *overlayLayer) Update(msPerUpdate, secPerUpdate float64) {
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.viewLocTxt.(*custom.DynamicTextNode)
+	gd := g.viewLocTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText(text)
 }
 

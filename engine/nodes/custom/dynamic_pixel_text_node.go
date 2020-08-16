@@ -8,8 +8,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
-// DynamicTextNode is a generic node
-type DynamicTextNode struct {
+// DynamicPixelTextNode is a generic node
+type DynamicPixelTextNode struct {
 	nodes.Node
 
 	color []float32
@@ -31,7 +31,7 @@ type DynamicTextNode struct {
 
 // NewDynamicTextNode constructs a generic shape node
 func NewDynamicTextNode(name string, pixelBufSize int, world api.IWorld, parent api.INode) (api.INode, error) {
-	o := new(DynamicTextNode)
+	o := new(DynamicPixelTextNode)
 	o.Initialize(name)
 	o.SetParent(parent)
 	o.pixelBufSize = pixelBufSize
@@ -47,7 +47,7 @@ func NewDynamicTextNode(name string, pixelBufSize int, world api.IWorld, parent 
 }
 
 // Build configures the node
-func (r *DynamicTextNode) Build(world api.IWorld) error {
+func (r *DynamicPixelTextNode) Build(world api.IWorld) error {
 	r.Node.Build(world)
 
 	r.pixelShifts = []int{0, 1, 2, 3, 4, 5, 6, 7}
@@ -69,7 +69,7 @@ func (r *DynamicTextNode) Build(world api.IWorld) error {
 	return nil
 }
 
-func (r *DynamicTextNode) populate() {
+func (r *DynamicPixelTextNode) populate() {
 	vertices := make([]float32, r.pixelBufSize*api.XYZComponentCount)
 
 	r.shape.SetVertices(vertices)
@@ -85,53 +85,53 @@ func (r *DynamicTextNode) populate() {
 }
 
 // Text returns current text
-func (r *DynamicTextNode) Text() string {
+func (r *DynamicPixelTextNode) Text() string {
 	return r.text
 }
 
 // SetText sets the text displayed
-func (r *DynamicTextNode) SetText(text string) {
+func (r *DynamicPixelTextNode) SetText(text string) {
 	r.text = text
 }
 
 // SetInverted changes the style of rendering
-func (r *DynamicTextNode) SetInverted(inverted bool) {
+func (r *DynamicPixelTextNode) SetInverted(inverted bool) {
 	r.inverted = inverted
 }
 
 // SetPixelSize sets the size of the pixel not the spacing.
 // Use the node's scale property to "push" the pixels apart.
-func (r *DynamicTextNode) SetPixelSize(size float32) {
+func (r *DynamicPixelTextNode) SetPixelSize(size float32) {
 	r.pixelSize = size
 }
 
 // SetBottomJustified forces the font's bottom to be at baseline.
 // Otherwise the font's top is at the baseline.
-func (r *DynamicTextNode) SetBottomJustified(justified bool) {
+func (r *DynamicPixelTextNode) SetBottomJustified(justified bool) {
 	r.bottomJustified = justified
 }
 
 // SetVerticalOffset sets the offset from the baseline if bottom justified.
-func (r *DynamicTextNode) SetVerticalOffset(offset float32) {
+func (r *DynamicPixelTextNode) SetVerticalOffset(offset float32) {
 	r.bottomVerticalOffset = offset
 }
 
 // SetColor sets color
-func (r *DynamicTextNode) SetColor(color []float32) {
+func (r *DynamicPixelTextNode) SetColor(color []float32) {
 	r.color = color
 }
 
 // Color gets the current color
-func (r *DynamicTextNode) Color() []float32 {
+func (r *DynamicPixelTextNode) Color() []float32 {
 	return r.color
 }
 
 // SetAlpha sets the current color's alpha channel 0.0->1.0
-func (r *DynamicTextNode) SetAlpha(alpha float32) {
+func (r *DynamicPixelTextNode) SetAlpha(alpha float32) {
 	r.color[3] = alpha
 }
 
-func (r *DynamicTextNode) reGen() {
+func (r *DynamicPixelTextNode) reGen() {
 	// Update backing array
 	// -------------------------------------------
 	// Gen text
@@ -182,7 +182,7 @@ func (r *DynamicTextNode) reGen() {
 }
 
 // Draw renders shape
-func (r *DynamicTextNode) Draw(model api.IMatrix4) {
+func (r *DynamicPixelTextNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.DynamicPixelBufRenderGraphic)
 
 	r.reGen()

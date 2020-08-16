@@ -55,7 +55,7 @@ func NewTextureAtlas(name, manifest string) api.ITextureAtlas {
 }
 
 // Build setups the atlas based on manifest
-func (t *textureAtlas) Build(relativePath string) {
+func (t *textureAtlas) Load(relativePath string, flipped bool) {
 	dataPath, err := filepath.Abs(relativePath)
 	if err != nil {
 		panic(err)
@@ -79,8 +79,8 @@ func (t *textureAtlas) Build(relativePath string) {
 	}
 
 	file := dataPath + "/" + t.manifestJ.OutputPNG
-	fmt.Println("TextureAtlas.Build loading: ", file)
-	image, err := t.loadImage(file, true)
+	fmt.Println("TextureAtlas.Load loading: ", file)
+	image, err := t.loadImage(file, flipped)
 
 	if err != nil {
 		panic(err)
@@ -108,6 +108,17 @@ func (t *textureAtlas) SetLayer(id float32) {
 // Layer gets the 3D texture.z
 func (t *textureAtlas) Layer() float32 {
 	return t.layer
+}
+
+// GetIndex from name
+func (t *textureAtlas) GetIndex(name string) int {
+	for i, subTex := range t.manifestJ.Tiles {
+		if name == subTex.Name {
+			return i
+		}
+	}
+
+	return -1
 }
 
 // TextureXYCoords returns the assigned coords of named sub texture to tile.

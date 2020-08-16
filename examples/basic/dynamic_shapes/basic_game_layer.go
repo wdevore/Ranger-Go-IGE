@@ -72,7 +72,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	}
 	g.dynoTxt.SetScale(2.0)
 	g.dynoTxt.SetPosition(-100.0, 100.0)
-	gd := g.dynoTxt.(*custom.DynamicTextNode)
+	gd := g.dynoTxt.(*custom.DynamicPixelTextNode)
 	gd.SetText("Ranger is a Go!")
 	gd.SetColor(color.NewPaletteInt64(color.LightPink).Array())
 	gd.SetPixelSize(3.0)

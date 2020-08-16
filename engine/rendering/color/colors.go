@@ -1,6 +1,9 @@
 package color
 
 const (
+	// Transparent colorless
+	Transparent = uint64(0xffffff00)
+
 	// White color
 	White = uint64(0xffffffff)
 	// Black color

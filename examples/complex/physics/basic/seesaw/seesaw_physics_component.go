@@ -90,11 +90,11 @@ func (p *seesawPhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position 
 	verts := tcc.Vertices()
 	s := p.phyNode.Scale()
 
-	vertices = append(vertices, box2d.B2Vec2{X: float64(verts[0] * s), Y: float64(verts[1] * s)})
-	vertices = append(vertices, box2d.B2Vec2{X: float64(verts[3] * s), Y: float64(verts[4] * s)})
-	vertices = append(vertices, box2d.B2Vec2{X: float64(verts[6] * s), Y: float64(verts[7] * s)})
-	vertices = append(vertices, box2d.B2Vec2{X: float64(verts[9] * s), Y: float64(verts[10] * s)})
-	vertices = append(vertices, box2d.B2Vec2{X: float64(verts[12] * s), Y: float64(verts[13] * s)})
+	vertices = append(vertices, box2d.B2Vec2{X: float64((*verts)[0] * s), Y: float64((*verts)[1] * s)})
+	vertices = append(vertices, box2d.B2Vec2{X: float64((*verts)[3] * s), Y: float64((*verts)[4] * s)})
+	vertices = append(vertices, box2d.B2Vec2{X: float64((*verts)[6] * s), Y: float64((*verts)[7] * s)})
+	vertices = append(vertices, box2d.B2Vec2{X: float64((*verts)[9] * s), Y: float64((*verts)[10] * s)})
+	vertices = append(vertices, box2d.B2Vec2{X: float64((*verts)[12] * s), Y: float64((*verts)[13] * s)})
 
 	b2Shape.Set(vertices, len(vertices))
 

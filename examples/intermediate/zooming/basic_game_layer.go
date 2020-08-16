@@ -69,7 +69,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	}
 	g.viewCoords.SetScale(2.0)
 	g.viewCoords.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.viewCoords.(*custom.DynamicTextNode)
+	gd := g.viewCoords.(*custom.DynamicPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.GreenYellow).Array())
 	gd.SetPixelSize(1.0)
@@ -89,7 +89,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 // Update updates the time properties of a node.
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.viewCoords.(*custom.DynamicTextNode)
+	gd := g.viewCoords.(*custom.DynamicPixelTextNode)
 	gd.SetText(text)
 }
 

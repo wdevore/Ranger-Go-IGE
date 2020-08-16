@@ -39,7 +39,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	g.text, err = custom.NewDynamicTextNode("Text", 500, world, g)
 	g.text.SetScale(2.0)
-	gt := g.text.(*custom.DynamicTextNode)
+	gt := g.text.(*custom.DynamicPixelTextNode)
 	gt.SetText("Ranger Go!")
 
 	return nil

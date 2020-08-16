@@ -65,7 +65,7 @@ func (r *StaticPolygonNode) Populate(vertices []float32, indices []uint32) {
 }
 
 // Vertices returns the shape's vertices
-func (r *StaticPolygonNode) Vertices() []float32 {
+func (r *StaticPolygonNode) Vertices() *[]float32 {
 	return r.shape.Vertices()
 }
 

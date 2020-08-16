@@ -55,7 +55,7 @@ func (r *StaticLineStripNode) Populate(vertices []float32, indices []uint32) {
 }
 
 // Vertices returns the shape's vertices
-func (r *StaticLineStripNode) Vertices() []float32 {
+func (r *StaticLineStripNode) Vertices() *[]float32 {
 	return r.shape.Vertices()
 }
 

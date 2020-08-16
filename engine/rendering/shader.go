@@ -60,7 +60,7 @@ func (s *Shader) Compile() error {
 		return err
 	}
 
-	fmt.Println("Shader: compiling complete.")
+	fmt.Println("Shader compiling complete for ID:", s.program)
 	return nil
 }
 

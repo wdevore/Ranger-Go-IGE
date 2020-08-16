@@ -24,10 +24,10 @@ func NewTextureManager() api.ITextureManager {
 	return o
 }
 
-func (t *textureManager) AddAtlas(name, relativePath, textureManifest string) {
+func (t *textureManager) AddAtlas(name, relativePath, textureManifest string, flipped bool) {
 	// Open manifest to get texture file name
 	ta := NewTextureAtlas(name, textureManifest)
-	ta.Build(relativePath)
+	ta.Load(relativePath, flipped)
 
 	t.atlases = append(t.atlases, ta)
 }

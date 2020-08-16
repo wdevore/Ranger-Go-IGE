@@ -97,7 +97,7 @@ func (r *StaticArcNode) populate() {
 }
 
 // Vertices returns the shape's vertices
-func (r *StaticArcNode) Vertices() []float32 {
+func (r *StaticArcNode) Vertices() *[]float32 {
 	return r.shape.Vertices()
 }
 

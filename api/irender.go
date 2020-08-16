@@ -11,6 +11,9 @@ const (
 
 	// TextureRenderGraphic is used for texture quads
 	TextureRenderGraphic = 3
+
+	// TextureRenderGraphic is used for additional textures
+	Texture2RenderGraphic = 4
 )
 
 // IRender is the visual interface for drawing

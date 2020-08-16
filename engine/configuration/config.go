@@ -78,11 +78,19 @@ type shadersJSON struct {
 	TextureFragmentShaderSrc string
 
 	// These properties are populated dynamically
+	VertexShaderCode   string
+	FragmentShaderCode string
+
 	UseTextureShader          bool
-	VertexShaderCode          string
-	FragmentShaderCode        string
 	TextureVertexShaderCode   string
 	TextureFragmentShaderCode string
+
+	UseFontShader         bool
+	FontVertexShaderSrc   string
+	FontFragmentShaderSrc string
+	// These properties are populated dynamically
+	FontVertexShaderCode   string
+	FontFragmentShaderCode string
 }
 
 // Properties reflects config.json

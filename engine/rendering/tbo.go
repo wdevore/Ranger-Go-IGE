@@ -12,7 +12,8 @@ import (
 
 // TBO represents a shader's Texture features.
 type TBO struct {
-	tboID uint32 // GLuint
+	tboID        uint32 // GLuint
+	textureIndex uint32
 }
 
 // NewTBO creates a empty TBO
@@ -32,9 +33,9 @@ func (t *TBO) TboID() uint32 {
 }
 
 // Use bind vertex array to Id
-func (t *TBO) Use(textureIndex int) {
+func (t *TBO) Use(textureIndex uint32) {
 	// activate the texture unit first before binding. There can be anywhere from 8 to 32
-	gl.ActiveTexture(indexToTextureID(textureIndex))
+	gl.ActiveTexture(gl.TEXTURE0 + t.textureIndex)
 	gl.BindTexture(gl.TEXTURE_2D, t.tboID)
 }
 
@@ -45,8 +46,9 @@ func (t *TBO) UnUse() {
 
 // Bind binds the pixels to buffer
 // *image.NRGBA has a .Pix() that returns the []uint8 array.
-func (t *TBO) Bind(width, height int32, smooth bool, pixels []uint8) {
-	t.Use(0)
+func (t *TBO) Bind(width, height int32, textureIndex uint32, smooth bool, pixels []uint8) {
+	t.textureIndex = textureIndex
+	t.Use(textureIndex)
 
 	gl.PixelStorei(gl.UNPACK_ALIGNMENT, 1)
 
@@ -63,8 +65,9 @@ func (t *TBO) Bind(width, height int32, smooth bool, pixels []uint8) {
 }
 
 // BindUsingImage binds the image to buffer
-func (t *TBO) BindUsingImage(image *image.NRGBA, smooth bool) {
-	t.Use(0)
+func (t *TBO) BindUsingImage(image *image.NRGBA, textureIndex uint32, smooth bool) {
+	t.textureIndex = textureIndex
+	t.Use(textureIndex)
 
 	gl.PixelStorei(gl.UNPACK_ALIGNMENT, 1)
 
@@ -119,9 +122,9 @@ func (t *TBO) BindTextureVbo(points []float32, vbo uint32) {
 }
 
 // BindTextureVbo2 binds the vertex attributes for xyst
-func (t *TBO) BindTextureVbo2(points []float32, vbo uint32) {
+func (t *TBO) BindTextureVbo2(points *[]float32, vbo uint32) {
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, 4*len(points), gl.Ptr(points), gl.DYNAMIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, 4*len(*points), gl.Ptr(*points), gl.DYNAMIC_DRAW)
 
 	sizeOfFloat := int32(4)
 
