@@ -52,7 +52,7 @@ func (b *textureQuadObject) ConstructWithImage(image *image.NRGBA, textureIndex 
 		panic("VBO.Construct: VBO/EBO buffers are zero")
 	}
 
-	b.tbo.BindTextureVbo2(vertices, b.vbo.VboID())
+	b.vbo.BindTextureVbo2(vertices)
 
 	b.ebo.Bind(eboBufferSize, indices)
 

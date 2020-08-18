@@ -88,3 +88,28 @@ func (v *VBO) UpdateTexture(data *[]float32) {
 	gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(*data)*4, gl.Ptr(*data))
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
+
+// BindTextureVbo2 binds the vertex attributes for xyst
+func (v *VBO) BindTextureVbo2(points *[]float32) {
+	gl.BindBuffer(gl.ARRAY_BUFFER, v.vboID)
+	gl.BufferData(gl.ARRAY_BUFFER, 4*len(*points), gl.Ptr(*points), gl.DYNAMIC_DRAW)
+
+	sizeOfFloat := int32(4)
+
+	// If the data per-vertex is (x,y,s,t = 4) then
+	stride := 4 * sizeOfFloat
+
+	// position attribute
+	size := int32(2)   // x,y
+	offset := int32(0) // position is first thus this attrib is offset by 0
+	attribIndex := uint32(0)
+	gl.VertexAttribPointer(attribIndex, size, gl.FLOAT, false, stride, gl.PtrOffset(int(offset)))
+	gl.EnableVertexAttribArray(0)
+
+	// texture coord attribute is offset by 2 (i.e. x,y)
+	size = int32(2)   // s,t
+	offset = int32(2) // the preceeding component size = 2, thus this attrib is offset by 2
+	attribIndex = uint32(1)
+	gl.VertexAttribPointer(attribIndex, size, gl.FLOAT, false, stride, gl.PtrOffset(int(offset*sizeOfFloat)))
+	gl.EnableVertexAttribArray(1)
+}

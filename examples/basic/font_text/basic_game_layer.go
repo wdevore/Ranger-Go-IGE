@@ -42,29 +42,20 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	textureMan := world.TextureManager()
 
 	g.addShip(world)
-	g.addFont(world)
-	g.addDynText(world)
-
-	textureNode, err := custom.NewBitmapFont9x9Node("StarCastle", "Font9x9", textureMan, world, g)
-	if err != nil {
-		panic(err)
-	}
-	textureNode.SetScale(25)
-	textureNode.SetPosition(0.0, -50.0)
-
-	tn := textureNode.(*custom.BitmapFont9x9Node)
-	tn.SetText("Star Castle")
-	tn.Populate()
+	// g.addFont(world)
+	// g.addDynText(world)
 
 	// ---------------------------------------------------------
 	// Bind atlas images for text above
-	textureAtlas := textureMan.GetAtlasByName("Font9x9")
-	renG := world.GetRenderGraphic(api.TextureRenderGraphic)
-	renG.ConstructWithImage(textureAtlas.AtlasImage(), false, world.ShapeAtlas())
+	// textureAtlas := textureMan.GetAtlasByName("Font9x9")
+	// renG := world.GetRenderGraphic(api.TextureRenderGraphic)
+	// renG.ConstructWithImage(textureAtlas.AtlasImage(), false, world.ShapeAtlas())
 
-	textureAtlas = textureMan.GetAtlasByName("StarShip")
-	renG = world.GetRenderGraphic(api.Texture2RenderGraphic)
-	renG.ConstructWithImage(textureAtlas.AtlasImage(), false, world.ShapeAtlas())
+	textureAtlasShip := textureMan.GetAtlasByName("StarShip")
+	renG2 := world.GetRenderGraphic(api.TextureRenderGraphic)
+	renG2.ConstructWithImage(textureAtlasShip.AtlasImage(), false)
+	// renG2 := world.GetRenderGraphic(api.TextureRenderGraphic)
+	// renG2.ConstructWithImage(textureAtlas2.AtlasImage(), false)
 
 	return nil
 }
@@ -91,7 +82,7 @@ func (g *gameLayer) addDynText(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.textureNodeAlpha, err = custom.NewDynamicTextureNode("Font9x9", 0, textureMan, world, g)
+	g.textureNodeAlpha, err = custom.NewDynamicTextureNode("Font9x9", api.Texture2RenderGraphic, 0, textureMan, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -109,14 +100,25 @@ func (g *gameLayer) addDynText(world api.IWorld) {
 	c := color.NewPaletteInt64(color.PanSkin)
 	c.SetAlpha(0.5)
 	tn.SetColor(c.Array())
-	tn.Populate()
+	tn.Populate(0)
+
+	textureNode, err := custom.NewBitmapFont9x9Node("StarCastle", "Font9x9", textureMan, world, g)
+	if err != nil {
+		panic(err)
+	}
+	textureNode.SetScale(25)
+	textureNode.SetPosition(0.0, -50.0)
+
+	tn2 := textureNode.(*custom.BitmapFont9x9Node)
+	tn2.SetText("Star Castle")
+	tn2.Populate()
 }
 
 func (g *gameLayer) addShip(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.shipNode, err = custom.NewDynamicTexture2Node("StarShip", 0, textureMan, world, g)
+	g.shipNode, err = custom.NewDynamicTextureNode("StarShip", api.TextureRenderGraphic, 0, textureMan, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -127,21 +129,21 @@ func (g *gameLayer) addShip(world api.IWorld) {
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35,
 	}
 
-	tn := g.shipNode.(*custom.DynamicTexture2Node)
+	tn := g.shipNode.(*custom.DynamicTextureNode)
 	tn.SetIndexes(indexes)
 	tn.SetColor(color.NewPaletteInt64(color.Transparent).Array())
-	tn.Populate()
+	tn.Populate(1)
 }
 
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
-	g.textureNode.SetRotation(maths.DegreeToRadians * g.angle)
-	g.angle -= 0.5
+	// g.textureNode.SetRotation(maths.DegreeToRadians * g.angle)
+	// g.angle -= 0.5
 
-	if g.msCnt > g.timeSpan {
-		g.msCnt = 0.0
-		g.incTextureID()
-	}
-	g.msCnt += msPerUpdate
+	// if g.msCnt > g.timeSpan {
+	// 	g.msCnt = 0.0
+	// 	g.incTextureID()
+	// }
+	// g.msCnt += msPerUpdate
 }
 
 // -----------------------------------------------------
@@ -186,16 +188,28 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 }
 
 func (g *gameLayer) incTextureID() {
-	g.textureIdx = (g.textureIdx + 1) % 94
-	tn := g.textureNodeAlpha.(*custom.DynamicTextureNode)
+	g.textureIdx = (g.textureIdx + 1) % 35
+	tn := g.shipNode.(*custom.DynamicTextureNode)
 	tn.SelectCoordsByIndex(g.textureIdx)
+
+	// g.textureIdx = (g.textureIdx + 1) % 94
+	// tn := g.textureNodeAlpha.(*custom.DynamicTextureNode)
+	// tn.SelectCoordsByIndex(g.textureIdx)
 }
 
 func (g *gameLayer) decTextureID() {
-	g.textureIdx = (g.textureIdx - 1) % 94
+	g.textureIdx = (g.textureIdx - 1) % 35
 	if g.textureIdx < 0 {
-		g.textureIdx = 94 - 1
+		g.textureIdx = 35 - 1
 	}
-	tn := g.textureNodeAlpha.(*custom.DynamicTextureNode)
+
+	tn := g.shipNode.(*custom.DynamicTextureNode)
 	tn.SelectCoordsByIndex(g.textureIdx)
+
+	// g.textureIdx = (g.textureIdx - 1) % 94
+	// if g.textureIdx < 0 {
+	// 	g.textureIdx = 94 - 1
+	// }
+	// tn := g.textureNodeAlpha.(*custom.DynamicTextureNode)
+	// tn.SelectCoordsByIndex(g.textureIdx)
 }

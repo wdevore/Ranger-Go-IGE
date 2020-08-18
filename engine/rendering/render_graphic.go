@@ -52,7 +52,7 @@ func (r *RenderGraphic) Construct(meshType int, atlas api.IAtlas) {
 }
 
 // ConstructWithImage ...
-func (r *RenderGraphic) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
+func (r *RenderGraphic) ConstructWithImage(image *image.NRGBA, smooth bool) {
 }
 
 // BufferObjInUse indicates if this graphic's buffer is activated

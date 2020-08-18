@@ -13,18 +13,20 @@ import (
 type DynamicTextureNode struct {
 	nodes.Node
 
-	shape api.IAtlasShape
+	shape     api.IAtlasShape
+	graphicID int
 
 	textureMan         api.ITextureManager
 	verticesAndTexture []float32
 	textureIndexes     []int
 	index              int
+	atlasIndex         int
 
 	color []float32
 }
 
 // NewDynamicTextureNode constructs a generic shape node
-func NewDynamicTextureNode(name string, startIndex int, textureMan api.ITextureManager, world api.IWorld, parent api.INode) (api.INode, error) {
+func NewDynamicTextureNode(name string, graphicID, startIndex int, textureMan api.ITextureManager, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(DynamicTextureNode)
 	o.Initialize(name)
 	o.SetParent(parent)
@@ -36,6 +38,7 @@ func NewDynamicTextureNode(name string, startIndex int, textureMan api.ITextureM
 
 	o.index = startIndex
 	o.textureMan = textureMan
+	o.graphicID = graphicID
 
 	o.color = color.NewPaletteInt64(color.Transparent).Array()
 
@@ -52,11 +55,13 @@ func (d *DynamicTextureNode) Build(world api.IWorld) error {
 }
 
 // Populate ...
-func (d *DynamicTextureNode) Populate() {
+func (d *DynamicTextureNode) Populate(atlasIndex int) {
+	d.atlasIndex = atlasIndex
+
 	// These 2D vertices are interleaved with 2D texture coords
 	// The s,t coords are sourced by the manifest based on index
 	idx := d.textureIndexes[d.index]
-	coords := d.textureMan.GetSTCoords(0, idx)
+	coords := d.textureMan.GetSTCoords(atlasIndex, idx)
 	c := *coords
 	d.verticesAndTexture = []float32{
 		// Pos           Tex
@@ -91,12 +96,12 @@ func (d *DynamicTextureNode) Populate() {
 
 // Draw renders shape
 func (d *DynamicTextureNode) Draw(model api.IMatrix4) {
-	renG := d.World().UseRenderGraphic(api.TextureRenderGraphic)
+	renG := d.World().UseRenderGraphic(d.graphicID)
 
 	renG.SetColor4(d.color)
 
 	idx := d.textureIndexes[d.index]
-	coords := d.textureMan.GetSTCoords(0, idx)
+	coords := d.textureMan.GetSTCoords(d.atlasIndex, idx)
 
 	renG.UpdateTexture(coords)
 
@@ -119,10 +124,10 @@ func (d *DynamicTextureNode) SelectCoordsByIndex(index int) {
 	d.index = index
 	// Fetch s,t texture coords from texture atlas
 	idx := d.textureIndexes[index]
-	coords := d.textureMan.GetSTCoords(0, idx)
+	coords := d.textureMan.GetSTCoords(d.atlasIndex, idx)
 
 	// Call VBO's update.
-	renG := d.World().GetRenderGraphic(api.TextureRenderGraphic)
+	renG := d.World().GetRenderGraphic(d.graphicID)
 
 	renG.UpdateTexture(coords)
 }

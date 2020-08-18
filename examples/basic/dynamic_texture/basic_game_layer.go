@@ -44,7 +44,7 @@ func (g *gameLayer) addShip(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.textureNode, err = custom.NewDynamicTextureNode("StarShip", 0, textureMan, world, g)
+	g.textureNode, err = custom.NewDynamicTextureNode("StarShip", api.TextureRenderGraphic, 0, textureMan, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -57,13 +57,13 @@ func (g *gameLayer) addShip(world api.IWorld) {
 
 	tn := g.textureNode.(*custom.DynamicTextureNode)
 	tn.SetIndexes(indexes)
-	tn.Populate()
+	tn.Populate(0)
 
 	// Use render graphic to bind image
 	renG := world.GetRenderGraphic(api.TextureRenderGraphic)
 	textureAtlas := textureMan.GetAtlasByName("StarShip")
 
-	renG.ConstructWithImage(textureAtlas.AtlasImage(), false, world.ShapeAtlas())
+	renG.ConstructWithImage(textureAtlas.AtlasImage(), false)
 }
 
 func (g *gameLayer) addBar(world api.IWorld) {

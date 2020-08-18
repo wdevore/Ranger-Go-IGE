@@ -43,7 +43,7 @@ func NewTextureRenderGraphic(atlas api.IAtlas, shader api.IShader) api.IRenderGr
 		panic("Couldn't find 'fragColor' uniform variable")
 	}
 
-	gl.Uniform1i(gl.GetUniformLocation(programID, gl.Str("texture1\x00")), 0)
+	// gl.Uniform1i(gl.GetUniformLocation(programID, gl.Str("texture1\x00")), 0)
 
 	return o
 }
@@ -53,8 +53,8 @@ func (r *TextureRenderGraphic) Construct(meshType int, atlas api.IAtlas) {
 }
 
 // ConstructWithImage ...
-func (r *TextureRenderGraphic) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
-	r.bufObj.ConstructWithImage(image, 0, smooth, atlas)
+func (r *TextureRenderGraphic) ConstructWithImage(image *image.NRGBA, smooth bool) {
+	r.bufObj.ConstructWithImage(image, 0, smooth, r.atlas)
 }
 
 // BufferObjInUse indicates if this graphic's buffer is activated

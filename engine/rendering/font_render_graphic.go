@@ -51,8 +51,8 @@ func (r *FontRenderGraphic) Construct(meshType int, atlas api.IAtlas) {
 }
 
 // ConstructWithImage ...
-func (r *FontRenderGraphic) ConstructWithImage(image *image.NRGBA, smooth bool, atlas api.IAtlas) {
-	r.bufObj.ConstructWithImage(image, 0, smooth, atlas)
+func (r *FontRenderGraphic) ConstructWithImage(image *image.NRGBA, smooth bool) {
+	r.bufObj.ConstructWithImage(image, 0, smooth, r.atlas)
 }
 
 // BufferObjInUse indicates if this graphic's buffer is activated

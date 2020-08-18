@@ -6,7 +6,7 @@ import "image"
 type IRenderGraphic interface {
 	BufferObjInUse() bool
 	Construct(meshType int, atlas IAtlas)
-	ConstructWithImage(image *image.NRGBA, smooth bool, atlas IAtlas)
+	ConstructWithImage(image *image.NRGBA, smooth bool)
 
 	Use()
 	UnUse()

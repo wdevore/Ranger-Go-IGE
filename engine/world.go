@@ -201,7 +201,7 @@ func (w *world) Configure() error {
 	// ---------------------------------------------------------------
 
 	// --------------------------------------------------------------
-	// A Font renderer
+	// A renderer
 	w.texture2Shader = rendering.NewShaderFromCode(shaderP.TextureVertexShaderCode, shaderP.TextureFragmentShaderCode)
 
 	err = w.texture2Shader.Compile()
@@ -211,7 +211,7 @@ func (w *world) Configure() error {
 		panic(err)
 	}
 	w.texture2Atlas = rendering.NewShapeAtlas()
-	renG = rendering.NewTexture2RenderGraphic(w.texture2Atlas, w.texture2Shader)
+	renG = rendering.NewTextureRenderGraphic(w.texture2Atlas, w.texture2Shader)
 	w.AddRenderGraphic(renG, api.Texture2RenderGraphic)
 	// --------------------------------------------------------------
 
@@ -280,17 +280,6 @@ func (w *world) PostProcess() {
 	if w.dynamicAtlas.HasShapes() {
 		renG := w.renderRepo[api.DynamicRenderGraphic]
 		renG.Construct(api.MeshDynamicMulti, w.dynamicAtlas)
-	}
-
-	if w.textureAtlas.HasShapes() {
-		// renG := w.renderRepo[api.TextureRenderGraphic]
-		// // Access image from Texture manager
-		// image, err := w.textureMan.AccessTexture(0)
-		// if err != nil {
-		// 	panic(err)
-		// }
-		// smooth := false
-		// renG.ConstructWithImage(image, smooth, w.textureAtlas)
 	}
 }
 
