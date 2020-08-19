@@ -45,3 +45,4 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * Joysticks and Gamepads
 * OpenGL ES (https://github.com/golang/go/wiki/Mobile)
 
+Alpha-0.2 branch
