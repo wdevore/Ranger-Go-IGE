@@ -83,8 +83,6 @@ func (p *landPhysicsComponent) buildPolygon(world api.IWorld, parent api.INode) 
 	gpol := p.phyNode.(*custom.StaticLineStripNode)
 	gpol.SetColor(color.NewPaletteInt64(color.White))
 
-	p.phyNode.Build(world)
-
 	vertices := []float32{
 		-30.0, 2.5, 0.0,
 		-25.0, 2.5, 0.0,

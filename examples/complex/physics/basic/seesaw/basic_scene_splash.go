@@ -11,14 +11,19 @@ type sceneSplash struct {
 	nodes.Transition
 }
 
-func newBasicSplashScene(name string, replacement api.INode) api.INode {
+func newBasicSplashScene(name string, world api.IWorld, replacement api.INode) (api.INode, error) {
 	o := new(sceneSplash)
 	o.Initialize(name)
 	o.SetReplacement(replacement)
-	return o
+
+	if err := o.build(world); err != nil {
+		return nil, err
+	}
+
+	return o, nil
 }
 
-func (s *sceneSplash) Build(world api.IWorld) error {
+func (s *sceneSplash) build(world api.IWorld) error {
 	s.Node.Build(world)
 
 	game, err := newBasicGameLayer("Game Layer", world, s)

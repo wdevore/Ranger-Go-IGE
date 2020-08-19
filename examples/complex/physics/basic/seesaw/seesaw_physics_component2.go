@@ -108,8 +108,6 @@ func (p *seesawPhysicsComponent) buildPolygon2(world api.IWorld, parent api.INod
 	gpol := p.phyNode.(*custom.StaticPolygonNode)
 	gpol.SetColor(color.NewPaletteInt64(color.LightOrange))
 
-	p.phyNode.Build(world)
-
 	vertices := []float32{
 		-1.0, 2.0, 0.0,
 		-1.0, 0.0, 0.0,

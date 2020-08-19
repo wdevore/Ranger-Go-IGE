@@ -29,8 +29,7 @@ func main() {
 
 	engine.SetPreNode(preNode)
 
-	splash := newBasicSplashScene("Splash", nil)
-	err = splash.Build(world)
+	splash, err := newBasicSplashScene("Splash", world, nil)
 	if err != nil {
 		panic(err)
 	}

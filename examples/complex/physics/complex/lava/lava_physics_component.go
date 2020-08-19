@@ -143,8 +143,6 @@ func (p *lavaPhysicsComponent) buildPolygon(world api.IWorld, parent api.INode, 
 	gpol := p.phyNode.(*custom.StaticPolygonNode)
 	gpol.SetColor(color.NewPaletteInt64(color.Brick))
 
-	p.phyNode.Build(world)
-
 	vertices := []float32{
 		0.5, 0.0, 0.0,
 		0.2, 0.8, 0.0,

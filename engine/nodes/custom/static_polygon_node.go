@@ -30,7 +30,7 @@ func NewStaticPolygonNode(name string, filled bool, world api.IWorld, parent api
 	o.filled = filled
 	parent.AddChild(o)
 
-	if err := o.Build(world); err != nil {
+	if err := o.build(world); err != nil {
 		return nil, err
 	}
 
@@ -38,7 +38,7 @@ func NewStaticPolygonNode(name string, filled bool, world api.IWorld, parent api
 }
 
 // Build configures the node
-func (r *StaticPolygonNode) Build(world api.IWorld) error {
+func (r *StaticPolygonNode) build(world api.IWorld) error {
 	r.Node.Build(world)
 
 	if r.filled {

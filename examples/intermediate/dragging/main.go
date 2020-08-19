@@ -18,12 +18,10 @@ func main() {
 
 	world := engine.World()
 
-	splash := newBasicSplashScene("Splash", nil)
-	err = splash.Build(world)
+	splash, err := newBasicSplashScene("Splash", world, nil)
 	if err != nil {
 		panic(err)
 	}
-
 	// This example uses the super basic Boot scene that does absolutely nothing.
 	boot := custom.NewBasicBootScene("Boot", splash)
 
