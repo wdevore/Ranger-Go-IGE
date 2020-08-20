@@ -21,9 +21,8 @@ type world struct {
 	properties   *configuration.Properties
 	relativePath string
 
-	defaultShader  api.IShader
-	textureShader  api.IShader
-	texture2Shader api.IShader
+	defaultShader api.IShader
+	textureShader api.IShader
 
 	staticAtlas   api.IAtlas
 	dynamicAtlas  api.IAtlas
@@ -108,22 +107,6 @@ func newWorld(relativePath string) api.IWorld {
 		shaders.TextureFragmentShaderCode = *code
 	}
 
-	// if shaders.UseFontShader {
-	// 	if shaders.FontVertexShaderSrc != "" {
-	// 		code, err := o.loadShaderSource(dataPath, shaders.FontVertexShaderSrc)
-	// 		if err != nil {
-	// 			panic(err)
-	// 		}
-	// 		shaders.FontVertexShaderCode = *code
-	// 	}
-
-	// 	code, err := o.loadShaderSource(dataPath, shaders.FontFragmentShaderSrc)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	shaders.FontFragmentShaderCode = *code
-	// }
-
 	o.textureMan = textures.NewTextureManager()
 
 	return o
@@ -199,21 +182,6 @@ func (w *world) Configure() error {
 	renG = rendering.NewTextureRenderGraphic(w.textureAtlas, w.textureShader)
 	w.AddRenderGraphic(renG, api.TextureRenderGraphic)
 	// ---------------------------------------------------------------
-
-	// --------------------------------------------------------------
-	// A renderer
-	w.texture2Shader = rendering.NewShaderFromCode(shaderP.TextureVertexShaderCode, shaderP.TextureFragmentShaderCode)
-
-	err = w.texture2Shader.Compile()
-
-	if err != nil {
-		fmt.Println("texture2Shader Shader compile error: ")
-		panic(err)
-	}
-	w.texture2Atlas = rendering.NewShapeAtlas()
-	renG = rendering.NewTextureRenderGraphic(w.texture2Atlas, w.texture2Shader)
-	w.AddRenderGraphic(renG, api.Texture2RenderGraphic)
-	// --------------------------------------------------------------
 
 	// Force UseRenderGraphic to UnUse/Use for the first node visited
 	w.activeRenGID = -1
@@ -295,12 +263,8 @@ func (w *world) PixelAtlas() api.IAtlas {
 	return w.pixelAtlas
 }
 
-func (w *world) ShapeAtlas() api.IAtlas {
+func (w *world) TextureAtlas() api.IAtlas {
 	return w.textureAtlas
-}
-
-func (w *world) Texture2Atlas() api.IAtlas {
-	return w.texture2Atlas
 }
 
 func (w *world) Shader() api.IShader {

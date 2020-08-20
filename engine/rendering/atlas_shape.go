@@ -26,8 +26,6 @@ type AtlasShape struct {
 	// accordingly.
 	// The indices are set during GL configuration. They reference
 	// vertices in the GL buffer
-	elementIndices []uint32
-	// These
 	indices []uint32
 
 	name string

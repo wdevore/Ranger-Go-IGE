@@ -54,7 +54,8 @@ func (r *TextureRenderGraphic) Construct(meshType int, atlas api.IAtlas) {
 
 // ConstructWithImage ...
 func (r *TextureRenderGraphic) ConstructWithImage(image *image.NRGBA, smooth bool) {
-	r.bufObj.ConstructWithImage(image, 0, smooth, r.atlas)
+	tbo := r.bufObj.(*textureQuadObject)
+	tbo.ConstructWithImage(image, 0, smooth, r.atlas)
 }
 
 // BufferObjInUse indicates if this graphic's buffer is activated
@@ -98,6 +99,7 @@ func (r *TextureRenderGraphic) BufferObj() api.IBufferObject {
 
 // SetColor currently textures are mixed with vertex colors
 func (r *TextureRenderGraphic) SetColor(color []float32) {
+	gl.Uniform4fv(r.colorLoc, 1, &color[0])
 }
 
 // Render renders a shape

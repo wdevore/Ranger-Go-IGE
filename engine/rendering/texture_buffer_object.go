@@ -14,17 +14,12 @@ type TextureBufferObject struct {
 	tbo *TBO
 	ebo *EBO
 
-	floatSize int
-	uintSize  int
-
 	verticesAndCoords []float32
 }
 
 // NewTextureBufferObject creates a new vector object with an associated Mesh
 func NewTextureBufferObject() api.IBufferObject {
 	o := new(TextureBufferObject)
-	o.floatSize = int(unsafe.Sizeof(float32(0)))
-	o.uintSize = int(unsafe.Sizeof(uint32(0)))
 	return o
 }
 
@@ -53,9 +48,11 @@ func (b *TextureBufferObject) ConstructWithImage(image *image.NRGBA, textureInde
 	elementOffset := 0
 	indexOffset := uint32(0)
 
+	uintSize := int(unsafe.Sizeof(uint32(0)))
+
 	for _, shape := range atlas.Shapes() {
 		shape.SetElementOffset(elementOffset)
-		elementOffset += len(shape.Indices()) * b.uintSize
+		elementOffset += len(shape.Indices()) * uintSize
 
 		for _, v := range *shape.Vertices() {
 			b.verticesAndCoords = append(b.verticesAndCoords, v)
@@ -68,8 +65,8 @@ func (b *TextureBufferObject) ConstructWithImage(image *image.NRGBA, textureInde
 		indexOffset = uint32(len(b.verticesAndCoords) / api.XYZComponentCount)
 	}
 
-	vboBufferSize := len(b.verticesAndCoords) * api.XYZWComponentCount * b.floatSize
-	eboBufferSize := len(indices) * b.uintSize
+	vboBufferSize := len(b.verticesAndCoords) * api.XYZWComponentCount * int(unsafe.Sizeof(float32(0)))
+	eboBufferSize := len(indices) * uintSize
 
 	if vboBufferSize == 0 || eboBufferSize == 0 {
 		panic("VBO.Construct: VBO/EBO buffers are zero")
@@ -104,18 +101,27 @@ func (b *TextureBufferObject) Update(shape api.IAtlasShape) {
 func (b *TextureBufferObject) TextureUpdate(coords *[]float32) {
 	c := *coords
 
-	i := 2
-	b.verticesAndCoords[i] = c[0]
-	b.verticesAndCoords[i+1] = c[1]
-	i += 2
-	b.verticesAndCoords[i] = c[2]
-	b.verticesAndCoords[i+1] = c[3]
-	i += 2
-	b.verticesAndCoords[i] = c[4]
-	b.verticesAndCoords[i+1] = c[5]
-	i += 2
-	b.verticesAndCoords[i] = c[6]
-	b.verticesAndCoords[i+1] = c[7]
+	b.verticesAndCoords[2] = c[0]
+	b.verticesAndCoords[3] = c[1]
+	b.verticesAndCoords[6] = c[2]
+	b.verticesAndCoords[7] = c[3]
+	b.verticesAndCoords[10] = c[4]
+	b.verticesAndCoords[11] = c[5]
+	b.verticesAndCoords[14] = c[6]
+	b.verticesAndCoords[15] = c[7]
+
+	// i := 2
+	// b.verticesAndCoords[i] = c[0]
+	// b.verticesAndCoords[i+1] = c[1]
+	// i += 2
+	// b.verticesAndCoords[i] = c[2]
+	// b.verticesAndCoords[i+1] = c[3]
+	// i += 2
+	// b.verticesAndCoords[i] = c[4]
+	// b.verticesAndCoords[i+1] = c[5]
+	// i += 2
+	// b.verticesAndCoords[i] = c[6]
+	// b.verticesAndCoords[i+1] = c[7]
 
 	b.vbo.UpdateTexture(&b.verticesAndCoords)
 }

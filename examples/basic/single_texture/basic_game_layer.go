@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
@@ -54,7 +53,6 @@ func (g *gameLayer) addShip(world api.IWorld) {
 
 	tn := g.textureNode.(*extras.DynamicTextureNode)
 	tn.SetIndexes(indexes)
-	tn.SetColor(color.NewPaletteInt64(color.Transparent).Array())
 	tn.Populate(0)
 
 	// Use render graphic to bind image

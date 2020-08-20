@@ -42,14 +42,14 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	textureMan := world.TextureManager()
 
 	g.addShip(world)
-	// g.addFont(world)
+	g.addFont(world)
 	// g.addDynText(world)
 
 	// ---------------------------------------------------------
 	// Bind atlas images for text above
-	// textureAtlas := textureMan.GetAtlasByName("Font9x9")
-	// renG := world.GetRenderGraphic(api.TextureRenderGraphic)
-	// renG.ConstructWithImage(textureAtlas.AtlasImage(), false, world.ShapeAtlas())
+	textureAtlas := textureMan.GetAtlasByName("Font9x9")
+	renG := world.GetRenderGraphic(api.TextureRenderGraphic)
+	renG.ConstructWithImage(textureAtlas.AtlasImage(), false)
 
 	textureAtlasShip := textureMan.GetAtlasByName("StarShip")
 	renG2 := world.GetRenderGraphic(api.TextureRenderGraphic)

@@ -38,7 +38,7 @@ func (r *StaticQuadNode) Build(world api.IWorld) error {
 
 	r.color = color.NewPaletteInt64(color.White).Array()
 
-	r.shape = world.ShapeAtlas().GenerateShape("TextureQuad", gl.TRIANGLES)
+	r.shape = world.TextureAtlas().GenerateShape("TextureQuad", gl.TRIANGLES)
 
 	// Populate shape
 	r.populate()

@@ -1,7 +1,6 @@
 package rendering
 
 import (
-	"image"
 	"unsafe"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
@@ -74,8 +73,8 @@ func (b *BufferObject) Construct(meshType int, atlas api.IAtlas) {
 }
 
 // ConstructWithImage note need to rethink the api
-func (b *BufferObject) ConstructWithImage(image *image.NRGBA, textureIndex uint32, smooth bool, atlas api.IAtlas) {
-}
+// func (b *BufferObject) ConstructWithImage(image *image.NRGBA, textureIndex uint32, smooth bool, atlas api.IAtlas) {
+// }
 
 // Use activates the VAO
 func (b *BufferObject) Use() {

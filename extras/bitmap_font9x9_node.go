@@ -50,7 +50,7 @@ func NewBitmapFont9x9Node(name, textureAtlas string, textureMan api.ITextureMana
 func (d *BitmapFont9x9Node) Build(world api.IWorld) error {
 	d.Node.Build(world)
 
-	d.shape = world.ShapeAtlas().GenerateShape("DynamicTextureQuad", gl.TRIANGLES)
+	d.shape = world.TextureAtlas().GenerateShape("DynamicTextureQuad", gl.TRIANGLES)
 
 	d.textureIndexes = []int{}
 

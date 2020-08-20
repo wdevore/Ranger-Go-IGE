@@ -58,6 +58,18 @@ func NewPaletteInt64WithAlpha(c uint64, alpha float32) api.IPalette {
 	return o
 }
 
+// NewPaletteInt64RGBAlpha constructs an RGB color object a single 64bit int
+// and overlay alpha value
+func NewPaletteInt64RGBAlpha(c uint64) api.IPalette {
+	o := NewPaletteRGBA(
+		uint8((c&0xff000000)>>24),
+		uint8((c&0x00ff0000)>>16),
+		uint8((c&0x0000ff00)>>8),
+		float32(uint8(c&0x000000ff)/255.0),
+	)
+	return o
+}
+
 func (p *palette) Components() (r, g, b, a float32) {
 	return r, g, b, a
 }

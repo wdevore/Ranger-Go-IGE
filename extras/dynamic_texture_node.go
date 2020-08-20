@@ -21,6 +21,7 @@ type DynamicTextureNode struct {
 	textureIndexes     []int
 	index              int
 	atlasIndex         int
+	coordsChanged      bool
 
 	color []float32
 }
@@ -39,8 +40,9 @@ func NewDynamicTextureNode(name string, graphicID, startIndex int, textureMan ap
 	o.index = startIndex
 	o.textureMan = textureMan
 	o.graphicID = graphicID
+	o.coordsChanged = true
 
-	o.color = color.NewPaletteInt64(color.Transparent).Array()
+	o.color = color.NewPaletteInt64(color.White).Array()
 
 	return o, nil
 }
@@ -49,7 +51,7 @@ func NewDynamicTextureNode(name string, graphicID, startIndex int, textureMan ap
 func (d *DynamicTextureNode) Build(world api.IWorld) error {
 	d.Node.Build(world)
 
-	d.shape = world.ShapeAtlas().GenerateShape("DynamicTextureQuad", gl.TRIANGLES)
+	d.shape = world.TextureAtlas().GenerateShape("DynamicTextureQuad", gl.TRIANGLES)
 
 	return nil
 }
@@ -75,10 +77,10 @@ func (d *DynamicTextureNode) Populate(atlasIndex int) {
 	// d.verticesAndTexture = []float32{
 	// 	// Pos           Tex
 	// 	//x  y       z/s    w/t
-	// 	// -0.5, -0.5, 0.0, 0.0, // CCW
-	// 	// 0.5, -0.5, 1.0, 0.0,
-	// 	// 0.5, 0.5, 1.0, 1.0,
-	// 	// -0.5, 0.5, 0.0, 1.0,
+	// 	-0.5, -0.5, 0.0, 0.0, // CCW
+	// 	0.5, -0.5, 1.0, 0.0,
+	// 	0.5, 0.5, 1.0, 1.0,
+	// 	-0.5, 0.5, 0.0, 1.0,
 	// }
 
 	// fmt.Println(d.verticesAndTexture)
@@ -100,10 +102,13 @@ func (d *DynamicTextureNode) Draw(model api.IMatrix4) {
 
 	renG.SetColor(d.color)
 
-	idx := d.textureIndexes[d.index]
-	coords := d.textureMan.GetSTCoords(d.atlasIndex, idx)
+	if d.coordsChanged {
+		idx := d.textureIndexes[d.index]
+		coords := d.textureMan.GetSTCoords(d.atlasIndex, idx)
 
-	renG.UpdateTexture(coords)
+		renG.UpdateTexture(coords)
+		d.coordsChanged = false
+	}
 
 	// Render texture on quad
 	renG.Render(d.shape, model)
@@ -130,4 +135,5 @@ func (d *DynamicTextureNode) SelectCoordsByIndex(index int) {
 	renG := d.World().GetRenderGraphic(d.graphicID)
 
 	renG.UpdateTexture(coords)
+	d.coordsChanged = true
 }

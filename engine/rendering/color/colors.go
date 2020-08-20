@@ -2,7 +2,7 @@ package color
 
 const (
 	// Transparent colorless
-	Transparent = uint64(0xffffff00)
+	Transparent = uint64(0x00000000)
 
 	// White color
 	White = uint64(0xffffffff)
@@ -25,7 +25,7 @@ const (
 	LightGray = uint64(0x646464ff)
 	// LighterGray color
 	LighterGray = uint64(0x848484ff)
-	// LighterGray color
+	// LightestGray color
 	LightestGray = uint64(0xa4a4a4ff)
 	// Silver color
 	Silver = uint64(0xddddddff)
@@ -99,6 +99,7 @@ const (
 	// ----------------------------------------------------
 	// Brown hues
 	// ----------------------------------------------------
+
 	// Chocolate color
 	Chocolate = uint64(0xD2691EFF)
 	// Saddlebrown color
