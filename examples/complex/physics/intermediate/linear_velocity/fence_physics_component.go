@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type fencePhysicsComponent struct {
@@ -51,7 +51,7 @@ func (p *fencePhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position a
 	// Bottom fixture
 	px = p.bottomLineNode.Position().X()
 	py = p.bottomLineNode.Position().Y()
-	tln := p.bottomLineNode.(*custom.StaticHLineNode)
+	tln := p.bottomLineNode.(*extras.StaticHLineNode)
 	halfLength := float64(tln.HalfLength())
 
 	b2Shape := box2d.MakeB2EdgeShape()
@@ -100,40 +100,40 @@ func (p *fencePhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position a
 func (p *fencePhysicsComponent) buildNodes(world api.IWorld, parent api.INode) error {
 	var err error
 
-	p.bottomLineNode, err = custom.NewStaticHLineNode("Bottom", world, parent)
+	p.bottomLineNode, err = extras.NewStaticHLineNode("Bottom", world, parent)
 	if err != nil {
 		return err
 	}
 	p.bottomLineNode.SetScale(25.0)
 	p.bottomLineNode.SetPosition(0.0, -12.5)
-	glh := p.bottomLineNode.(*custom.StaticHLineNode)
+	glh := p.bottomLineNode.(*extras.StaticHLineNode)
 	glh.SetColor(color.NewPaletteInt64(color.Yellow))
 
-	p.rightLineNode, err = custom.NewStaticVLineNode("Right", world, parent)
+	p.rightLineNode, err = extras.NewStaticVLineNode("Right", world, parent)
 	if err != nil {
 		return err
 	}
 	p.rightLineNode.SetScale(25.0)
 	p.rightLineNode.SetPosition(12.5, 0.0)
-	glv := p.rightLineNode.(*custom.StaticVLineNode)
+	glv := p.rightLineNode.(*extras.StaticVLineNode)
 	glv.SetColor(color.NewPaletteInt64(color.Yellow))
 
-	p.topLineNode, err = custom.NewStaticHLineNode("Top", world, parent)
+	p.topLineNode, err = extras.NewStaticHLineNode("Top", world, parent)
 	if err != nil {
 		return err
 	}
 	p.topLineNode.SetScale(25.0)
 	p.topLineNode.SetPosition(0.0, 12.5)
-	glh = p.topLineNode.(*custom.StaticHLineNode)
+	glh = p.topLineNode.(*extras.StaticHLineNode)
 	glh.SetColor(color.NewPaletteInt64(color.Yellow))
 
-	p.leftLineNode, err = custom.NewStaticVLineNode("Left", world, parent)
+	p.leftLineNode, err = extras.NewStaticVLineNode("Left", world, parent)
 	if err != nil {
 		return err
 	}
 	p.leftLineNode.SetScale(25.0)
 	p.leftLineNode.SetPosition(-12.5, 0.0)
-	glv = p.leftLineNode.(*custom.StaticVLineNode)
+	glv = p.leftLineNode.(*extras.StaticVLineNode)
 	glv.SetColor(color.NewPaletteInt64(color.Yellow))
 
 	return nil

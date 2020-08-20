@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type quadBoxPhysicsComponent struct {
@@ -41,7 +41,7 @@ func (p *quadBoxPhysicsComponent) Reset() {
 
 func (p *quadBoxPhysicsComponent) Build(world api.IWorld, parent api.INode, phyWorld *box2d.B2World, position api.IPoint) {
 	// phyNode is the Anchor node.
-	p.phyNode, _ = custom.NewStaticSquareNode("QuadBox", true, false, world, parent)
+	p.phyNode, _ = extras.NewStaticSquareNode("QuadBox", true, false, world, parent)
 	p.phyNode.SetPosition(position.X(), position.Y())
 
 	p.buildBoxes(world, p.phyNode)
@@ -74,7 +74,7 @@ func (p *quadBoxPhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position
 		// means if the object is defined otherwise we need the object
 		// to return the correct value
 		box := p.boxes[int(i)]
-		tcc := box.(*custom.StaticSquareNode)
+		tcc := box.(*extras.StaticSquareNode)
 		pos := box.Position()
 		offsetFromBodyOriginX := float64(pos.X())
 		offsetFromBodyOriginY := float64(pos.Y())
@@ -96,49 +96,49 @@ func (p *quadBoxPhysicsComponent) buildBoxes(world api.IWorld, parent api.INode)
 	var err error
 
 	// --------------------------------------------------------------
-	node, err := custom.NewStaticSquareNode("Square1", true, true, world, parent)
+	node, err := extras.NewStaticSquareNode("Square1", true, true, world, parent)
 	if err != nil {
 		return err
 	}
 	node.SetScale(3.0)
 	node.SetPosition(1.5, 0.0)
-	gol2 := node.(*custom.StaticSquareNode)
+	gol2 := node.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64WithAlpha(color.Aqua, 0.5))
 
 	p.boxes = append(p.boxes, node)
 
 	// --------------------------------------------------------------
-	node, err = custom.NewStaticSquareNode("Square2", true, true, world, parent)
+	node, err = extras.NewStaticSquareNode("Square2", true, true, world, parent)
 	if err != nil {
 		return err
 	}
 	node.SetScale(3.0)
 	node.SetPosition(0.0, 1.5)
-	gol2 = node.(*custom.StaticSquareNode)
+	gol2 = node.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64WithAlpha(color.Aqua, 0.5))
 
 	p.boxes = append(p.boxes, node)
 
 	// --------------------------------------------------------------
-	node, err = custom.NewStaticSquareNode("Square3", true, true, world, parent)
+	node, err = extras.NewStaticSquareNode("Square3", true, true, world, parent)
 	if err != nil {
 		return err
 	}
 	node.SetScale(3.0)
 	node.SetPosition(-1.5, 0.0)
-	gol2 = node.(*custom.StaticSquareNode)
+	gol2 = node.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64WithAlpha(color.Aqua, 0.5))
 
 	p.boxes = append(p.boxes, node)
 
 	// --------------------------------------------------------------
-	node, err = custom.NewStaticSquareNode("Square4", true, true, world, parent)
+	node, err = extras.NewStaticSquareNode("Square4", true, true, world, parent)
 	if err != nil {
 		return err
 	}
 	node.SetScale(3.0)
 	node.SetPosition(0.0, -1.5)
-	gol2 = node.(*custom.StaticSquareNode)
+	gol2 = node.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64WithAlpha(color.Aqua, 0.5))
 
 	p.boxes = append(p.boxes, node)

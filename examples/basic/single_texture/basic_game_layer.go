@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -41,7 +41,7 @@ func (g *gameLayer) addShip(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.textureNode, err = custom.NewDynamicTextureNode("StarShip", api.TextureRenderGraphic, 0, textureMan, world, g)
+	g.textureNode, err = extras.NewDynamicTextureNode("StarShip", api.TextureRenderGraphic, 0, textureMan, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,7 @@ func (g *gameLayer) addShip(world api.IWorld) {
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35,
 	}
 
-	tn := g.textureNode.(*custom.DynamicTextureNode)
+	tn := g.textureNode.(*extras.DynamicTextureNode)
 	tn.SetIndexes(indexes)
 	tn.SetColor(color.NewPaletteInt64(color.Transparent).Array())
 	tn.Populate(0)
@@ -86,10 +86,10 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 		if event.GetState() == 1 || event.GetState() == 2 {
 			switch event.GetKeyScan() {
 			case 68: // d
-				tn := g.textureNode.(*custom.DynamicTextureNode)
+				tn := g.textureNode.(*extras.DynamicTextureNode)
 				tn.SelectCoordsByIndex(1)
 			case 70: // f
-				tn := g.textureNode.(*custom.DynamicTextureNode)
+				tn := g.textureNode.(*extras.DynamicTextureNode)
 				tn.SelectCoordsByIndex(0)
 			case 90: // z
 			case 65: // a
@@ -100,11 +100,11 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 				if g.textureIdx < 0 {
 					g.textureIdx = 34
 				}
-				tn := g.textureNode.(*custom.DynamicTextureNode)
+				tn := g.textureNode.(*extras.DynamicTextureNode)
 				tn.SelectCoordsByIndex(g.textureIdx)
 			case 262: // Right
 				g.textureIdx = (g.textureIdx + 1) % 35
-				tn := g.textureNode.(*custom.DynamicTextureNode)
+				tn := g.textureNode.(*extras.DynamicTextureNode)
 				tn.SelectCoordsByIndex(g.textureIdx)
 			}
 		}

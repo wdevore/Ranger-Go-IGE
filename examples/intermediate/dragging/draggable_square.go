@@ -5,8 +5,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/misc"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type draggableSquare struct {
@@ -32,7 +32,7 @@ func (d *draggableSquare) Build(world api.IWorld, parent api.INode) error {
 	d.localPosition = geometry.NewPoint()
 
 	// ---------------------------------------------------------
-	d.square, err = custom.NewStaticSquareNode("FilledSqr", true, true, world, parent)
+	d.square, err = extras.NewStaticSquareNode("FilledSqr", true, true, world, parent)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func (d *draggableSquare) Build(world api.IWorld, parent api.INode) error {
 	}
 	d.square.SetScale(100.0)
 	d.square.SetPosition(90.0, 80.0)
-	gsq := d.square.(*custom.StaticSquareNode)
+	gsq := d.square.(*extras.StaticSquareNode)
 	gsq.SetColor(color.NewPaletteInt64(color.LightPurple))
 
 	d.outSquare, err = newCustomRectangleNode("OutlineSqr", true, false, world, parent)

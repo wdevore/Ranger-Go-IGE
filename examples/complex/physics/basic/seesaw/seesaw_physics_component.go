@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type seesawPhysicsComponent struct {
@@ -84,7 +84,7 @@ func (p *seesawPhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position 
 	// Box2D assumes the same is defined in unit-space which
 	// means if the object is defined otherwise we need the object
 	// to return the correct value
-	tcc := p.phyNode.(*custom.StaticPolygonNode)
+	tcc := p.phyNode.(*extras.StaticPolygonNode)
 
 	vertices := []box2d.B2Vec2{}
 	verts := tcc.Vertices()
@@ -109,7 +109,7 @@ func (p *seesawPhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position 
 	// Every Fixture has a shape
 	b2CircleShape := box2d.MakeB2CircleShape()
 	b2CircleShape.M_p.Set(float64(p.circle.Position().X()*s), float64(p.circle.Position().Y()*s)) // Relative to body position
-	gcir := p.circle.(*custom.StaticCircleNode)
+	gcir := p.circle.(*extras.StaticCircleNode)
 	b2CircleShape.SetRadius(float64(gcir.Radius() * s))
 
 	fd = box2d.MakeB2FixtureDef()
@@ -122,7 +122,7 @@ func (p *seesawPhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position 
 	// ---------------------------------------------------------------
 	// Every Fixture has a shape
 	b2SquareShape := box2d.MakeB2PolygonShape()
-	gss := p.square.(*custom.StaticSquareNode)
+	gss := p.square.(*extras.StaticSquareNode)
 
 	b2SquareShape.SetAsBoxFromCenterAndAngle(
 		float64(gss.HalfSide()*s), float64(gss.HalfSide()*s),
@@ -138,13 +138,13 @@ func (p *seesawPhysicsComponent) buildPolygon(world api.IWorld, parent api.INode
 	var err error
 
 	// --------------------------------------------------------------
-	p.phyNode, err = custom.NewStaticPolygonNode("Polygon", false, world, parent)
+	p.phyNode, err = extras.NewStaticPolygonNode("Polygon", false, world, parent)
 	if err != nil {
 		return err
 	}
 	p.phyNode.SetScale(3.0)
 	p.phyNode.SetPosition(p.position.X(), p.position.Y())
-	gpol := p.phyNode.(*custom.StaticPolygonNode)
+	gpol := p.phyNode.(*extras.StaticPolygonNode)
 	gpol.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	vertices := []float32{
@@ -167,13 +167,13 @@ func (p *seesawPhysicsComponent) buildPolygon(world api.IWorld, parent api.INode
 func (p *seesawPhysicsComponent) buildCircle(world api.IWorld, parent api.INode) error {
 	var err error
 
-	p.circle, err = custom.NewStaticCircleNode("Circle", false, world, parent)
+	p.circle, err = extras.NewStaticCircleNode("Circle", false, world, parent)
 	if err != nil {
 		return err
 	}
 	p.circle.SetScale(5.0 / 3)
 	p.circle.SetPosition(-5.0, 0.0)
-	gol2 := p.circle.(*custom.StaticCircleNode)
+	gol2 := p.circle.(*extras.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.Green))
 
 	return nil
@@ -182,13 +182,13 @@ func (p *seesawPhysicsComponent) buildCircle(world api.IWorld, parent api.INode)
 func (p *seesawPhysicsComponent) buildSquare(world api.IWorld, parent api.INode) error {
 	var err error
 
-	p.square, err = custom.NewStaticSquareNode("Square", true, false, world, parent)
+	p.square, err = extras.NewStaticSquareNode("Square", true, false, world, parent)
 	if err != nil {
 		return err
 	}
 	p.square.SetScale(5.0 / 3)
 	p.square.SetPosition(5.0, 0.0)
-	gol2 := p.square.(*custom.StaticSquareNode)
+	gol2 := p.square.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.Aqua))
 
 	return nil

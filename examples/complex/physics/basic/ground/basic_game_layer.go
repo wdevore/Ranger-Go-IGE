@@ -6,8 +6,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -71,14 +71,14 @@ func (g *gameLayer) Build(world api.IWorld) error {
 func (g *gameLayer) addGround() error {
 	var err error
 
-	g.groundLineNode, err = custom.NewStaticHLineNode("Ground", g.World(), g)
+	g.groundLineNode, err = extras.NewStaticHLineNode("Ground", g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.groundLineNode.SetScale(25.0)
 	g.groundLineNode.SetRotation(maths.DegreeToRadians * 10.0)
 	g.groundLineNode.SetPosition(0.0, 0.0)
-	gl2 := g.groundLineNode.(*custom.StaticHLineNode)
+	gl2 := g.groundLineNode.(*extras.StaticHLineNode)
 	gl2.SetColor(color.NewPaletteInt64(color.Yellow))
 
 	return nil
@@ -88,13 +88,13 @@ func (g *gameLayer) addCircle() error {
 	var err error
 
 	fallingCirPos := geometry.NewPointUsing(0.0, 15.0)
-	g.fallingCirNode, err = custom.NewStaticCircleNode("Circle", true, g.World(), g)
+	g.fallingCirNode, err = extras.NewStaticCircleNode("Circle", true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.fallingCirNode.SetScale(3.0)
 	g.fallingCirNode.SetPosition(fallingCirPos.X(), fallingCirPos.Y())
-	gol2 := g.fallingCirNode.(*custom.StaticCircleNode)
+	gol2 := g.fallingCirNode.(*extras.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	g.cirPhyComp = newCirPhysicsComponent()
@@ -107,13 +107,13 @@ func (g *gameLayer) addSquare() error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(0.0, 10.0)
-	g.fallingSqrNode, err = custom.NewStaticSquareNode("Square", true, true, g.World(), g)
+	g.fallingSqrNode, err = extras.NewStaticSquareNode("Square", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.fallingSqrNode.SetScale(3.0)
 	g.fallingSqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
-	gol2 := g.fallingSqrNode.(*custom.StaticSquareNode)
+	gol2 := g.fallingSqrNode.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.Aqua))
 
 	g.sqrPhyComp = newBoxPhysicsComponent()
@@ -126,13 +126,13 @@ func (g *gameLayer) addTri() error {
 	var err error
 
 	fallingTriPos := geometry.NewPointUsing(0.0, 5.0)
-	g.fallingTriNode, err = custom.NewStaticTriangleNode("Triangle", true, true, g.World(), g)
+	g.fallingTriNode, err = extras.NewStaticTriangleNode("Triangle", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.fallingTriNode.SetScale(3.0)
 	g.fallingTriNode.SetPosition(fallingTriPos.X(), fallingTriPos.Y())
-	gol2 := g.fallingTriNode.(*custom.StaticTriangleNode)
+	gol2 := g.fallingTriNode.(*extras.StaticTriangleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.Pink))
 
 	g.triPhyComp = newTriPhysicsComponent()
@@ -235,7 +235,7 @@ func buildGroundPhysics(g *gameLayer) {
 
 	g.b2GroundBody = g.b2World.CreateBody(&bDef)
 
-	tln := g.groundLineNode.(*custom.StaticHLineNode)
+	tln := g.groundLineNode.(*extras.StaticHLineNode)
 	halfLength := float64(tln.HalfLength())
 	groundShape := box2d.MakeB2EdgeShape()
 	groundShape.Set(

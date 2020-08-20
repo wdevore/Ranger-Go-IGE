@@ -6,8 +6,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -77,13 +77,13 @@ func (g *gameLayer) addCircle() error {
 
 	initialPos := geometry.NewPointUsing(5.0, 30.0)
 	// ---------------------------------------------------------
-	g.circle, err = custom.NewStaticCircleNode("Circle", true, g.World(), g)
+	g.circle, err = extras.NewStaticCircleNode("Circle", true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.circle.SetScale(5.0)
 	g.circle.SetPosition(initialPos.X(), initialPos.Y())
-	gol2 := g.circle.(*custom.StaticCircleNode)
+	gol2 := g.circle.(*extras.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	g.cirPhyComp = newCirPhysicsComponent()

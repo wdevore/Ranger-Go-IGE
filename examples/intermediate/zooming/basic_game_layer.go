@@ -6,8 +6,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -46,36 +46,36 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	var err error
 
-	g.zoom, err = custom.NewZoomNode("ZoomNode", world, g)
+	g.zoom, err = extras.NewZoomNode("ZoomNode", world, g)
 
 	// Square ----------------------------------------------------
 	g.dragSquare = newDraggableSquare()
 	g.dragSquare.Build(world, g.zoom)
 
 	// ---------------------------------------------------------
-	tri, err := custom.NewStaticTriangleNode("FilledTri", true, true, world, g.zoom)
+	tri, err := extras.NewStaticTriangleNode("FilledTri", true, true, world, g.zoom)
 	if err != nil {
 		return err
 	}
 	tri.SetScale(100)
 	tri.SetPosition(150.0, 0.0)
-	gtr := tri.(*custom.StaticTriangleNode)
+	gtr := tri.(*extras.StaticTriangleNode)
 	gtr.SetColor(color.NewPaletteInt64WithAlpha(color.DeepPink, 0.5))
 
 	// ---------------------------------------------------------
-	g.viewCoords, err = custom.NewDynamicTextNode("ViewCoords", 500, world, g)
+	g.viewCoords, err = extras.NewDynamicTextNode("ViewCoords", 500, world, g)
 	if err != nil {
 		return err
 	}
 	g.viewCoords.SetScale(2.0)
 	g.viewCoords.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.viewCoords.(*custom.DynamicPixelTextNode)
+	gd := g.viewCoords.(*extras.DynamicPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.GreenYellow).Array())
 	gd.SetPixelSize(1.0)
 
 	// ---------------------------------------------------------
-	g.plus, err = custom.NewStaticPlusNode("Plus", world, g)
+	g.plus, err = extras.NewStaticPlusNode("Plus", world, g)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 // Update updates the time properties of a node.
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.viewCoords.(*custom.DynamicPixelTextNode)
+	gd := g.viewCoords.(*extras.DynamicPixelTextNode)
 	gd.SetText(text)
 }
 

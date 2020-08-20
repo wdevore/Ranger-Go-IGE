@@ -5,7 +5,7 @@ import (
 
 	"github.com/wdevore/Ranger-Go-IGE/engine"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 func main() {
@@ -26,11 +26,11 @@ func main() {
 
 	// ------------------------------------------------------------
 	// Set a custom background clear effect
-	preNode, err := custom.NewStaticCheckerboardNode("CheckBackground", world, nil)
+	preNode, err := extras.NewStaticCheckerboardNode("CheckBackground", world, nil)
 	if err != nil {
 		panic(err)
 	}
-	grn := preNode.(*custom.StaticCheckerboardNode)
+	grn := preNode.(*extras.StaticCheckerboardNode)
 	grn.SetSize(200)
 
 	engine.SetPreNode(preNode)
@@ -42,7 +42,7 @@ func main() {
 	}
 
 	// This example uses the super basic Boot scene that does absolutely nothing.
-	boot := custom.NewBasicBootScene("Boot", splash)
+	boot := extras.NewBasicBootScene("Boot", splash)
 
 	nodes.PrintTree(splash)
 

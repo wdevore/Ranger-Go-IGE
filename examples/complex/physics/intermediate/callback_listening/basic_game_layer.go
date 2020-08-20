@@ -5,8 +5,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -109,13 +109,13 @@ func (g *gameLayer) addSquare() error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(0.0, 5.0)
-	g.sqrNode, err = custom.NewStaticSquareNode("Square", true, true, g.World(), g)
+	g.sqrNode, err = extras.NewStaticSquareNode("Square", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.sqrNode.SetScale(3.0)
 	g.sqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
-	gol2 := g.sqrNode.(*custom.StaticSquareNode)
+	gol2 := g.sqrNode.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.Aqua))
 
 	g.sqrPhyComp = newBoxPhysicsComponent()
@@ -129,13 +129,13 @@ func (g *gameLayer) addCircle() error {
 	var err error
 
 	fallingCirPos := geometry.NewPointUsing(0.0, 15.0)
-	g.cirNode, err = custom.NewStaticCircleNode("Circle", true, g.World(), g)
+	g.cirNode, err = extras.NewStaticCircleNode("Circle", true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.cirNode.SetScale(5.0)
 	g.cirNode.SetPosition(fallingCirPos.X(), fallingCirPos.Y())
-	gol2 := g.cirNode.(*custom.StaticCircleNode)
+	gol2 := g.cirNode.(*extras.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	g.cirPhyComp = newCirPhysicsComponent()

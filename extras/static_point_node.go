@@ -1,4 +1,4 @@
-package custom
+package extras
 
 import (
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -8,18 +8,19 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
-// StaticPlusNode is a generic node
-type StaticPlusNode struct {
+// StaticPointNode is a generic node
+type StaticPointNode struct {
 	nodes.Node
 
 	color []float32
+	size  float32
 
 	shape api.IAtlasShape
 }
 
-// NewStaticPlusNode constructs a generic shape node
-func NewStaticPlusNode(name string, world api.IWorld, parent api.INode) (api.INode, error) {
-	o := new(StaticPlusNode)
+// NewStaticPointNode constructs a generic shape node
+func NewStaticPointNode(name string, world api.IWorld, parent api.INode) (api.INode, error) {
+	o := new(StaticPointNode)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
@@ -32,31 +33,28 @@ func NewStaticPlusNode(name string, world api.IWorld, parent api.INode) (api.INo
 }
 
 // Build configures the node
-func (r *StaticPlusNode) Build(world api.IWorld) error {
+func (r *StaticPointNode) Build(world api.IWorld) error {
 	r.Node.Build(world)
 
 	r.color = color.NewPaletteInt64(color.White).Array()
+	r.size = 1.0
 
-	r.shape = world.Atlas().GenerateShape("Plus", gl.LINES)
+	r.shape = world.Atlas().GenerateShape("Point", gl.POINTS)
 
-	// Populated shape
 	r.populate()
 
 	return nil
 }
 
-func (r *StaticPlusNode) populate() {
+func (r *StaticPointNode) populate() {
 	vertices := []float32{
-		-0.5, 0.0, 0.0,
-		0.5, 0.0, 0.0,
-		0.0, -0.5, 0.0,
-		0.0, 0.5, 0.0,
+		0.0, 0.0, 0.0,
 	}
 
 	r.shape.SetVertices(vertices)
 
 	indices := []uint32{
-		0, 1, 2, 3,
+		0,
 	}
 
 	r.shape.SetIndices(indices)
@@ -65,18 +63,25 @@ func (r *StaticPlusNode) populate() {
 }
 
 // SetColor sets line color
-func (r *StaticPlusNode) SetColor(color api.IPalette) {
+func (r *StaticPointNode) SetColor(color api.IPalette) {
 	r.color = color.Array()
 }
 
+// SetSize sets the size of the point
+func (r *StaticPointNode) SetSize(size float32) {
+	r.size = size
+}
+
 // SetAlpha sets the current color's alpha channel 0.0->1.0
-func (r *StaticPlusNode) SetAlpha(alpha float32) {
+func (r *StaticPointNode) SetAlpha(alpha float32) {
 	r.color[3] = alpha
 }
 
 // Draw renders shape
-func (r *StaticPlusNode) Draw(model api.IMatrix4) {
+func (r *StaticPointNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
 	renG.SetColor(r.color)
+	gl.PointSize(r.size)
 	renG.Render(r.shape, model)
+	gl.PointSize(1)
 }

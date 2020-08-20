@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type fencePhysicsComponent struct {
@@ -48,7 +48,7 @@ func (p *fencePhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position a
 	// Bottom fixture
 	px = p.bottomLineNode.Position().X()
 	py = p.bottomLineNode.Position().Y()
-	tln := p.bottomLineNode.(*custom.StaticHLineNode)
+	tln := p.bottomLineNode.(*extras.StaticHLineNode)
 	halfLength := float64(tln.HalfLength())
 
 	b2Shape := box2d.MakeB2EdgeShape()
@@ -63,13 +63,13 @@ func (p *fencePhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position a
 func (p *fencePhysicsComponent) buildNodes(world api.IWorld, parent api.INode) error {
 	var err error
 
-	p.bottomLineNode, err = custom.NewStaticHLineNode("Bottom", world, parent)
+	p.bottomLineNode, err = extras.NewStaticHLineNode("Bottom", world, parent)
 	if err != nil {
 		return err
 	}
 	p.bottomLineNode.SetScale(100.0)
 	p.bottomLineNode.SetPosition(0.0, -12.5)
-	glh := p.bottomLineNode.(*custom.StaticHLineNode)
+	glh := p.bottomLineNode.(*extras.StaticHLineNode)
 	glh.SetColor(color.NewPaletteInt64(color.Yellow))
 
 	return nil

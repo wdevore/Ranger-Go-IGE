@@ -4,8 +4,8 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -37,23 +37,23 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	var err error
 
 	// ---------------------------------------------------------
-	g.circle, err = custom.NewStaticCircleNode("Circle", true, world, g)
+	g.circle, err = extras.NewStaticCircleNode("Circle", true, world, g)
 	if err != nil {
 		return err
 	}
 	g.circle.SetScale(5.0)
 	g.circle.SetPosition(25.0, 25.0)
-	gol2 := g.circle.(*custom.StaticCircleNode)
+	gol2 := g.circle.(*extras.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	// ---------------------------------------------------------
-	plus, err := custom.NewStaticPlusNode("Plus", world, g)
+	plus, err := extras.NewStaticPlusNode("Plus", world, g)
 	if err != nil {
 		return err
 	}
 	plus.SetScale(10.0)
 	plus.SetPosition(25.0, 25.0)
-	gp := plus.(*custom.StaticPlusNode)
+	gp := plus.(*extras.StaticPlusNode)
 	gp.SetColor(color.NewPaletteInt64(color.White))
 
 	// --------------------------------------------

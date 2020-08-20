@@ -4,8 +4,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -34,99 +34,99 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	var err error
 
 	// ---------------------------------------------------------
-	shline, err := custom.NewStaticHLineNode("HLine", world, g)
+	shline, err := extras.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
 		return err
 	}
 	shline.SetScale(float32(dvr.Width))
-	ghl := shline.(*custom.StaticHLineNode)
+	ghl := shline.(*extras.StaticHLineNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// ---------------------------------------------------------
-	svline, err := custom.NewStaticVLineNode("VLine", world, g)
+	svline, err := extras.NewStaticVLineNode("VLine", world, g)
 	if err != nil {
 		return err
 	}
 	svline.SetScale(float32(dvr.Width))
-	gvl := svline.(*custom.StaticVLineNode)
+	gvl := svline.(*extras.StaticVLineNode)
 	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// ---------------------------------------------------------
-	osql, err := custom.NewStaticSquareNode("FilledSqr", true, true, world, g)
+	osql, err := extras.NewStaticSquareNode("FilledSqr", true, true, world, g)
 	if err != nil {
 		return err
 	}
 	osql.SetScale(100.0)
 	osql.SetPosition(110.0, 100.0)
-	gol2 := osql.(*custom.StaticSquareNode)
+	gol2 := osql.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightPurple))
 
 	// ---------------------------------------------------------
-	tri, err := custom.NewStaticTriangleNode("FilledTri", true, true, world, g)
+	tri, err := extras.NewStaticTriangleNode("FilledTri", true, true, world, g)
 	if err != nil {
 		return err
 	}
 	tri.SetScale(100)
 	tri.SetPosition(-100.0, 100.0)
-	gtr := tri.(*custom.StaticTriangleNode)
+	gtr := tri.(*extras.StaticTriangleNode)
 	gtr.SetColor(color.NewPaletteInt64(color.Pink))
 
 	// ---------------------------------------------------------
-	circle, err := custom.NewStaticCircleNode("FilledCirle", true, world, g)
+	circle, err := extras.NewStaticCircleNode("FilledCirle", true, world, g)
 	if err != nil {
 		return err
 	}
 	circle.SetScale(100)
 	circle.SetPosition(0.0, 100.0)
-	gcr := circle.(*custom.StaticCircleNode)
+	gcr := circle.(*extras.StaticCircleNode)
 	gcr.SetColor(color.NewPaletteInt64(color.GoldYellow))
 
-	ocircle, err := custom.NewStaticCircleNode("OutlineCirle", false, world, g)
+	ocircle, err := extras.NewStaticCircleNode("OutlineCirle", false, world, g)
 	if err != nil {
 		return err
 	}
 	ocircle.SetScale(100)
 	ocircle.SetPosition(0.0, 100.0)
-	gocr := ocircle.(*custom.StaticCircleNode)
+	gocr := ocircle.(*extras.StaticCircleNode)
 	gocr.SetColor(color.NewPaletteInt64(color.White))
 
 	// ---------------------------------------------------------
-	circle2, err := custom.NewStaticCircleNode("FilledCirle", true, world, g)
+	circle2, err := extras.NewStaticCircleNode("FilledCirle", true, world, g)
 	if err != nil {
 		return err
 	}
 	circle2.SetScale(100)
 	circle2.SetPosition(0.0, -150.0)
-	gcr2 := circle2.(*custom.StaticCircleNode)
+	gcr2 := circle2.(*extras.StaticCircleNode)
 	gcr2.SetColor(color.NewPaletteInt64(color.SoftGreen))
 
 	// ---------------------------------------------------------
-	g.zbar, err = custom.NewStaticZBarNode("FilledZBar", true, world, g)
+	g.zbar, err = extras.NewStaticZBarNode("FilledZBar", true, world, g)
 	if err != nil {
 		return err
 	}
 	g.zbar.SetScale(100)
 	g.zbar.SetPosition(300.0, 100.0)
-	gzr := g.zbar.(*custom.StaticZBarNode)
+	gzr := g.zbar.(*extras.StaticZBarNode)
 	gzr.SetColor(color.NewPaletteInt64(color.LightNavyBlue))
 
-	g.ozbar, err = custom.NewStaticZBarNode("OutlineZBar", false, world, g)
+	g.ozbar, err = extras.NewStaticZBarNode("OutlineZBar", false, world, g)
 	if err != nil {
 		return err
 	}
 	g.ozbar.SetScale(100)
 	g.ozbar.SetPosition(300.0, 100.0)
-	gzr = g.ozbar.(*custom.StaticZBarNode)
+	gzr = g.ozbar.(*extras.StaticZBarNode)
 	gzr.SetColor(color.NewPaletteInt64(color.White))
 
 	// ---------------------------------------------------------
-	point, err := custom.NewStaticPointNode("Point", world, g)
+	point, err := extras.NewStaticPointNode("Point", world, g)
 	if err != nil {
 		return err
 	}
 	point.SetScale(100)
 	point.SetPosition(100.0, -100.0)
-	gp := point.(*custom.StaticPointNode)
+	gp := point.(*extras.StaticPointNode)
 	gp.SetColor(color.NewPaletteInt64(color.Aqua))
 	gp.SetSize(10.0)
 

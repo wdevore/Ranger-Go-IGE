@@ -1,4 +1,4 @@
-package custom
+package extras
 
 import (
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -10,6 +10,7 @@ import (
 )
 
 // TODO replace with a interleved vertex/color atlas
+
 // StaticCheckerboardNode is a checkerboard
 type StaticCheckerboardNode struct {
 	nodes.Node

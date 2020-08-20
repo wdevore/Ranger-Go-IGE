@@ -5,8 +5,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -61,13 +61,13 @@ func (g *gameLayer) Build(world api.IWorld) error {
 func (g *gameLayer) addGround() error {
 	var err error
 
-	g.groundLineNode, err = custom.NewStaticHLineNode("Ground", g.World(), g)
+	g.groundLineNode, err = extras.NewStaticHLineNode("Ground", g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.groundLineNode.SetScale(100.0)
 	g.groundLineNode.SetPosition(0.0, -5.0)
-	gl2 := g.groundLineNode.(*custom.StaticHLineNode)
+	gl2 := g.groundLineNode.(*extras.StaticHLineNode)
 	gl2.SetColor(color.NewPaletteInt64(color.Yellow))
 
 	return nil
@@ -168,7 +168,7 @@ func buildGroundPhysics(g *gameLayer) {
 
 	g.b2GroundBody = g.b2World.CreateBody(&bDef)
 
-	tln := g.groundLineNode.(*custom.StaticHLineNode)
+	tln := g.groundLineNode.(*extras.StaticHLineNode)
 	halfLength := float64(tln.HalfLength())
 	groundShape := box2d.MakeB2EdgeShape()
 	groundShape.Set(

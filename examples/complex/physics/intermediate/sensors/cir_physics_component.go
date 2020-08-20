@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type cirPhysicsComponent struct {
@@ -45,7 +45,7 @@ func (p *cirPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 	// Every Fixture has a shape
 	circleShape := box2d.MakeB2CircleShape()
 	circleShape.M_p.Set(0.0, 0.0) // Relative to body position
-	tcc := p.phyNode.(*custom.StaticCircleNode)
+	tcc := p.phyNode.(*extras.StaticCircleNode)
 	radius := tcc.Radius()
 	circleShape.M_radius = float64(radius)
 
@@ -70,10 +70,10 @@ func (p *cirPhysicsComponent) ConfigureFilter(categoryBits, maskBits uint16) {
 
 // HandleBeginContact processes BeginContact events
 func (p *cirPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*custom.StaticCircleNode)
+	n, ok := nodeA.(*extras.StaticCircleNode)
 
 	if !ok {
-		n, ok = nodeB.(*custom.StaticCircleNode)
+		n, ok = nodeB.(*extras.StaticCircleNode)
 	}
 
 	if ok {
@@ -85,10 +85,10 @@ func (p *cirPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
 
 // HandleEndContact processes EndContact events
 func (p *cirPhysicsComponent) HandleEndContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*custom.StaticCircleNode)
+	n, ok := nodeA.(*extras.StaticCircleNode)
 
 	if !ok {
-		n, ok = nodeB.(*custom.StaticCircleNode)
+		n, ok = nodeB.(*extras.StaticCircleNode)
 	}
 
 	if ok {

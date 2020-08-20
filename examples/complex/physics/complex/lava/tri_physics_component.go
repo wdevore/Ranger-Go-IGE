@@ -7,7 +7,7 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/misc/particles"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 // Lava particle
@@ -39,7 +39,7 @@ func (p *triPhysicsComponent) Configure(
 
 	p.initialPosition = position
 
-	p.phyNode, err = custom.NewStaticTriangleNode(fmt.Sprintf("::Lava%d", id), true, true, parent.World(), parent)
+	p.phyNode, err = extras.NewStaticTriangleNode(fmt.Sprintf("::Lava%d", id), true, true, parent.World(), parent)
 	if err != nil {
 		panic(err)
 	}
@@ -47,7 +47,7 @@ func (p *triPhysicsComponent) Configure(
 
 	p.phyNode.SetScale(scale)
 	p.phyNode.SetPosition(position.X(), position.Y())
-	gp := p.phyNode.(*custom.StaticTriangleNode)
+	gp := p.phyNode.(*extras.StaticTriangleNode)
 	gp.SetColor(color)
 
 	p.Build(phyWorld, position)
@@ -68,7 +68,7 @@ func (p *triPhysicsComponent) Build(phyWorld *box2d.B2World, position api.IPoint
 	// An instance of a body to contain Fixtures
 	p.b2Body = phyWorld.CreateBody(&bDef)
 
-	tcc := p.phyNode.(*custom.StaticTriangleNode)
+	tcc := p.phyNode.(*extras.StaticTriangleNode)
 	// Box2D expects polygon edges to be defined at full length, not
 	// half-side
 	scale := tcc.SideLength()

@@ -6,8 +6,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -38,41 +38,41 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	dvr := world.Properties().Window.DeviceRes
 
 	// -------------------------------------------------------------
-	shline, err := custom.NewStaticHLineNode("HLine", world, g)
+	shline, err := extras.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
 		return err
 	}
 	shline.SetScale(float32(dvr.Width))
-	ghl := shline.(*custom.StaticHLineNode)
+	ghl := shline.(*extras.StaticHLineNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// -------------------------------------------------------------
-	svline, err := custom.NewStaticVLineNode("VLine", world, g)
+	svline, err := extras.NewStaticVLineNode("VLine", world, g)
 	if err != nil {
 		return err
 	}
 	svline.SetScale(float32(dvr.Width))
-	gvl2 := svline.(*custom.StaticVLineNode)
+	gvl2 := svline.(*extras.StaticVLineNode)
 	gvl2.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// -------------------------------------------------------------
-	g.sqr, err = custom.NewStaticSquareNode("FilledSqr", true, true, world, g)
+	g.sqr, err = extras.NewStaticSquareNode("FilledSqr", true, true, world, g)
 	if err != nil {
 		return err
 	}
 	g.sqr.SetScale(100)
 	g.sqr.SetPosition(100.0, 100.0)
-	gol2 := g.sqr.(*custom.StaticSquareNode)
+	gol2 := g.sqr.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	// -------------------------------------------------------------
-	g.dynoTxt, err = custom.NewDynamicTextNode("DynoTxt", 500, world, g)
+	g.dynoTxt, err = extras.NewDynamicTextNode("DynoTxt", 500, world, g)
 	if err != nil {
 		return err
 	}
 	g.dynoTxt.SetScale(2.0)
 	g.dynoTxt.SetPosition(-100.0, 100.0)
-	gd := g.dynoTxt.(*custom.DynamicPixelTextNode)
+	gd := g.dynoTxt.(*extras.DynamicPixelTextNode)
 	gd.SetText("Ranger is a Go!")
 	gd.SetColor(color.NewPaletteInt64(color.LightPink).Array())
 	gd.SetPixelSize(3.0)

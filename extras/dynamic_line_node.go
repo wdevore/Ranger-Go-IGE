@@ -1,4 +1,4 @@
-package custom
+package extras
 
 import (
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -8,19 +8,19 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
-// StaticHLineNode is a generic node
-type StaticHLineNode struct {
+// DynamicLineNode is a generic node
+type DynamicLineNode struct {
 	nodes.Node
 
-	color      []float32
-	halfLength float32
+	color []float32
 
-	shape api.IAtlasShape
+	shape        api.IAtlasShape
+	outlineShape api.IAtlasShape
 }
 
-// NewStaticHLineNode constructs a generic shape node
-func NewStaticHLineNode(name string, world api.IWorld, parent api.INode) (api.INode, error) {
-	o := new(StaticHLineNode)
+// NewDynamicLineNode constructs a dynamic line
+func NewDynamicLineNode(name string, world api.IWorld, parent api.INode) (api.INode, error) {
+	o := new(DynamicLineNode)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
@@ -33,11 +33,13 @@ func NewStaticHLineNode(name string, world api.IWorld, parent api.INode) (api.IN
 }
 
 // Build configures the node
-func (r *StaticHLineNode) Build(world api.IWorld) error {
+func (r *DynamicLineNode) Build(world api.IWorld) error {
 	r.Node.Build(world)
 
-	r.color = color.NewPaletteInt64(color.White).Array()
+	r.color = color.NewPaletteInt64(color.LightPurple).Array()
 
+	// The shape has been added to the atlas but is hasn't been
+	// populated with this node's backing info.
 	r.shape = world.Atlas().GenerateShape("HLine", gl.LINES)
 
 	// Populated shape
@@ -46,12 +48,10 @@ func (r *StaticHLineNode) Build(world api.IWorld) error {
 	return nil
 }
 
-func (r *StaticHLineNode) populate() {
-	r.halfLength = 0.5 // Or 1.0
-
+func (r *DynamicLineNode) populate() {
 	vertices := []float32{
-		-r.halfLength, 0.0, 0.0,
-		r.halfLength, 0.0, 0.0,
+		-0.5, 0.0, 0.0,
+		0.5, 0.0, 0.0,
 	}
 
 	r.shape.SetVertices(vertices)
@@ -62,26 +62,20 @@ func (r *StaticHLineNode) populate() {
 
 	r.shape.SetIndices(indices)
 
-	r.shape.SetElementCount(len(indices))
-}
-
-// HalfLength returns the scaled half length.
-func (r *StaticHLineNode) HalfLength() float32 {
-	return r.halfLength * r.Scale()
 }
 
 // SetColor sets line color
-func (r *StaticHLineNode) SetColor(color api.IPalette) {
+func (r *DynamicLineNode) SetColor(color api.IPalette) {
 	r.color = color.Array()
 }
 
 // SetAlpha sets the current color's alpha channel 0.0->1.0
-func (r *StaticHLineNode) SetAlpha(alpha float32) {
+func (r *DynamicLineNode) SetAlpha(alpha float32) {
 	r.color[3] = alpha
 }
 
 // Draw renders shape
-func (r *StaticHLineNode) Draw(model api.IMatrix4) {
+func (r *DynamicLineNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
 	renG.SetColor(r.color)
 	renG.Render(r.shape, model)

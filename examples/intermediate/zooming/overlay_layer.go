@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type overlayLayer struct {
@@ -29,21 +29,21 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	dvr := world.Properties().Window.DeviceRes
 
 	// ---------------------------------------------------------
-	shline, err := custom.NewStaticHLineNode("HLine", world, g)
+	shline, err := extras.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
 		return err
 	}
 	shline.SetScale(float32(dvr.Width))
-	ghl := shline.(*custom.StaticHLineNode)
+	ghl := shline.(*extras.StaticHLineNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// ---------------------------------------------------------
-	svline, err := custom.NewStaticVLineNode("VLine", world, g)
+	svline, err := extras.NewStaticVLineNode("VLine", world, g)
 	if err != nil {
 		return err
 	}
 	svline.SetScale(float32(dvr.Width))
-	gvl := svline.(*custom.StaticVLineNode)
+	gvl := svline.(*extras.StaticVLineNode)
 	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	return nil

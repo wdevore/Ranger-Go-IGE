@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type triPhysicsComponent struct {
@@ -33,7 +33,7 @@ func (p *triPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 	// An instance of a body to contain Fixtures
 	p.b2Body = phyWorld.CreateBody(&bDef)
 
-	tcc := p.phyNode.(*custom.StaticTriangleNode)
+	tcc := p.phyNode.(*extras.StaticTriangleNode)
 	// Box2D expects polygon edges to be defined at full length, not
 	// half-side
 	scale := tcc.SideLength()

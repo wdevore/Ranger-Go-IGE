@@ -5,8 +5,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -89,13 +89,13 @@ func (g *gameLayer) addOrangeSquare() error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(-20.0, 5.0)
-	g.orangeSqrNode, err = custom.NewStaticSquareNode("OrangeSquare", true, true, g.World(), g)
+	g.orangeSqrNode, err = extras.NewStaticSquareNode("OrangeSquare", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.orangeSqrNode.SetScale(3.0)
 	g.orangeSqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
-	gol2 := g.orangeSqrNode.(*custom.StaticSquareNode)
+	gol2 := g.orangeSqrNode.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	g.orangeSqrPhyComp = newBoxPhysicsComponent()
@@ -108,13 +108,13 @@ func (g *gameLayer) addBlueSquare() error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(-10.0, 5.0)
-	g.blueSqrNode, err = custom.NewStaticSquareNode("BlueSquare", true, true, g.World(), g)
+	g.blueSqrNode, err = extras.NewStaticSquareNode("BlueSquare", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.blueSqrNode.SetScale(3.0)
 	g.blueSqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
-	gol2 := g.blueSqrNode.(*custom.StaticSquareNode)
+	gol2 := g.blueSqrNode.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightNavyBlue))
 
 	g.blueSqrPhyComp = newBoxPhysicsComponent()
@@ -127,13 +127,13 @@ func (g *gameLayer) addLimeSquare() error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(0.0, 5.0)
-	g.limeSqrNode, err = custom.NewStaticSquareNode("LimeSquare", true, true, g.World(), g)
+	g.limeSqrNode, err = extras.NewStaticSquareNode("LimeSquare", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.limeSqrNode.SetScale(3.0)
 	g.limeSqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
-	gol2 := g.limeSqrNode.(*custom.StaticSquareNode)
+	gol2 := g.limeSqrNode.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.Lime))
 
 	g.limeSqrPhyComp = newBoxPhysicsComponent()
@@ -146,13 +146,13 @@ func (g *gameLayer) addPurpleSquare() error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(10.0, 5.0)
-	g.purpleSqrNode, err = custom.NewStaticSquareNode("PurpleSquare", true, true, g.World(), g)
+	g.purpleSqrNode, err = extras.NewStaticSquareNode("PurpleSquare", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.purpleSqrNode.SetScale(3.0)
 	g.purpleSqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
-	gol2 := g.purpleSqrNode.(*custom.StaticSquareNode)
+	gol2 := g.purpleSqrNode.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightPurple))
 
 	g.purpleSqrPhyComp = newBoxPhysicsComponent()
@@ -166,13 +166,13 @@ func (g *gameLayer) addYellowSquare() error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(20.0, 5.0)
-	g.yellowSqrNode, err = custom.NewStaticSquareNode("YellowSquare", true, true, g.World(), g)
+	g.yellowSqrNode, err = extras.NewStaticSquareNode("YellowSquare", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.yellowSqrNode.SetScale(3.0)
 	g.yellowSqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
-	gol2 := g.yellowSqrNode.(*custom.StaticSquareNode)
+	gol2 := g.yellowSqrNode.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.Yellow))
 
 	g.yellowSqrPhyComp = newBoxPhysicsComponent()

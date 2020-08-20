@@ -5,8 +5,8 @@ import (
 	"github.com/tanema/gween/ease"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/misc"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 // ZoneCircle is a basic vector circle shape.
@@ -55,20 +55,20 @@ func (z *ZoneCircle) Build(innerRadius, outerRadius float32, position api.IPoint
 	z.enteredColor = color.NewPaletteInt64(color.LightPurple)
 
 	var err error
-	z.innerCircle, err = custom.NewStaticCircleNode("InnerCircle", false, world, parent)
+	z.innerCircle, err = extras.NewStaticCircleNode("InnerCircle", false, world, parent)
 	if err != nil {
 		panic(err)
 	}
 	z.innerCircle.SetVisible(false)
-	gol2 := z.innerCircle.(*custom.StaticCircleNode)
+	gol2 := z.innerCircle.(*extras.StaticCircleNode)
 	gol2.SetColor(z.innerColor)
 
-	z.outerCircle, err = custom.NewStaticCircleNode("OuterCircle", false, world, parent)
+	z.outerCircle, err = extras.NewStaticCircleNode("OuterCircle", false, world, parent)
 	if err != nil {
 		panic(err)
 	}
 	z.outerCircle.SetVisible(false)
-	gol2 = z.outerCircle.(*custom.StaticCircleNode)
+	gol2 = z.outerCircle.(*extras.StaticCircleNode)
 	gol2.SetColor(z.outerColor)
 
 	z.zone = misc.NewCircleZone()
@@ -121,10 +121,10 @@ func (z *ZoneCircle) SetRadi(innerRadius, outerRadius float32) {
 	zo := z.zone.(*misc.CircleZone)
 	zo.SetRadi(float64(innerRadius/2), float64(outerRadius/2))
 
-	cr := z.innerCircle.(*custom.StaticCircleNode)
+	cr := z.innerCircle.(*extras.StaticCircleNode)
 	cr.SetScale(innerRadius)
 
-	cr = z.outerCircle.(*custom.StaticCircleNode)
+	cr = z.outerCircle.(*extras.StaticCircleNode)
 	cr.SetScale(outerRadius)
 }
 

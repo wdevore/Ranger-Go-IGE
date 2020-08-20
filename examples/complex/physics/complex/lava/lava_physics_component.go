@@ -8,8 +8,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/misc/particles"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 // A Mountain polygon and collection of triangles
@@ -108,7 +108,7 @@ func (p *lavaPhysicsComponent) buildMountain(
 	b2ChainShape := box2d.MakeB2ChainShape()
 
 	vertices := []box2d.B2Vec2{}
-	gla := p.phyNode.(*custom.StaticPolygonNode)
+	gla := p.phyNode.(*extras.StaticPolygonNode)
 	verts := gla.Vertices()
 
 	for i := 0; i < len(*verts); i += api.XYZComponentCount {
@@ -134,13 +134,13 @@ func (p *lavaPhysicsComponent) buildPolygon(world api.IWorld, parent api.INode, 
 	var err error
 
 	// --------------------------------------------------------------
-	p.phyNode, err = custom.NewStaticPolygonNode("Mountain", true, world, parent)
+	p.phyNode, err = extras.NewStaticPolygonNode("Mountain", true, world, parent)
 	if err != nil {
 		return err
 	}
 	p.phyNode.SetScale(scale)
 	p.phyNode.SetPosition(p.position.X(), p.position.Y())
-	gpol := p.phyNode.(*custom.StaticPolygonNode)
+	gpol := p.phyNode.(*extras.StaticPolygonNode)
 	gpol.SetColor(color.NewPaletteInt64(color.Brick))
 
 	vertices := []float32{

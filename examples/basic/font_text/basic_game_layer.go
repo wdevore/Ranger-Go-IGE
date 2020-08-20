@@ -4,8 +4,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -64,7 +64,7 @@ func (g *gameLayer) addFont(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.textureNode, err = custom.NewBitmapFont9x9Node("Ranger", "Font9x9", textureMan, world, g)
+	g.textureNode, err = extras.NewBitmapFont9x9Node("Ranger", "Font9x9", textureMan, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ func (g *gameLayer) addFont(world api.IWorld) {
 	g.textureNode.SetPosition(20.0, 20.0)
 	g.textureNode.SetRotation(45.0 * maths.DegreeToRadians)
 
-	tn := g.textureNode.(*custom.BitmapFont9x9Node)
+	tn := g.textureNode.(*extras.BitmapFont9x9Node)
 	tn.SetText("Ranger is a Go!")
 	tn.SetColor(color.NewPaletteInt64(color.LightPink).Array())
 	tn.Populate()
@@ -82,7 +82,7 @@ func (g *gameLayer) addDynText(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.textureNodeAlpha, err = custom.NewDynamicTextureNode("Font9x9", api.Texture2RenderGraphic, 0, textureMan, world, g)
+	g.textureNodeAlpha, err = extras.NewDynamicTextureNode("Font9x9", api.Texture2RenderGraphic, 0, textureMan, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -95,21 +95,21 @@ func (g *gameLayer) addDynText(world api.IWorld) {
 		indexes = append(indexes, i)
 	}
 
-	tn := g.textureNodeAlpha.(*custom.DynamicTextureNode)
+	tn := g.textureNodeAlpha.(*extras.DynamicTextureNode)
 	tn.SetIndexes(indexes)
 	c := color.NewPaletteInt64(color.PanSkin)
 	c.SetAlpha(0.5)
 	tn.SetColor(c.Array())
 	tn.Populate(0)
 
-	textureNode, err := custom.NewBitmapFont9x9Node("StarCastle", "Font9x9", textureMan, world, g)
+	textureNode, err := extras.NewBitmapFont9x9Node("StarCastle", "Font9x9", textureMan, world, g)
 	if err != nil {
 		panic(err)
 	}
 	textureNode.SetScale(25)
 	textureNode.SetPosition(0.0, -50.0)
 
-	tn2 := textureNode.(*custom.BitmapFont9x9Node)
+	tn2 := textureNode.(*extras.BitmapFont9x9Node)
 	tn2.SetText("Star Castle")
 	tn2.Populate()
 }
@@ -118,7 +118,7 @@ func (g *gameLayer) addShip(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.shipNode, err = custom.NewDynamicTextureNode("StarShip", api.TextureRenderGraphic, 0, textureMan, world, g)
+	g.shipNode, err = extras.NewDynamicTextureNode("StarShip", api.TextureRenderGraphic, 0, textureMan, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -129,7 +129,7 @@ func (g *gameLayer) addShip(world api.IWorld) {
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35,
 	}
 
-	tn := g.shipNode.(*custom.DynamicTextureNode)
+	tn := g.shipNode.(*extras.DynamicTextureNode)
 	tn.SetIndexes(indexes)
 	tn.SetColor(color.NewPaletteInt64(color.Transparent).Array())
 	tn.Populate(1)
@@ -189,11 +189,11 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 
 func (g *gameLayer) incTextureID() {
 	g.textureIdx = (g.textureIdx + 1) % 35
-	tn := g.shipNode.(*custom.DynamicTextureNode)
+	tn := g.shipNode.(*extras.DynamicTextureNode)
 	tn.SelectCoordsByIndex(g.textureIdx)
 
 	// g.textureIdx = (g.textureIdx + 1) % 94
-	// tn := g.textureNodeAlpha.(*custom.DynamicTextureNode)
+	// tn := g.textureNodeAlpha.(*extras.DynamicTextureNode)
 	// tn.SelectCoordsByIndex(g.textureIdx)
 }
 
@@ -203,13 +203,13 @@ func (g *gameLayer) decTextureID() {
 		g.textureIdx = 35 - 1
 	}
 
-	tn := g.shipNode.(*custom.DynamicTextureNode)
+	tn := g.shipNode.(*extras.DynamicTextureNode)
 	tn.SelectCoordsByIndex(g.textureIdx)
 
 	// g.textureIdx = (g.textureIdx - 1) % 94
 	// if g.textureIdx < 0 {
 	// 	g.textureIdx = 94 - 1
 	// }
-	// tn := g.textureNodeAlpha.(*custom.DynamicTextureNode)
+	// tn := g.textureNodeAlpha.(*extras.DynamicTextureNode)
 	// tn.SelectCoordsByIndex(g.textureIdx)
 }

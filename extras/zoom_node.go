@@ -1,4 +1,4 @@
-package custom
+package extras
 
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"

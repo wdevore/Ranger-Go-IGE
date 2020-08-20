@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type landPhysicsComponent struct {
@@ -46,7 +46,7 @@ func (p *landPhysicsComponent) Build(phyWorld *box2d.B2World, parent api.INode, 
 	b2ChainShape := box2d.MakeB2ChainShape()
 
 	vertices := []box2d.B2Vec2{}
-	gla := p.phyNode.(*custom.StaticLineStripNode)
+	gla := p.phyNode.(*extras.StaticLineStripNode)
 	verts := gla.Vertices()
 	scale := p.phyNode.Scale()
 
@@ -74,13 +74,13 @@ func (p *landPhysicsComponent) buildPolygon(world api.IWorld, parent api.INode) 
 	var err error
 
 	// --------------------------------------------------------------
-	p.phyNode, err = custom.NewStaticLineStripNode("Land", world, parent)
+	p.phyNode, err = extras.NewStaticLineStripNode("Land", world, parent)
 	if err != nil {
 		return err
 	}
 	p.phyNode.SetScale(2.0)
 	p.phyNode.SetPosition(p.position.X(), p.position.Y())
-	gpol := p.phyNode.(*custom.StaticLineStripNode)
+	gpol := p.phyNode.(*extras.StaticLineStripNode)
 	gpol.SetColor(color.NewPaletteInt64(color.White))
 
 	vertices := []float32{

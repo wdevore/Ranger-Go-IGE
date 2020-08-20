@@ -5,8 +5,8 @@ import (
 	"github.com/tanema/gween/ease"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -35,13 +35,13 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	var err error
 
 	// ---------------------------------------------------------
-	g.square, err = custom.NewStaticSquareNode("FilledSqr", true, true, world, g)
+	g.square, err = extras.NewStaticSquareNode("FilledSqr", true, true, world, g)
 	if err != nil {
 		return err
 	}
 	g.square.SetScale(100.0)
 	g.square.SetPosition(100.0, 100.0)
-	gol2 := g.square.(*custom.StaticSquareNode)
+	gol2 := g.square.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	// 5s = 5000ms

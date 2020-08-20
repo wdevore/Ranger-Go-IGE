@@ -10,8 +10,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/display"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 const (
@@ -85,7 +85,7 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 
 	// ---------------------------------------------------------
 	if o.world.Properties().Engine.ShowTimingInfo {
-		o.postNode, err = custom.NewDynamicTextNode("TimingInfo", 500, o.world, nil)
+		o.postNode, err = extras.NewDynamicTextNode("TimingInfo", 500, o.world, nil)
 		if err != nil {
 			return nil, err
 		}

@@ -7,8 +7,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -44,21 +44,21 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	var err error
 
 	// ---------------------------------------------------------
-	shline, err := custom.NewStaticHLineNode("HLine", world, g)
+	shline, err := extras.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
 		return err
 	}
 	shline.SetScale(float32(dvr.Width))
-	ghl := shline.(*custom.StaticHLineNode)
+	ghl := shline.(*extras.StaticHLineNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// ---------------------------------------------------------
-	svline, err := custom.NewStaticVLineNode("VLine", world, g)
+	svline, err := extras.NewStaticVLineNode("VLine", world, g)
 	if err != nil {
 		return err
 	}
 	svline.SetScale(float32(dvr.Width))
-	gvl := svline.(*custom.StaticVLineNode)
+	gvl := svline.(*extras.StaticVLineNode)
 	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// ---------------------------------------------------------
@@ -74,24 +74,24 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	gb.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	// ---------------------------------------------------------
-	g.mousePosTxt, err = custom.NewDynamicTextNode("MousePos", 500, world, g)
+	g.mousePosTxt, err = extras.NewDynamicTextNode("MousePos", 500, world, g)
 	if err != nil {
 		return err
 	}
 	g.mousePosTxt.SetScale(2.0)
 	g.mousePosTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.mousePosTxt.(*custom.DynamicPixelTextNode)
+	gd := g.mousePosTxt.(*extras.DynamicPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.White).Array())
 	gd.SetPixelSize(1.0)
 
-	g.localRecPosTxt, err = custom.NewDynamicTextNode("LocPos", 500, world, g)
+	g.localRecPosTxt, err = extras.NewDynamicTextNode("LocPos", 500, world, g)
 	if err != nil {
 		return err
 	}
 	g.localRecPosTxt.SetScale(2.0)
 	g.localRecPosTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-60.0))
-	gd = g.localRecPosTxt.(*custom.DynamicPixelTextNode)
+	gd = g.localRecPosTxt.(*extras.DynamicPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.GoldYellow).Array())
 	gd.SetPixelSize(1.0)
@@ -109,13 +109,13 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	}
 
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.mousePosTxt.(*custom.DynamicPixelTextNode)
+	gd := g.mousePosTxt.(*extras.DynamicPixelTextNode)
 	gd.SetText(text)
 
 	glp := g.sqr.(*customRectangleNode)
 	lp := glp.LocalPosition()
 	text = fmt.Sprintf("(%7.3f, %7.3f)", lp.X(), lp.Y())
-	gd = g.localRecPosTxt.(*custom.DynamicPixelTextNode)
+	gd = g.localRecPosTxt.(*extras.DynamicPixelTextNode)
 	gd.SetText(text)
 }
 

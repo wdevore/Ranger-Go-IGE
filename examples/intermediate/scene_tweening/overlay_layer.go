@@ -6,8 +6,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type overlayLayer struct {
@@ -33,33 +33,33 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 	dvr := world.Properties().Window.DeviceRes
 
 	// ---------------------------------------------------------
-	g.viewLocTxt, err = custom.NewDynamicTextNode("Text", 500, world, g)
+	g.viewLocTxt, err = extras.NewDynamicTextNode("Text", 500, world, g)
 	if err != nil {
 		return err
 	}
 	g.viewLocTxt.SetScale(2.0)
 	g.viewLocTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.viewLocTxt.(*custom.DynamicPixelTextNode)
+	gd := g.viewLocTxt.(*extras.DynamicPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.White).Array())
 	gd.SetPixelSize(1.0)
 
 	// ---------------------------------------------------------
-	shline, err := custom.NewStaticHLineNode("HLine", world, g)
+	shline, err := extras.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
 		return err
 	}
 	shline.SetScale(float32(dvr.Width))
-	ghl := shline.(*custom.StaticHLineNode)
+	ghl := shline.(*extras.StaticHLineNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// ---------------------------------------------------------
-	svline, err := custom.NewStaticVLineNode("VLine", world, g)
+	svline, err := extras.NewStaticVLineNode("VLine", world, g)
 	if err != nil {
 		return err
 	}
 	svline.SetScale(float32(dvr.Width))
-	gvl := svline.(*custom.StaticVLineNode)
+	gvl := svline.(*extras.StaticVLineNode)
 	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	g.viewPoint = geometry.NewPoint()
@@ -70,7 +70,7 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 // Update updates the time properties of a node.
 func (g *overlayLayer) Update(msPerUpdate, secPerUpdate float64) {
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.viewLocTxt.(*custom.DynamicPixelTextNode)
+	gd := g.viewLocTxt.(*extras.DynamicPixelTextNode)
 	gd.SetText(text)
 }
 

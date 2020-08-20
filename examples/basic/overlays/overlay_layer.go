@@ -4,8 +4,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type overlayLayer struct {
@@ -29,11 +29,11 @@ func (g *overlayLayer) Build(world api.IWorld) error {
 
 	var err error
 
-	g.text, err = custom.NewDynamicTextNode("Text", 500, world, g)
+	g.text, err = extras.NewDynamicTextNode("Text", 500, world, g)
 	if err != nil {
 		return err
 	}
-	gt := g.text.(*custom.DynamicPixelTextNode)
+	gt := g.text.(*extras.DynamicPixelTextNode)
 	g.text.SetScale(1.25)
 	gt.SetText("Ranger")
 	gt.SetPixelSize(10.0)

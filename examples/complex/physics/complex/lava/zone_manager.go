@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 // zoneManager handles zones
@@ -32,11 +32,11 @@ func newZoneManager(parent api.INode) *zoneManager {
 func (z *zoneManager) Build(world api.IWorld) {
 	var err error
 
-	z.zoom, err = custom.NewZoomNode("ZoomNode", world, z.parent)
+	z.zoom, err = extras.NewZoomNode("ZoomNode", world, z.parent)
 	if err != nil {
 		panic(err)
 	}
-	gz := z.zoom.(*custom.ZoomNode)
+	gz := z.zoom.(*extras.ZoomNode)
 	gz.SetStepSize(0.05)
 
 	zone := NewZoneCircle("RightCircleZone", objectRightZone, z)
@@ -76,7 +76,7 @@ func (z *zoneManager) UpdateCheck(point api.IPoint, msPerUpdate float64) {
 		if z.enteredZoneID == zone.ID() {
 			z.zoomScale, isFinished = zone.TweenUpdate(msPerUpdate)
 			if !isFinished {
-				gz := z.zoom.(*custom.ZoomNode)
+				gz := z.zoom.(*extras.ZoomNode)
 				gz.ScaleTo(float32(z.zoomScale))
 			}
 		}
@@ -92,7 +92,7 @@ func (z *zoneManager) SetAnimationActive(active bool) {
 }
 
 func (z *zoneManager) ZoomScale() float32 {
-	gz := z.zoom.(*custom.ZoomNode)
+	gz := z.zoom.(*extras.ZoomNode)
 
 	return gz.ZoomScale()
 }
@@ -114,7 +114,7 @@ func (z *zoneManager) Notify(state, id int) {
 	// Find zone that matches "id"
 	for _, zone := range z.zones {
 		if z.enteredZoneID == zone.ID() {
-			gz := z.zoom.(*custom.ZoomNode)
+			gz := z.zoom.(*extras.ZoomNode)
 			gz.SetFocalPoint(zone.Position().X(), zone.Position().Y())
 			break
 		}

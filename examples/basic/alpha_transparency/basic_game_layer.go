@@ -4,8 +4,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -34,63 +34,63 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	var err error
 
 	// ---------------------------------------------------------
-	shline, err := custom.NewStaticHLineNode("HLine", world, g)
+	shline, err := extras.NewStaticHLineNode("HLine", world, g)
 	if err != nil {
 		return err
 	}
 	shline.SetScale(float32(dvr.Width))
-	ghl := shline.(*custom.StaticHLineNode)
+	ghl := shline.(*extras.StaticHLineNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// ---------------------------------------------------------
-	svline, err := custom.NewStaticVLineNode("VLine", world, g)
+	svline, err := extras.NewStaticVLineNode("VLine", world, g)
 	if err != nil {
 		return err
 	}
 	svline.SetScale(float32(dvr.Width))
-	gvl := svline.(*custom.StaticVLineNode)
+	gvl := svline.(*extras.StaticVLineNode)
 	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// ---------------------------------------------------------
-	square, err := custom.NewStaticSquareNode("FilledSqr", true, true, world, g)
+	square, err := extras.NewStaticSquareNode("FilledSqr", true, true, world, g)
 	if err != nil {
 		return err
 	}
 	square.SetScale(100.0)
 	square.SetPosition(90.0, 80.0)
-	gsq := square.(*custom.StaticSquareNode)
+	gsq := square.(*extras.StaticSquareNode)
 	gsq.SetColor(color.NewPaletteInt64(color.White))
 
 	// ---------------------------------------------------------
-	circle, err := custom.NewStaticCircleNode("FilledCirle", true, world, g)
+	circle, err := extras.NewStaticCircleNode("FilledCirle", true, world, g)
 	if err != nil {
 		return err
 	}
 
 	circle.SetScale(100.0)
 	circle.SetPosition(30.0, 80.0)
-	gc := circle.(*custom.StaticCircleNode)
+	gc := circle.(*extras.StaticCircleNode)
 	gc.SetColor(color.NewPaletteInt64(color.GoldYellow))
 	gc.SetAlpha(0.5)
 
 	// ---------------------------------------------------------
-	tri, err := custom.NewStaticTriangleNode("FilledTri", true, true, world, g)
+	tri, err := extras.NewStaticTriangleNode("FilledTri", true, true, world, g)
 	if err != nil {
 		return err
 	}
 	tri.SetScale(100.0)
 	tri.SetPosition(55.0, 45.0)
-	gt := tri.(*custom.StaticTriangleNode)
+	gt := tri.(*extras.StaticTriangleNode)
 	gt.SetColor(color.NewPaletteInt64WithAlpha(color.Pink, 0.5))
 
 	// ---------------------------------------------------------
-	g.zbar, err = custom.NewStaticZBarNode("FilledZBar", true, world, g)
+	g.zbar, err = extras.NewStaticZBarNode("FilledZBar", true, world, g)
 	if err != nil {
 		return err
 	}
 	g.zbar.SetScale(100)
 	g.zbar.SetPosition(100.0, 150.0)
-	gzr := g.zbar.(*custom.StaticZBarNode)
+	gzr := g.zbar.(*extras.StaticZBarNode)
 	gzr.SetColor(color.NewPaletteInt64WithAlpha(color.DarkBlue, 0.75))
 
 	return nil

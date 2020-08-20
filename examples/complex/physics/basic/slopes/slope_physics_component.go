@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type slopePhysicsComponent struct {
@@ -46,7 +46,7 @@ func (p *slopePhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position a
 
 	fd := box2d.MakeB2FixtureDef()
 
-	tln := p.slope.(*custom.StaticHLineNode)
+	tln := p.slope.(*extras.StaticHLineNode)
 	halfLength := float64(tln.HalfLength())
 
 	// ------------------------------------------------------------
@@ -66,14 +66,14 @@ func (p *slopePhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position a
 func (p *slopePhysicsComponent) buildNodes(world api.IWorld, parent api.INode, position api.IPoint, rotation float64) error {
 	var err error
 
-	p.slope, err = custom.NewStaticHLineNode("Bottom", world, parent)
+	p.slope, err = extras.NewStaticHLineNode("Bottom", world, parent)
 	if err != nil {
 		return err
 	}
 	p.slope.SetScale(25.0)
 	p.slope.SetPosition(position.X(), position.Y())
 	p.slope.SetRotation(rotation)
-	glh := p.slope.(*custom.StaticHLineNode)
+	glh := p.slope.(*extras.StaticHLineNode)
 	glh.SetColor(color.NewPaletteInt64(color.Yellow))
 
 	return nil

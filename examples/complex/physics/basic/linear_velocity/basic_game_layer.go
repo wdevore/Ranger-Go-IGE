@@ -5,8 +5,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -70,13 +70,13 @@ func (g *gameLayer) addSquare() error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(0.0, 5.0)
-	g.fallingSqrNode, err = custom.NewStaticSquareNode("Square", true, true, g.World(), g)
+	g.fallingSqrNode, err = extras.NewStaticSquareNode("Square", true, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.fallingSqrNode.SetScale(3.0)
 	g.fallingSqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
-	gol2 := g.fallingSqrNode.(*custom.StaticSquareNode)
+	gol2 := g.fallingSqrNode.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.Aqua))
 
 	g.sqrPhyComp = newBoxPhysicsComponent()

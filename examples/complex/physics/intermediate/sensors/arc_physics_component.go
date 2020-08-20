@@ -4,8 +4,8 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type arcPhysicsComponent struct {
@@ -46,7 +46,7 @@ func (p *arcPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 
 	p.b2Body.SetAngularVelocity(45.0 * maths.DegreeToRadians)
 
-	tcc := p.phyNode.(*custom.StaticArcNode)
+	tcc := p.phyNode.(*extras.StaticArcNode)
 	scale := p.phyNode.Scale()
 	verts := tcc.Vertices()
 
@@ -85,10 +85,10 @@ func (p *arcPhysicsComponent) ConfigureFilter(categoryBits, maskBits uint16) {
 
 // HandleBeginContact processes BeginContact events
 func (p *arcPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*custom.StaticArcNode)
+	n, ok := nodeA.(*extras.StaticArcNode)
 
 	if !ok {
-		n, ok = nodeB.(*custom.StaticArcNode)
+		n, ok = nodeB.(*extras.StaticArcNode)
 	}
 
 	if ok {
@@ -100,10 +100,10 @@ func (p *arcPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
 
 // HandleEndContact processes EndContact events
 func (p *arcPhysicsComponent) HandleEndContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*custom.StaticArcNode)
+	n, ok := nodeA.(*extras.StaticArcNode)
 
 	if !ok {
-		n, ok = nodeB.(*custom.StaticArcNode)
+		n, ok = nodeB.(*extras.StaticArcNode)
 	}
 
 	if ok {

@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type boxPhysicsComponent struct {
@@ -65,7 +65,7 @@ func (p *boxPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 	// Box2D assumes the same is defined in unit-space which
 	// means if the object is defined otherwise we need the object
 	// to return the correct value
-	tcc := p.phyNode.(*custom.StaticSquareNode)
+	tcc := p.phyNode.(*extras.StaticSquareNode)
 	b2Shape.SetAsBoxFromCenterAndAngle(
 		float64(tcc.HalfSide()), float64(tcc.HalfSide()),
 		box2d.B2Vec2{X: 0.0, Y: 0.0}, 0.0)

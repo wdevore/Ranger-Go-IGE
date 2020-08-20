@@ -7,8 +7,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 // StarShipComponent is a triangle physics object
@@ -68,12 +68,12 @@ func NewStarShipComponent(name string, parent api.INode) *StarShipComponent {
 
 	var err error
 
-	o.hullVisual, err = custom.NewStaticCircleNode("MainHull", true, parent.World(), parent)
+	o.hullVisual, err = extras.NewStaticCircleNode("MainHull", true, parent.World(), parent)
 	if err != nil {
 		panic(err)
 	}
 	o.hullVisual.SetPosition(0.0, 0.0)
-	gol2 := o.hullVisual.(*custom.StaticCircleNode)
+	gol2 := o.hullVisual.(*extras.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	o.torqueEnabled = true
@@ -86,24 +86,24 @@ func NewStarShipComponent(name string, parent api.INode) *StarShipComponent {
 	// scenegraph handle the relationship, however that would be incorrect
 	// because Box2D will handle the relationship via Joints. So visually it appears
 	// as if the nacels are children of the hull but technically they are not.
-	o.rightNacelVisual, err = custom.NewStaticRectangleNode(
+	o.rightNacelVisual, err = extras.NewStaticRectangleNode(
 		-0.125, -float32(o.nacelLongLength/2.0), 0.125, float32(o.nacelLongLength/2.0), "RightNacel", true, parent.World(), parent)
 	if err != nil {
 		panic(err)
 	}
 	o.rightNacelVisual.SetScale(o.nacelScale)
 	o.rightNacelVisual.SetPosition(0.0, 0.0)
-	grc := o.rightNacelVisual.(*custom.StaticRectangleNode)
+	grc := o.rightNacelVisual.(*extras.StaticRectangleNode)
 	grc.SetColor(color.NewPaletteInt64(color.LightNavyBlue))
 
-	o.leftNacelVisual, err = custom.NewStaticRectangleNode(
+	o.leftNacelVisual, err = extras.NewStaticRectangleNode(
 		-0.125, -float32(o.nacelLongLength/2.0), 0.125, float32(o.nacelLongLength/2.0), "LeftNacel", true, parent.World(), parent)
 	if err != nil {
 		panic(err)
 	}
 	o.leftNacelVisual.SetScale(o.nacelScale)
 	o.leftNacelVisual.SetPosition(0.0, 0.0)
-	glc := o.leftNacelVisual.(*custom.StaticRectangleNode)
+	glc := o.leftNacelVisual.(*extras.StaticRectangleNode)
 	glc.SetColor(color.NewPaletteInt64(color.Lime))
 
 	return o
@@ -285,7 +285,7 @@ func buildMainHull(s *StarShipComponent, b2World *box2d.B2World) {
 
 	// Every Fixture has a shape
 	b2Shape := box2d.MakeB2CircleShape()
-	tcc := s.hullVisual.(*custom.StaticCircleNode)
+	tcc := s.hullVisual.(*extras.StaticCircleNode)
 	radius := tcc.Radius()
 	b2Shape.SetRadius(float64(radius))
 
@@ -308,7 +308,7 @@ func buildRightNacel(s *StarShipComponent, b2World *box2d.B2World) {
 
 	s.b2BodyRightNacel = b2World.CreateBody(&bDef)
 
-	sr := s.rightNacelVisual.(*custom.StaticRectangleNode)
+	sr := s.rightNacelVisual.(*extras.StaticRectangleNode)
 	scale := s.rightNacelVisual.Scale()
 
 	// Every Fixture has a shape
@@ -385,7 +385,7 @@ func buildLeftNacel(s *StarShipComponent, b2World *box2d.B2World) {
 
 	s.b2BodyLeftNacel = b2World.CreateBody(&bDef)
 
-	sr := s.leftNacelVisual.(*custom.StaticRectangleNode)
+	sr := s.leftNacelVisual.(*extras.StaticRectangleNode)
 	scale := s.leftNacelVisual.Scale()
 
 	// Every Fixture has a shape

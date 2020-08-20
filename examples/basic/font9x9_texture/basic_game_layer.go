@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 type gameLayer struct {
@@ -40,7 +40,7 @@ func (g *gameLayer) addFont(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.textureNode, err = custom.NewDynamicTextureNode("Font9x9", api.TextureRenderGraphic, 0, textureMan, world, g)
+	g.textureNode, err = extras.NewDynamicTextureNode("Font9x9", api.TextureRenderGraphic, 0, textureMan, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,7 @@ func (g *gameLayer) addFont(world api.IWorld) {
 		indexes = append(indexes, i)
 	}
 
-	tn := g.textureNode.(*custom.DynamicTextureNode)
+	tn := g.textureNode.(*extras.DynamicTextureNode)
 	tn.SetIndexes(indexes)
 	tn.Populate(0)
 
@@ -85,10 +85,10 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 		if event.GetState() == 1 || event.GetState() == 2 {
 			switch event.GetKeyScan() {
 			case 68: // d
-				tn := g.textureNode.(*custom.DynamicTextureNode)
+				tn := g.textureNode.(*extras.DynamicTextureNode)
 				tn.SelectCoordsByIndex(1)
 			case 70: // f
-				tn := g.textureNode.(*custom.DynamicTextureNode)
+				tn := g.textureNode.(*extras.DynamicTextureNode)
 				tn.SelectCoordsByIndex(0)
 			case 90: // z
 			case 65: // a
@@ -99,11 +99,11 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 				if g.textureIdx < 0 {
 					g.textureIdx = 94 - 1
 				}
-				tn := g.textureNode.(*custom.DynamicTextureNode)
+				tn := g.textureNode.(*extras.DynamicTextureNode)
 				tn.SelectCoordsByIndex(g.textureIdx)
 			case 262: // Right
 				g.textureIdx = (g.textureIdx + 1) % 94
-				tn := g.textureNode.(*custom.DynamicTextureNode)
+				tn := g.textureNode.(*extras.DynamicTextureNode)
 				tn.SelectCoordsByIndex(g.textureIdx)
 			}
 			// fmt.Println(g.textureIdx)

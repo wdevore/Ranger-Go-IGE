@@ -6,8 +6,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 const (
@@ -176,13 +176,13 @@ func (g *gameLayer) addSquare(parent api.INode) error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(25.0, -10.0)
-	g.sqrNode, err = custom.NewStaticSquareNode("Square", true, true, g.World(), parent)
+	g.sqrNode, err = extras.NewStaticSquareNode("Square", true, true, g.World(), parent)
 	if err != nil {
 		return err
 	}
 	g.sqrNode.SetScale(3.0)
 	g.sqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
-	gol2 := g.sqrNode.(*custom.StaticSquareNode)
+	gol2 := g.sqrNode.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.GoldYellow))
 
 	g.sqrPhyComp = newBoxPhysicsComponent()
@@ -209,7 +209,7 @@ func (g *gameLayer) addRay(parent api.INode) error {
 func (g *gameLayer) addScrollRing(parent api.INode, ring *geometry.Circle) error {
 	var err error
 
-	g.scrollRingNode, err = custom.NewStaticCircleNode("ScrollRing", false, g.World(), g)
+	g.scrollRingNode, err = extras.NewStaticCircleNode("ScrollRing", false, g.World(), g)
 	if err != nil {
 		return err
 	}
@@ -217,7 +217,7 @@ func (g *gameLayer) addScrollRing(parent api.INode, ring *geometry.Circle) error
 	g.scrollRingNode.SetVisible(false)
 	pos := geometry.NewPointUsing(0.0, 0.0)
 	g.scrollRingNode.SetPosition(pos.X(), pos.Y())
-	gol2 := g.scrollRingNode.(*custom.StaticCircleNode)
+	gol2 := g.scrollRingNode.(*extras.StaticCircleNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	return nil
@@ -269,7 +269,7 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	// fmt.Println(fmt.Sprintf("Range(%2.3f) %s, %v", dRange, shipPos, _nodePoint))
 
 	if dRange > 0 {
-		gc := g.scrollRingNode.(*custom.StaticCircleNode)
+		gc := g.scrollRingNode.(*extras.StaticCircleNode)
 		gc.SetColor(color.NewPaletteInt64(color.Aqua))
 
 		ray := maths.NewVectorUsing(_nodePoint.X(), _nodePoint.Y())
@@ -277,11 +277,11 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 		ray.Scale(-dRange / g.softness)
 
 		zoom := g.zoneMan.GetZoom()
-		gz := zoom.(*custom.ZoomNode)
+		gz := zoom.(*extras.ZoomNode)
 		gz.TranslateBy(ray.X(), ray.Y())
 
 	} else {
-		gc := g.scrollRingNode.(*custom.StaticCircleNode)
+		gc := g.scrollRingNode.(*extras.StaticCircleNode)
 		gc.SetColor(color.NewPaletteInt64(color.LightestGray))
 	}
 

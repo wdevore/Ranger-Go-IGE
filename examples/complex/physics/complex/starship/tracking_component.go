@@ -8,8 +8,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/custom"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 // TrackingComponent is a box
@@ -60,7 +60,7 @@ func (t *TrackingComponent) Configure(scale float64, categoryBits, maskBits uint
 
 	var err error
 
-	t.visual, err = custom.NewStaticTriangleNode("Triangle", true, true, t.parent.World(), t.parent)
+	t.visual, err = extras.NewStaticTriangleNode("Triangle", true, true, t.parent.World(), t.parent)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func (t *TrackingComponent) Configure(scale float64, categoryBits, maskBits uint
 
 	t.visual.SetScale(float32(t.scale))
 	t.visual.SetPosition(0.0, 0.0)
-	gol2 := t.visual.(*custom.StaticTriangleNode)
+	gol2 := t.visual.(*extras.StaticTriangleNode)
 
 	t.beginContactColor = color.NewPaletteInt64(color.White)
 	t.endContactColor = color.NewPaletteInt64(color.Pink)
@@ -82,7 +82,7 @@ func (t *TrackingComponent) Configure(scale float64, categoryBits, maskBits uint
 
 // SetColor sets the visual's color
 func (t *TrackingComponent) SetColor(color api.IPalette) {
-	gr := t.visual.(*custom.StaticTriangleNode)
+	gr := t.visual.(*extras.StaticTriangleNode)
 	gr.SetColor(color)
 }
 
@@ -337,10 +337,10 @@ func (t *TrackingComponent) Update() {
 
 // HandleBeginContact processes BeginContact events
 func (t *TrackingComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*custom.StaticTriangleNode)
+	n, ok := nodeA.(*extras.StaticTriangleNode)
 
 	if !ok {
-		n, ok = nodeB.(*custom.StaticTriangleNode)
+		n, ok = nodeB.(*extras.StaticTriangleNode)
 	}
 
 	if ok {
@@ -352,10 +352,10 @@ func (t *TrackingComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
 
 // HandleEndContact processes EndContact events
 func (t *TrackingComponent) HandleEndContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*custom.StaticTriangleNode)
+	n, ok := nodeA.(*extras.StaticTriangleNode)
 
 	if !ok {
-		n, ok = nodeB.(*custom.StaticTriangleNode)
+		n, ok = nodeB.(*extras.StaticTriangleNode)
 	}
 
 	if ok {
@@ -374,7 +374,7 @@ func buildComp(t *TrackingComponent, b2World *box2d.B2World) {
 	vertices := []box2d.B2Vec2{}
 
 	// Sync the visual's vertices to this physic object
-	tr := t.visual.(*custom.StaticTriangleNode)
+	tr := t.visual.(*extras.StaticTriangleNode)
 	// Box2D expects polygon edges to be defined at full length, not
 	// half-side
 	scale := tr.SideLength()
