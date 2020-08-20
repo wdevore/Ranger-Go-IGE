@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
-	"github.com/wdevore/Ranger-Go-IGE/engine/misc"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/misc"
 )
 
 type draggableSquare struct {

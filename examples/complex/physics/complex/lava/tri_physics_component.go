@@ -6,8 +6,8 @@ import (
 
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/misc/particles"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/particles"
 )
 
 // Lava particle
