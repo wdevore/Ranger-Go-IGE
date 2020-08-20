@@ -95,7 +95,7 @@ func (r *DynamicLineNode) SetPoints(x1, y1, x2, y2 float32) {
 // Draw renders shape
 func (r *DynamicLineNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.DynamicRenderGraphic)
-	renG.SetColor4(r.color)
+	renG.SetColor(r.color)
 
 	r.shape.SetCount(2)
 

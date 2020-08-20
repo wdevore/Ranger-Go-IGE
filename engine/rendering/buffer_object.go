@@ -89,6 +89,5 @@ func (b *BufferObject) UnUse() {
 
 // Update modifies the VBO buffer
 func (b *BufferObject) Update(shape api.IAtlasShape) {
-	// b.mesh.Update(shape)
 	b.vbo.Update(shape.Offset(), shape.Count(), shape.Vertices())
 }

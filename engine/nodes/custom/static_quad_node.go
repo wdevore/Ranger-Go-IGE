@@ -88,7 +88,6 @@ func (r *StaticQuadNode) SetAlpha(alpha float32) {
 // Draw renders shape
 func (r *StaticQuadNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.TextureRenderGraphic)
-	// renG.SetColor4(r.color)
 	// Render texture on quad
 	renG.Render(r.shape, model)
 }

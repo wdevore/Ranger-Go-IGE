@@ -124,9 +124,9 @@ func (r *StaticCheckerboardNode) Draw(model api.IMatrix4) {
 			r.m4.ScaleByComp(r.size, r.size, 1.0)
 
 			if xflip {
-				renG.SetColor4(r.evenColor) // lighter
+				renG.SetColor(r.evenColor) // lighter
 			} else {
-				renG.SetColor4(r.oddColor) // darker
+				renG.SetColor(r.oddColor) // darker
 			}
 
 			renG.Render(r.shape, r.m4)
@@ -145,9 +145,9 @@ func (r *StaticCheckerboardNode) Draw(model api.IMatrix4) {
 			r.m4.ScaleByComp(r.size, r.size, 1.0)
 
 			if xflip {
-				renG.SetColor4(r.evenColor)
+				renG.SetColor(r.evenColor)
 			} else {
-				renG.SetColor4(r.oddColor)
+				renG.SetColor(r.oddColor)
 			}
 
 			renG.Render(r.shape, r.m4)
@@ -166,9 +166,9 @@ func (r *StaticCheckerboardNode) Draw(model api.IMatrix4) {
 			r.m4.ScaleByComp(r.size, r.size, 1.0)
 
 			if xflip {
-				renG.SetColor4(r.evenColor) // lightest
+				renG.SetColor(r.evenColor) // lightest
 			} else {
-				renG.SetColor4(r.oddColor) // lighter (darker)
+				renG.SetColor(r.oddColor) // lighter (darker)
 			}
 
 			renG.Render(r.shape, r.m4)
@@ -187,9 +187,9 @@ func (r *StaticCheckerboardNode) Draw(model api.IMatrix4) {
 			r.m4.ScaleByComp(r.size, r.size, 1.0)
 
 			if xflip {
-				renG.SetColor4(r.evenColor)
+				renG.SetColor(r.evenColor)
 			} else {
-				renG.SetColor4(r.oddColor)
+				renG.SetColor(r.oddColor)
 			}
 
 			renG.Render(r.shape, r.m4)

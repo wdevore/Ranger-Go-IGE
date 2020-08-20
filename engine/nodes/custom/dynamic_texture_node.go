@@ -98,7 +98,7 @@ func (d *DynamicTextureNode) Populate(atlasIndex int) {
 func (d *DynamicTextureNode) Draw(model api.IMatrix4) {
 	renG := d.World().UseRenderGraphic(d.graphicID)
 
-	renG.SetColor4(d.color)
+	renG.SetColor(d.color)
 
 	idx := d.textureIndexes[d.index]
 	coords := d.textureMan.GetSTCoords(d.atlasIndex, idx)

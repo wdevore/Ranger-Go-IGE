@@ -105,7 +105,7 @@ func (d *BitmapFont9x9Node) SetColor(colr []float32) {
 // Draw renders shape
 func (d *BitmapFont9x9Node) Draw(model api.IMatrix4) {
 	renG := d.World().UseRenderGraphic(api.TextureRenderGraphic)
-	renG.SetColor4(d.color)
+	renG.SetColor(d.color)
 
 	d.model.Set(model)
 	for _, i := range d.textureIndexes {

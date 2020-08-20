@@ -190,7 +190,7 @@ func (r *DynamicPixelTextNode) Draw(model api.IMatrix4) {
 	r.shape.SetCount(r.pixelCount)
 	renG.Update(r.shape)
 
-	renG.SetColor4(r.color)
+	renG.SetColor(r.color)
 
 	gl.PointSize(r.pixelSize)
 

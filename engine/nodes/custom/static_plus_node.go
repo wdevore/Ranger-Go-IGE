@@ -77,6 +77,6 @@ func (r *StaticPlusNode) SetAlpha(alpha float32) {
 // Draw renders shape
 func (r *StaticPlusNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
-	renG.SetColor4(r.color)
+	renG.SetColor(r.color)
 	renG.Render(r.shape, model)
 }

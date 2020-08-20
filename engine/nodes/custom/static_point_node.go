@@ -80,7 +80,7 @@ func (r *StaticPointNode) SetAlpha(alpha float32) {
 // Draw renders shape
 func (r *StaticPointNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
-	renG.SetColor4(r.color)
+	renG.SetColor(r.color)
 	gl.PointSize(r.size)
 	renG.Render(r.shape, model)
 	gl.PointSize(1)

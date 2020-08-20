@@ -132,6 +132,6 @@ func (r *ParticleTriangleNode) PointInside(p api.IPoint) bool {
 // Draw renders shape
 func (r *ParticleTriangleNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
-	renG.SetColor4(r.color)
+	renG.SetColor(r.color)
 	renG.Render(r.shape, model)
 }

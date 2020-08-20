@@ -11,15 +11,10 @@ import (
 type StaticPolygonNode struct {
 	nodes.Node
 
-	color    []float32
-	halfSide float32
+	color  []float32
+	filled bool
 
-	vertices []float32
-	indices  []uint32
-
-	shape    api.IAtlasShape
-	centered bool
-	filled   bool
+	shape api.IAtlasShape
 }
 
 // NewStaticPolygonNode constructs a generic shape node
@@ -48,9 +43,6 @@ func (r *StaticPolygonNode) build(world api.IWorld) error {
 		name := "OutlinePolygon"
 		r.shape = world.Atlas().GenerateShape(name, gl.LINE_LOOP)
 	}
-
-	// The shape has been added to the atlas but is hasn't been
-	// populated with this node's backing data.
 
 	return nil
 }
@@ -82,6 +74,6 @@ func (r *StaticPolygonNode) SetAlpha(alpha float32) {
 // Draw renders shape
 func (r *StaticPolygonNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
-	renG.SetColor4(r.color)
+	renG.SetColor(r.color)
 	renG.Render(r.shape, model)
 }

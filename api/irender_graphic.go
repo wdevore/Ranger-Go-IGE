@@ -17,7 +17,6 @@ type IRenderGraphic interface {
 	BufferObj() IBufferObject
 
 	SetColor(color []float32)
-	SetColor4(color []float32)
 
 	Render(shape IAtlasShape, model IMatrix4)
 	RenderElements(shape IAtlasShape, elementCount, elementOffset int, model IMatrix4)

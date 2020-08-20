@@ -154,10 +154,10 @@ func (c *customRectangleNode) Draw(model api.IMatrix4) {
 	renG := c.World().UseRenderGraphic(api.StaticRenderGraphic)
 	if c.pointInside {
 		// fmt.Println("Inside: ", c.localPosition)
-		renG.SetColor4(c.insideColor)
+		renG.SetColor(c.insideColor)
 	} else {
 		// fmt.Println(c.localPosition)
-		renG.SetColor4(c.color)
+		renG.SetColor(c.color)
 	}
 
 	renG.Render(c.shape, model)

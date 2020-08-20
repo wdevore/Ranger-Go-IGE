@@ -11,22 +11,27 @@ type gameLayer struct {
 	nodes.Node
 }
 
-func newBasicGameLayer(name string, world api.IWorld, parent api.INode) api.INode {
+func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(gameLayer)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
-	o.Build(world)
-	return o
+
+	if err := o.build(world); err != nil {
+		return nil, err
+	}
+
+	return o, nil
 }
 
-func (g *gameLayer) Build(world api.IWorld) error {
+func (g *gameLayer) build(world api.IWorld) error {
 	g.Node.Build(world)
 
 	osql, err := custom.NewStaticSquareNode("FilledSqr", true, true, world, g)
 	if err != nil {
 		return err
 	}
+
 	osql.SetScale(100.0)
 	osql.SetPosition(100.0, 100.0)
 	gol2 := osql.(*custom.StaticSquareNode)

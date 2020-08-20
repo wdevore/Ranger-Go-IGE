@@ -72,6 +72,6 @@ func (r *StaticLineStripNode) SetAlpha(alpha float32) {
 // Draw renders shape
 func (r *StaticLineStripNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
-	renG.SetColor4(r.color)
+	renG.SetColor(r.color)
 	renG.Render(r.shape, model)
 }

@@ -110,6 +110,6 @@ func (r *StaticCircleNode) SetAlpha(alpha float32) {
 // Draw renders shape
 func (r *StaticCircleNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
-	renG.SetColor4(r.color)
+	renG.SetColor(r.color)
 	renG.Render(r.shape, model)
 }

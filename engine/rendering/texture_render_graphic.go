@@ -100,11 +100,6 @@ func (r *TextureRenderGraphic) BufferObj() api.IBufferObject {
 func (r *TextureRenderGraphic) SetColor(color []float32) {
 }
 
-// SetColor4 currently textures are mixed with vertex colors
-func (r *TextureRenderGraphic) SetColor4(color []float32) {
-	gl.Uniform4fv(r.colorLoc, 1, &color[0])
-}
-
 // Render renders a shape
 func (r *TextureRenderGraphic) Render(shape api.IAtlasShape, model api.IMatrix4) {
 	gl.UniformMatrix4fv(r.modelLoc, 1, false, &model.Matrix()[0])
