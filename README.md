@@ -45,3 +45,5 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * Vector Fonts via SVG import
 * Joysticks and Gamepads
 * OpenGL ES (https://github.com/golang/go/wiki/Mobile)
+
+scene_trans

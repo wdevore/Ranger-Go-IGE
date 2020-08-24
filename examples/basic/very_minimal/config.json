@@ -7,8 +7,8 @@
     "FullScreen": false,
     "Orientation": "Landscape",
     "Position": {
-      "X": 500,
-      "Y": 500
+      "X": 100,
+      "Y": 100
     },
     "Title": "Very Minimal"
   }
