@@ -4,6 +4,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
@@ -22,6 +23,10 @@ type gameLayer struct {
 	textureNode      api.INode
 	textureNodeAlpha api.INode
 	textureIdx       int
+
+	fontTextureRenderer api.ITextureRenderer
+	shipTextureRenderer api.ITextureRenderer
+	textureShipIdx      int
 }
 
 func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
@@ -38,24 +43,18 @@ func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INo
 func (g *gameLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
-	g.timeSpan = 500.0
+	g.timeSpan = 1000.0
 	textureMan := world.TextureManager()
+
+	g.fontTextureRenderer = rendering.NewTextureRenderer(textureMan, world.TextureShader())
+	g.fontTextureRenderer.Build("Font9x9")
+
+	g.shipTextureRenderer = rendering.NewTextureRenderer(textureMan, world.TextureShader())
+	g.shipTextureRenderer.Build("StarShip")
 
 	g.addShip(world)
 	g.addFont(world)
-	// g.addDynText(world)
-
-	// ---------------------------------------------------------
-	// Bind atlas images for text above
-	textureAtlas := textureMan.GetAtlasByName("Font9x9")
-	renG := world.GetRenderGraphic(api.TextureRenderGraphic)
-	renG.ConstructWithImage(textureAtlas.AtlasImage(), false)
-
-	textureAtlasShip := textureMan.GetAtlasByName("StarShip")
-	renG2 := world.GetRenderGraphic(api.TextureRenderGraphic)
-	renG2.ConstructWithImage(textureAtlasShip.AtlasImage(), false)
-	// renG2 := world.GetRenderGraphic(api.TextureRenderGraphic)
-	// renG2.ConstructWithImage(textureAtlas2.AtlasImage(), false)
+	g.addDynText(world)
 
 	return nil
 }
@@ -64,7 +63,9 @@ func (g *gameLayer) addFont(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.textureNode, err = extras.NewBitmapFont9x9Node("Ranger", "Font9x9", textureMan, world, g)
+	textureAtlas := textureMan.GetAtlasByName("Font9x9")
+
+	g.textureNode, err = extras.NewBitmapFont9x9Node("Ranger", textureAtlas, g.fontTextureRenderer, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -74,51 +75,46 @@ func (g *gameLayer) addFont(world api.IWorld) {
 
 	tn := g.textureNode.(*extras.BitmapFont9x9Node)
 	tn.SetText("Ranger is a Go!")
-	tn.SetColor(color.NewPaletteInt64(color.LightPink).Array())
-	tn.Populate()
+	tn.SetColor(color.NewPaletteInt64(color.LightOrange).Array())
 }
 
 func (g *gameLayer) addDynText(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.textureNodeAlpha, err = extras.NewDynamicTextureNode("Font9x9", api.Texture2RenderGraphic, 0, textureMan, world, g)
+	textureAtlas := textureMan.GetAtlasByName("Font9x9")
+
+	g.textureNodeAlpha, err = extras.NewDynamicTextureNode("Ranger", textureAtlas, g.fontTextureRenderer, world, g)
 	if err != nil {
 		panic(err)
 	}
-	g.textureNodeAlpha.SetScale(500)
-	g.textureNodeAlpha.SetPosition(0.0, -150.0)
+	g.textureNodeAlpha.SetScale(800)
+	g.textureNodeAlpha.SetPosition(0.0, 0.0)
 	g.textureNodeAlpha.SetRotation(-20.0 * maths.DegreeToRadians)
 
-	indexes := []int{}
-	for i := 0; i < 94; i++ {
-		indexes = append(indexes, i)
-	}
-
 	tn := g.textureNodeAlpha.(*extras.DynamicTextureNode)
-	tn.SetIndexes(indexes)
 	c := color.NewPaletteInt64(color.PanSkin)
 	c.SetAlpha(0.5)
 	tn.SetColor(c.Array())
-	tn.Populate(0)
 
-	textureNode, err := extras.NewBitmapFont9x9Node("StarCastle", "Font9x9", textureMan, world, g)
+	textureNode, err := extras.NewBitmapFont9x9Node("StarCastle", textureAtlas, g.fontTextureRenderer, world, g)
 	if err != nil {
 		panic(err)
 	}
 	textureNode.SetScale(25)
-	textureNode.SetPosition(0.0, -50.0)
+	textureNode.SetPosition(-25.0, -25.0)
 
 	tn2 := textureNode.(*extras.BitmapFont9x9Node)
 	tn2.SetText("Star Castle")
-	tn2.Populate()
 }
 
 func (g *gameLayer) addShip(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.shipNode, err = extras.NewDynamicTextureNode("StarShip", api.TextureRenderGraphic, 0, textureMan, world, g)
+	textureAtlas := textureMan.GetAtlasByName("StarShip")
+
+	g.shipNode, err = extras.NewDynamicTextureNode("StarShip", textureAtlas, g.shipTextureRenderer, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -131,19 +127,18 @@ func (g *gameLayer) addShip(world api.IWorld) {
 
 	tn := g.shipNode.(*extras.DynamicTextureNode)
 	tn.SetIndexes(indexes)
-	tn.SetColor(color.NewPaletteInt64(color.Transparent).Array())
-	tn.Populate(1)
 }
 
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
-	// g.textureNode.SetRotation(maths.DegreeToRadians * g.angle)
-	// g.angle -= 0.5
+	g.textureNodeAlpha.SetRotation(maths.DegreeToRadians * -g.angle)
+	g.textureNode.SetRotation(maths.DegreeToRadians * g.angle)
+	g.angle -= 0.5
 
-	// if g.msCnt > g.timeSpan {
-	// 	g.msCnt = 0.0
-	// 	g.incTextureID()
-	// }
-	// g.msCnt += msPerUpdate
+	if g.msCnt > g.timeSpan {
+		g.msCnt = 0.0
+		g.incTextureID()
+	}
+	g.msCnt += msPerUpdate
 }
 
 // -----------------------------------------------------
@@ -176,9 +171,9 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 			case 83: // s
 			case 82: // R
 			case 263: // Left
-				g.decTextureID()
+				g.decShipTextureID()
 			case 262: // Right
-				g.incTextureID()
+				g.incShipTextureID()
 			}
 			// fmt.Println(g.textureIdx)
 		}
@@ -187,29 +182,33 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 	return false
 }
 
-func (g *gameLayer) incTextureID() {
-	g.textureIdx = (g.textureIdx + 1) % 35
+func (g *gameLayer) incShipTextureID() {
+	g.textureShipIdx = (g.textureShipIdx + 1) % 35
 	tn := g.shipNode.(*extras.DynamicTextureNode)
-	tn.SelectCoordsByIndex(g.textureIdx)
-
-	// g.textureIdx = (g.textureIdx + 1) % 94
-	// tn := g.textureNodeAlpha.(*extras.DynamicTextureNode)
-	// tn.SelectCoordsByIndex(g.textureIdx)
+	tn.SetIndex(g.textureShipIdx)
 }
 
-func (g *gameLayer) decTextureID() {
-	g.textureIdx = (g.textureIdx - 1) % 35
-	if g.textureIdx < 0 {
-		g.textureIdx = 35 - 1
+func (g *gameLayer) decShipTextureID() {
+	g.textureShipIdx = (g.textureShipIdx - 1) % 35
+	if g.textureShipIdx < 0 {
+		g.textureShipIdx = 35 - 1
 	}
 
 	tn := g.shipNode.(*extras.DynamicTextureNode)
-	tn.SelectCoordsByIndex(g.textureIdx)
+	tn.SetIndex(g.textureShipIdx)
+}
 
-	// g.textureIdx = (g.textureIdx - 1) % 94
-	// if g.textureIdx < 0 {
-	// 	g.textureIdx = 94 - 1
-	// }
-	// tn := g.textureNodeAlpha.(*extras.DynamicTextureNode)
-	// tn.SelectCoordsByIndex(g.textureIdx)
+func (g *gameLayer) incTextureID() {
+	g.textureIdx = (g.textureIdx + 1) % 94
+	tn := g.textureNodeAlpha.(*extras.DynamicTextureNode)
+	tn.SetIndex(g.textureIdx)
+}
+
+func (g *gameLayer) decTextureID() {
+	g.textureIdx = (g.textureIdx - 1) % 94
+	if g.textureIdx < 0 {
+		g.textureIdx = 94 - 1
+	}
+	tn := g.textureNodeAlpha.(*extras.DynamicTextureNode)
+	tn.SetIndex(g.textureIdx)
 }

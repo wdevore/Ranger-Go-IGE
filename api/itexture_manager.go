@@ -6,4 +6,5 @@ type ITextureManager interface {
 	GetSTCoords(atlas, index int) *[]float32
 	GetAtlasByIndex(index int) ITextureAtlas
 	GetAtlasByName(name string) ITextureAtlas
+	GetAtlasPairByName(name string) (index int, atlas ITextureAtlas)
 }

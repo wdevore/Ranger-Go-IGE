@@ -15,6 +15,7 @@ type IWorld interface {
 	AddRenderGraphic(graphic IRenderGraphic, graphicID int)
 	GetRenderGraphic(graphicID int) IRenderGraphic
 	UseRenderGraphic(graphicID int) IRenderGraphic
+	SwitchRenderGraphic(graphicID int) IRenderGraphic
 
 	Viewspace() IMatrix4
 	InvertedViewspace() IMatrix4

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
@@ -12,6 +13,8 @@ type gameLayer struct {
 	angle float64
 	zbar  api.INode
 	ozbar api.INode
+
+	shipTextureRenderer api.ITextureRenderer
 
 	textureNode api.INode
 	textureIdx  int
@@ -31,6 +34,11 @@ func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INo
 func (g *gameLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
+	textureMan := world.TextureManager()
+
+	g.shipTextureRenderer = rendering.NewTextureRenderer(textureMan, world.TextureShader())
+	g.shipTextureRenderer.Build("StarShip")
+
 	g.addShip(world)
 
 	return nil
@@ -40,7 +48,9 @@ func (g *gameLayer) addShip(world api.IWorld) {
 	textureMan := world.TextureManager()
 	var err error
 
-	g.textureNode, err = extras.NewDynamicTextureNode("StarShip", api.TextureRenderGraphic, 0, textureMan, world, g)
+	textureAtlas := textureMan.GetAtlasByName("StarShip")
+
+	g.textureNode, err = extras.NewDynamicTextureNode("StarShip", textureAtlas, g.shipTextureRenderer, world, g)
 	if err != nil {
 		panic(err)
 	}
@@ -53,13 +63,6 @@ func (g *gameLayer) addShip(world api.IWorld) {
 
 	tn := g.textureNode.(*extras.DynamicTextureNode)
 	tn.SetIndexes(indexes)
-	tn.Populate(0)
-
-	// Use render graphic to bind image
-	renG := world.GetRenderGraphic(api.TextureRenderGraphic)
-	textureAtlas := textureMan.GetAtlasByName("StarShip")
-
-	renG.ConstructWithImage(textureAtlas.AtlasImage(), false)
 }
 
 // -----------------------------------------------------
@@ -85,10 +88,10 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 			switch event.GetKeyScan() {
 			case 68: // d
 				tn := g.textureNode.(*extras.DynamicTextureNode)
-				tn.SelectCoordsByIndex(1)
+				tn.SetIndex(1)
 			case 70: // f
 				tn := g.textureNode.(*extras.DynamicTextureNode)
-				tn.SelectCoordsByIndex(0)
+				tn.SetIndex(0)
 			case 90: // z
 			case 65: // a
 			case 83: // s
@@ -99,11 +102,11 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 					g.textureIdx = 34
 				}
 				tn := g.textureNode.(*extras.DynamicTextureNode)
-				tn.SelectCoordsByIndex(g.textureIdx)
+				tn.SetIndex(g.textureIdx)
 			case 262: // Right
 				g.textureIdx = (g.textureIdx + 1) % 35
 				tn := g.textureNode.(*extras.DynamicTextureNode)
-				tn.SelectCoordsByIndex(g.textureIdx)
+				tn.SetIndex(g.textureIdx)
 			}
 		}
 	}

@@ -219,15 +219,21 @@ func (w *world) GetRenderGraphic(graphicID int) api.IRenderGraphic {
 
 func (w *world) UseRenderGraphic(graphicID int) api.IRenderGraphic {
 	if w.activeRenGID != graphicID {
-		// Deactivate current graphic
-		w.activeRenG.UnUse()
-
-		// Activate new graphic
-		// fmt.Println("graphicID: ", graphicID)
-		w.activeRenGID = graphicID
-		w.activeRenG = w.renderRepo[graphicID]
-		w.activeRenG.Use()
+		w.SwitchRenderGraphic(graphicID)
 	}
+
+	return w.activeRenG
+}
+
+func (w *world) SwitchRenderGraphic(graphicID int) api.IRenderGraphic {
+	// Deactivate current graphic
+	w.activeRenG.UnUse()
+
+	// Activate new graphic
+	// fmt.Println("graphicID: ", graphicID)
+	w.activeRenGID = graphicID
+	w.activeRenG = w.renderRepo[graphicID]
+	w.activeRenG.Use()
 
 	return w.activeRenG
 }

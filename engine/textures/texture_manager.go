@@ -49,3 +49,13 @@ func (t *textureManager) GetAtlasByName(name string) api.ITextureAtlas {
 
 	return nil
 }
+
+func (t *textureManager) GetAtlasPairByName(name string) (index int, atlas api.ITextureAtlas) {
+	for i, ta := range t.atlases {
+		if ta.Name() == name {
+			return i, ta
+		}
+	}
+
+	return -1, nil
+}

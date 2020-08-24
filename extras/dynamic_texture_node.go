@@ -1,117 +1,59 @@
 package extras
 
 import (
-	"github.com/go-gl/gl/v4.5-core/gl"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
 // DynamicTextureNode is a dynamic texture ready node.
-// This node contains an index to a TextureAtlas.
 type DynamicTextureNode struct {
 	nodes.Node
 
-	shape     api.IAtlasShape
-	graphicID int
+	textureRenderer api.ITextureRenderer
+	textureAtlas    api.ITextureAtlas
 
-	textureMan         api.ITextureManager
-	verticesAndTexture []float32
-	textureIndexes     []int
-	index              int
-	atlasIndex         int
-	coordsChanged      bool
+	textureIndexes []int
+	index          int
 
+	text  string
 	color []float32
 }
 
 // NewDynamicTextureNode constructs a generic shape node
-func NewDynamicTextureNode(name string, graphicID, startIndex int, textureMan api.ITextureManager, world api.IWorld, parent api.INode) (api.INode, error) {
+func NewDynamicTextureNode(name string, textureAtlas api.ITextureAtlas, textureRenderer api.ITextureRenderer, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(DynamicTextureNode)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
 
-	if err := o.Build(world); err != nil {
+	o.textureRenderer = textureRenderer
+	o.textureAtlas = textureAtlas
+
+	if err := o.build(world); err != nil {
 		return nil, err
 	}
-
-	o.index = startIndex
-	o.textureMan = textureMan
-	o.graphicID = graphicID
-	o.coordsChanged = true
-
-	o.color = color.NewPaletteInt64(color.White).Array()
 
 	return o, nil
 }
 
 // Build configures the node
-func (d *DynamicTextureNode) Build(world api.IWorld) error {
+func (d *DynamicTextureNode) build(world api.IWorld) error {
 	d.Node.Build(world)
 
-	d.shape = world.TextureAtlas().GenerateShape("DynamicTextureQuad", gl.TRIANGLES)
+	d.color = color.NewPaletteInt64(color.White).Array()
 
 	return nil
 }
 
-// Populate ...
-func (d *DynamicTextureNode) Populate(atlasIndex int) {
-	d.atlasIndex = atlasIndex
-
-	// These 2D vertices are interleaved with 2D texture coords
-	// The s,t coords are sourced by the manifest based on index
-	idx := d.textureIndexes[d.index]
-	coords := d.textureMan.GetSTCoords(atlasIndex, idx)
-	c := *coords
-	d.verticesAndTexture = []float32{
-		// Pos           Tex
-		//x  y       z/s    w/t
-		-0.5, -0.5, c[0], c[1], // CCW
-		0.5, -0.5, c[2], c[3],
-		0.5, 0.5, c[4], c[5],
-		-0.5, 0.5, c[6], c[7],
-	}
-
-	// d.verticesAndTexture = []float32{
-	// 	// Pos           Tex
-	// 	//x  y       z/s    w/t
-	// 	-0.5, -0.5, 0.0, 0.0, // CCW
-	// 	0.5, -0.5, 1.0, 0.0,
-	// 	0.5, 0.5, 1.0, 1.0,
-	// 	-0.5, 0.5, 0.0, 1.0,
-	// }
-
-	// fmt.Println(d.verticesAndTexture)
-	d.shape.SetVertices(d.verticesAndTexture)
-
-	indices := []uint32{
-		0, 1, 2,
-		0, 2, 3,
-	}
-
-	d.shape.SetIndices(indices)
-
-	d.shape.SetElementCount(len(indices))
-}
-
 // Draw renders shape
 func (d *DynamicTextureNode) Draw(model api.IMatrix4) {
-	renG := d.World().UseRenderGraphic(d.graphicID)
+	d.textureRenderer.Use()
+	d.textureRenderer.SetColor(d.color)
 
-	renG.SetColor(d.color)
+	d.textureRenderer.SelectCoordsByIndex(d.index)
 
-	if d.coordsChanged {
-		idx := d.textureIndexes[d.index]
-		coords := d.textureMan.GetSTCoords(d.atlasIndex, idx)
-
-		renG.UpdateTexture(coords)
-		d.coordsChanged = false
-	}
-
-	// Render texture on quad
-	renG.Render(d.shape, model)
+	d.textureRenderer.Draw(model)
 }
 
 // SetIndexes defines the indices into the texture atlas
@@ -119,21 +61,12 @@ func (d *DynamicTextureNode) SetIndexes(indexes []int) {
 	d.textureIndexes = indexes
 }
 
-// SetColor ...
-func (d *DynamicTextureNode) SetColor(colr []float32) {
-	d.color = colr
+// SetIndex sets the active sub texture index
+func (d *DynamicTextureNode) SetIndex(index int) {
+	d.index = index
 }
 
-// SelectCoordsByIndex is called after a render graphic has been configured
-func (d *DynamicTextureNode) SelectCoordsByIndex(index int) {
-	d.index = index
-	// Fetch s,t texture coords from texture atlas
-	idx := d.textureIndexes[index]
-	coords := d.textureMan.GetSTCoords(d.atlasIndex, idx)
-
-	// Call VBO's update.
-	renG := d.World().GetRenderGraphic(d.graphicID)
-
-	renG.UpdateTexture(coords)
-	d.coordsChanged = true
+// SetColor sets mixin color
+func (d *DynamicTextureNode) SetColor(color []float32) {
+	d.color = color
 }

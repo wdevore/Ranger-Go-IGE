@@ -1,8 +1,6 @@
 package extras
 
 import (
-	"github.com/go-gl/gl/v4.5-core/gl"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
@@ -13,76 +11,44 @@ import (
 type BitmapFont9x9Node struct {
 	nodes.Node
 
-	shape api.IAtlasShape
+	textureRenderer api.ITextureRenderer
+	textureAtlas    api.ITextureAtlas
 
-	textureMan   api.ITextureManager
-	textureAtlas api.ITextureAtlas
-
-	verticesAndTexture []float32
-	textureIndexes     []int
+	// font indices
+	textureIndexes []int
 
 	text  string
 	color []float32
-	model api.IMatrix4
+	model api.IMatrix4 // Char spacing
 }
 
 // NewBitmapFont9x9Node constructs a bitmap font node
-func NewBitmapFont9x9Node(name, textureAtlas string, textureMan api.ITextureManager, world api.IWorld, parent api.INode) (api.INode, error) {
+func NewBitmapFont9x9Node(name string, textureAtlas api.ITextureAtlas, textureRenderer api.ITextureRenderer, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(BitmapFont9x9Node)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
 
-	if err := o.Build(world); err != nil {
+	o.textureRenderer = textureRenderer
+	o.textureAtlas = textureAtlas
+
+	if err := o.build(world); err != nil {
 		return nil, err
 	}
-
-	o.textureMan = textureMan
-
-	o.model = maths.NewMatrix4()
-	o.textureAtlas = textureMan.GetAtlasByName(textureAtlas)
-	o.color = color.NewPaletteInt64(color.Transparent).Array()
 
 	return o, nil
 }
 
 // Build configures the node
-func (d *BitmapFont9x9Node) Build(world api.IWorld) error {
+func (d *BitmapFont9x9Node) build(world api.IWorld) error {
 	d.Node.Build(world)
 
-	d.shape = world.TextureAtlas().GenerateShape("DynamicTextureQuad", gl.TRIANGLES)
+	d.model = maths.NewMatrix4()
+	d.color = color.NewPaletteInt64(color.White).Array()
 
 	d.textureIndexes = []int{}
 
 	return nil
-}
-
-// Populate ...
-func (d *BitmapFont9x9Node) Populate() {
-	// These 2D vertices are interleaved with 2D texture coords
-	// The s,t coords are sourced by the manifest based on index
-	idx := d.textureIndexes[0]
-	coords := d.textureMan.GetSTCoords(0, idx)
-	c := *coords
-	d.verticesAndTexture = []float32{
-		// Pos           Tex
-		//x  y       z/s    w/t
-		-0.5, -0.5, c[0], c[1], // CCW
-		0.5, -0.5, c[2], c[3],
-		0.5, 0.5, c[4], c[5],
-		-0.5, 0.5, c[6], c[7],
-	}
-
-	d.shape.SetVertices(d.verticesAndTexture)
-
-	indices := []uint32{
-		0, 1, 2,
-		0, 2, 3,
-	}
-
-	d.shape.SetIndices(indices)
-
-	d.shape.SetElementCount(len(indices))
 }
 
 // SetText updates the text rendered.
@@ -91,32 +57,31 @@ func (d *BitmapFont9x9Node) SetText(text string) {
 	d.textureIndexes = make([]int, len(text))
 
 	for i, c := range text {
-		sc := string(c)
-		idx := d.textureAtlas.GetIndex(sc)
+		idx := d.textureAtlas.GetIndex(string(c))
 		d.textureIndexes[i] = idx
 	}
 }
 
-// SetColor ...
-func (d *BitmapFont9x9Node) SetColor(colr []float32) {
-	d.color = colr
+// SetColor sets the mixin color. default is white = no effect.
+func (d *BitmapFont9x9Node) SetColor(color []float32) {
+	d.color = color
 }
 
-// Draw renders shape
+// Draw renders the font indices
 func (d *BitmapFont9x9Node) Draw(model api.IMatrix4) {
-	renG := d.World().UseRenderGraphic(api.TextureRenderGraphic)
-	renG.SetColor(d.color)
+	d.textureRenderer.Use()
+	d.textureRenderer.SetColor(d.color)
 
 	d.model.Set(model)
+
 	for _, i := range d.textureIndexes {
 		if i < 0 {
 			d.model.TranslateBy2Comps(0.65, 0.0) // Simulate " "
 		} else {
-			coords := d.textureMan.GetSTCoords(0, i)
-			renG.UpdateTexture(coords)
+			d.textureRenderer.SelectCoordsByIndex(i)
 
 			d.model.TranslateBy2Comps(0.85, 0.0)
-			renG.Render(d.shape, d.model)
+			d.textureRenderer.Draw(d.model)
 		}
 	}
 }
