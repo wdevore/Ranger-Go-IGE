@@ -56,14 +56,6 @@ func (g *gameLayer) addFont(world api.IWorld) {
 	}
 	g.textureNode.SetScale(50)
 	g.textureNode.SetPosition(0.0, 0.0)
-
-	indexes := []int{}
-	for i := 0; i < 94; i++ {
-		indexes = append(indexes, i)
-	}
-
-	tn := g.textureNode.(*extras.DynamicTextureNode)
-	tn.SetIndexes(indexes)
 }
 
 // -----------------------------------------------------

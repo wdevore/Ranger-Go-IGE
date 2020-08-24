@@ -13,8 +13,7 @@ type DynamicTextureNode struct {
 	textureRenderer api.ITextureRenderer
 	textureAtlas    api.ITextureAtlas
 
-	textureIndexes []int
-	index          int
+	index int
 
 	text  string
 	color []float32
@@ -54,11 +53,6 @@ func (d *DynamicTextureNode) Draw(model api.IMatrix4) {
 	d.textureRenderer.SelectCoordsByIndex(d.index)
 
 	d.textureRenderer.Draw(model)
-}
-
-// SetIndexes defines the indices into the texture atlas
-func (d *DynamicTextureNode) SetIndexes(indexes []int) {
-	d.textureIndexes = indexes
 }
 
 // SetIndex sets the active sub texture index
