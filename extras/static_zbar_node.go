@@ -104,8 +104,7 @@ func (r *StaticZBarNode) SetAlpha(alpha float32) {
 
 // Draw renders shape
 func (r *StaticZBarNode) Draw(model api.IMatrix4) {
-	// TODO refactor to NOT use Switch
-	renG := r.World().SwitchRenderGraphic(api.StaticRenderGraphic)
+	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
 	renG.SetColor(r.color)
 	renG.Render(r.shape, model)
 }

@@ -69,6 +69,8 @@ func (d *BitmapFont9x9Node) SetColor(color []float32) {
 
 // Draw renders the font indices
 func (d *BitmapFont9x9Node) Draw(model api.IMatrix4) {
+	d.World().SetRenderGraphic(api.TextureRenderGraphic)
+
 	d.textureRenderer.Use()
 	d.textureRenderer.SetColor(d.color)
 

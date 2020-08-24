@@ -47,6 +47,8 @@ func (d *DynamicTextureNode) build(world api.IWorld) error {
 
 // Draw renders shape
 func (d *DynamicTextureNode) Draw(model api.IMatrix4) {
+	d.World().SetRenderGraphic(api.TextureRenderGraphic)
+
 	d.textureRenderer.Use()
 	d.textureRenderer.SetColor(d.color)
 

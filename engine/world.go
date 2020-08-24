@@ -213,6 +213,10 @@ func (w *world) AddRenderGraphic(graphic api.IRenderGraphic, graphicID int) {
 	w.renderRepo[graphicID] = graphic
 }
 
+func (w *world) SetRenderGraphic(graphicID int) {
+	w.activeRenGID = graphicID
+}
+
 func (w *world) GetRenderGraphic(graphicID int) api.IRenderGraphic {
 	return w.renderRepo[graphicID]
 }
