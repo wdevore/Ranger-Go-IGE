@@ -23,9 +23,11 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Box2D physics (with space ship)
 * **Done** Zones combined with Zoom
 * **Done** Interpolation
-* --*Workng*-- Sprite Textures (quads)
+* **Done** Sprite Textures (quads)
+* --*Workng*-- Scene Transitioning
 * Simple motion animations
-* Bitmap fonts
+* Physics with bitmaps
+* **Done** Bitmap fonts
 * Audio (SFXR 8bit sound)
   * May build GUI using imGui
   * May use: https://github.com/faiface/beep
@@ -41,7 +43,6 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * Stippling with OpenGL patterns
 * Custom vector font (needs lower case completion)
 * Vector Fonts via SVG import
-* Scene Transitioning
 * Joysticks and Gamepads
 * OpenGL ES (https://github.com/golang/go/wiki/Mobile)
 
