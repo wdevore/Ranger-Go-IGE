@@ -26,6 +26,8 @@ type INode interface {
 	EnterNode(INodeManager)
 	ExitNode(INodeManager)
 
+	EnterStageNode(INodeManager)
+
 	IsVisible() bool
 	SetVisible(bool)
 

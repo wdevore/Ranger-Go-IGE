@@ -189,18 +189,17 @@ func (n *Node) Handle(event api.IEvent) bool {
 // Scene lifecycles
 // -----------------------------------------------------
 
-// Transition specifies what action should happen when transitioning.
-// The default is no action.
-func (n *Node) Transition() int {
-	return api.SceneNoAction
-}
-
-// EnterNode called when a node is entering the stage
+// EnterNode is called when a node is being activiated. The node
+// should track it own state to know if Enter has been called prior.
 func (n *Node) EnterNode(man api.INodeManager) {
 	// fmt.Println("Node: node enter")
 }
 
-// ExitNode called when a node is exiting stage
+// EnterStageNode is called when a node may begin entering the stage.
+func (n *Node) EnterStageNode(man api.INodeManager) {
+}
+
+// ExitNode is called when a node is exiting stage
 func (n *Node) ExitNode(man api.INodeManager) {
 }
 

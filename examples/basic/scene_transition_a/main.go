@@ -4,8 +4,7 @@ import (
 	"log"
 
 	"github.com/wdevore/Ranger-Go-IGE/engine"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 )
 
 func main() {
@@ -18,33 +17,32 @@ func main() {
 
 	world := engine.World()
 
+	textureMan := world.TextureManager()
+
 	// ------------------------------------------------------------
 	// Load any textures we need
 	// ------------------------------------------------------------
-	textureMan := world.TextureManager()
 	textureMan.AddAtlas("Font9x9", "../../../assets/images/atlas/", "font9x9_texture_manifest.json", true)
 
-	// ------------------------------------------------------------
-	// Set a custom background clear effect
-	preNode, err := extras.NewStaticCheckerboardNode("CheckBackground", world, nil)
+	fontTextureRenderer := rendering.NewTextureRenderer(textureMan, world.TextureShader())
+	fontTextureRenderer.Build("Font9x9")
+
+	exitScene, err := newBasicExitScene("Exit", world, fontTextureRenderer, nil)
 	if err != nil {
 		panic(err)
 	}
-	grn := preNode.(*extras.StaticCheckerboardNode)
-	grn.SetSize(200)
+	engine.Push(exitScene)
 
-	engine.SetPreNode(preNode)
-	// ------------------------------------------------------------
-
-	splash, err := newBasicSplashScene("Splash", world, nil)
+	splash, err := newBasicSplashScene("Splash", world, fontTextureRenderer, nil)
 	if err != nil {
 		panic(err)
 	}
+	engine.Push(splash)
 
 	// This example uses the super basic Boot scene that does absolutely nothing.
-	boot := extras.NewBasicBootScene("Boot", splash)
+	boot := NewBasicBootScene("Boot", world, fontTextureRenderer, nil)
 
-	nodes.PrintTree(splash)
+	// nodes.PrintTree(splash)
 
 	engine.Push(boot)
 

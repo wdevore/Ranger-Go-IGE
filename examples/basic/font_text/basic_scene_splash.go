@@ -52,3 +52,6 @@ func (s *sceneSplash) TransitionAction() int {
 	// Basically this scene never transitions to any node.
 	return api.SceneNoAction
 }
+
+func (s *sceneSplash) Notify(state int) {
+}

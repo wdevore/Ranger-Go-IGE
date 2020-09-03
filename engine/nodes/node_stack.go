@@ -20,7 +20,11 @@ func newNodeStack() *nodeStack {
 }
 
 func (n *nodeStack) isEmpty() bool {
-	return len(n.nodes) == 0
+	return n.count() == 0
+}
+
+func (n *nodeStack) count() int {
+	return len(n.nodes)
 }
 
 func (n *nodeStack) hasNextNode() bool {
@@ -56,6 +60,11 @@ func (n *nodeStack) pop() api.INode {
 	// fmt.Println("NodeStack -- no nodes to pop")
 
 	return nil
+}
+
+func (n *nodeStack) top() api.INode {
+	topI := len(n.nodes) - 1
+	return n.nodes[topI]
 }
 
 func (n *nodeStack) replace(replacement api.INode) {

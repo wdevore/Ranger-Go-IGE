@@ -14,9 +14,9 @@ type IEngine interface {
 	SetPreNode(INode)
 	SetPostNode(INode)
 
-	// PushStart pushes the given node onto the stack as the
+	// Push pushes the given node onto the stack as the
 	// first scene to start once the engine's configuration in complete.
-	PushStart(INode)
+	Push(INode)
 
 	RouteEvents(event IEvent)
 }

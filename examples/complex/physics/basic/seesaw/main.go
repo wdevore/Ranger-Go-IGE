@@ -39,7 +39,7 @@ func main() {
 
 	nodes.PrintTree(splash)
 
-	engine.PushStart(boot)
+	engine.Push(boot)
 
 	engine.Begin()
 

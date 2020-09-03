@@ -129,6 +129,10 @@ func (e *engine) loop() {
 	renderCnt := int64(0)
 	// avgRender := 0.0
 
+	if !e.sceneGraph.Begin() {
+		panic("Not enough scenes to start engine. There must be 2 or more.")
+	}
+
 	for !display.Closed() && e.running {
 		currentT := time.Now()
 
@@ -225,7 +229,7 @@ func (e *engine) SetPostNode(node api.INode) {
 	e.sceneGraph.SetPostNode(node)
 }
 
-func (e *engine) PushStart(scene api.INode) {
+func (e *engine) Push(scene api.INode) {
 	// Post process all Atlases
 	e.world.PostProcess()
 

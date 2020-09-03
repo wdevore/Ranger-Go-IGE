@@ -29,3 +29,6 @@ func NewBasicBootScene(name string, replacement api.INode) api.INode {
 func (s *sceneBoot) TransitionAction() int {
 	return api.SceneReplaceTake
 }
+
+func (s *sceneBoot) Notify(state int) {
+}
