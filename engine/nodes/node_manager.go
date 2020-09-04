@@ -205,7 +205,7 @@ func (n *nodeManager) Begin() bool {
 	}
 
 	n.currentScene = n.stack.pop()
-	n.enterNodes(n.currentScene)
+	n.enterScene(n.currentScene)
 
 	return true
 }
@@ -254,14 +254,18 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		} else {
 			n.nextScene = n.stack.pop()
 			// fmt.Println("NM C: Pop next scene: ", n.nextScene)
-			n.enterNodes(n.nextScene)
+			n.enterScene(n.nextScene)
 			// ShowState("NM NS: ", n.nextScene, " Notify SceneTransitionStartIn")
 			n.setSceneState(n.nextScene, api.SceneTransitionStartIn)
 		}
 	case api.SceneExitedStage:
 		// The current scene has finished leaving the stage.
 		// ShowState("NM NS: ", n.currentScene, "")
-		n.exitNodes(n.currentScene) // Let it cleanup and exit.
+		pooled := n.exitScene(n.currentScene) // Let it cleanup and exit.
+
+		if pooled {
+			// fmt.Println("Returning node to pool: ", n.currentScene)
+		}
 
 		// Promote next-scene to current-scene
 		n.currentScene = n.nextScene
@@ -270,7 +274,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		if !n.stack.isEmpty() {
 			n.nextScene = n.stack.pop()
 			// fmt.Println("NM NS: Popped next scene: ", n.nextScene)
-			n.enterNodes(n.nextScene)
+			n.enterScene(n.nextScene)
 		}
 	}
 
@@ -465,7 +469,7 @@ func (n *nodeManager) RouteEvents(event api.IEvent) {
 
 func (n *nodeManager) setNextNode() {
 	if n.stack.hasRunningNode() {
-		n.exitNodes(n.stack.runningNode)
+		n.exitScene(n.stack.runningNode)
 	}
 
 	n.stack.runningNode = n.stack.nextNode
@@ -473,7 +477,7 @@ func (n *nodeManager) setNextNode() {
 
 	// fmt.Println("NodeManager: new running node ", m.stack.runningNode)
 
-	n.enterNodes(n.stack.runningNode)
+	n.enterScene(n.stack.runningNode)
 }
 
 // End cleans up NodeManager by clearing the stack and calling all Exits
@@ -483,7 +487,7 @@ func (n *nodeManager) End() {
 	pn := n.PopNode()
 
 	for pn != nil {
-		n.exitNodes(pn)
+		n.exitScene(pn)
 		pn = n.PopNode()
 	}
 
@@ -494,23 +498,46 @@ func (n *nodeManager) End() {
 // Scene lifecycles
 // -----------------------------------------------------
 
-func (n *nodeManager) enterNodes(node api.INode) {
-	// fmt.Println("NodeManager: enter-node ", node)
+func (n *nodeManager) enterScene(node api.INode) {
+	// fmt.Println("NodeManager: enterScene ", node)
+	scene, _ := node.(api.IScene)
+	scene.EnterScene(n)
+
+	children := node.Children()
+	for _, child := range children {
+		n.enterNode(child)
+	}
+}
+
+func (n *nodeManager) enterNode(node api.INode) {
+	// fmt.Println("NodeManager: enterNode ", node)
 	node.EnterNode(n)
 
 	children := node.Children()
 	for _, child := range children {
-		n.enterNodes(child)
+		n.enterNode(child)
 	}
 }
 
-func (n *nodeManager) exitNodes(node api.INode) {
-	// fmt.Println("NodeManager: exit-node ", node)
+func (n *nodeManager) exitScene(node api.INode) bool {
+	// fmt.Println("NodeManager: exitScene ", node)
+	scene, _ := node.(api.IScene)
+	pooled := scene.ExitScene(n)
+
+	children := node.Children()
+	for _, child := range children {
+		n.exitNode(child)
+	}
+
+	return pooled
+}
+
+func (n *nodeManager) exitNode(node api.INode) {
 	node.ExitNode(n)
 
 	children := node.Children()
 	for _, child := range children {
-		n.exitNodes(child)
+		n.exitNode(child)
 	}
 }
 
@@ -519,23 +546,4 @@ func (n *nodeManager) Debug() {
 
 func (n nodeManager) String() string {
 	return fmt.Sprintf("%s", n.stack)
-}
-
-// DeleteAt removes an item from the slice
-func DeleteAt(i int, slice []api.INode) {
-	// Remove the element at index i from slice.
-	copy(slice[i:], slice[i+1:]) // Shift a[i+1:] left one index.
-	slice[len(slice)-1] = nil    // Erase last element (write zero value).
-	slice = slice[:len(slice)-1] // Truncate slice.
-}
-
-// FindFirstElement finds the first item in the slice
-func FindFirstElement(node api.INode, slice []api.INode) int {
-	for idx, item := range slice {
-		if item.ID() == node.ID() {
-			return idx
-		}
-	}
-
-	return -1
 }

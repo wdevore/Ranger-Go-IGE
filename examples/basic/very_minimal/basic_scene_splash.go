@@ -8,7 +8,6 @@ import (
 type sceneSplash struct {
 	nodes.Node
 	nodes.Scene
-	nodes.Transition
 	angle float64
 }
 

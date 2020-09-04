@@ -43,6 +43,9 @@ type IScene interface {
 	CurrentState() int
 	SetCurrentState(current int)
 
+	EnterScene(INodeManager)
+	ExitScene(INodeManager) bool
+
 	SetReplacement(INode)
 	GetReplacement() INode
 }

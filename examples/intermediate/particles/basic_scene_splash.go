@@ -8,7 +8,6 @@ import (
 type sceneSplash struct {
 	nodes.Node
 	nodes.Scene
-	nodes.Transition
 }
 
 func newBasicSplashScene(name string, world api.IWorld, replacement api.INode) (api.INode, error) {

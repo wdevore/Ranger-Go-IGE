@@ -19,10 +19,7 @@ type sceneBoot struct {
 	pretendWorkCnt  float64
 	pretendWorkSpan float64
 
-	transitionInCnt    float64
-	transitionInDelay  float64
-	transitionOutCnt   float64
-	transitionOutDelay float64
+	transition api.ITransition
 
 	scanCnt   float64
 	scanDelay float64
@@ -46,8 +43,7 @@ func NewBasicBootScene(name string, world api.IWorld, fontRenderer api.ITextureR
 	o.scanDelay = 75
 	o.dotScale = 15.0
 
-	o.transitionInDelay = 1000.0
-	o.transitionOutDelay = 1000.0
+	o.transition = nodes.NewTransition()
 
 	textureMan := world.TextureManager()
 	var err error
@@ -85,22 +81,24 @@ func (s *sceneBoot) Update(msPerUpdate, secPerUpdate float64) {
 		if s.pretendWorkCnt > s.pretendWorkSpan {
 			// Tell NM that we want to transition off the stage.
 			s.setState("Update: ", api.SceneTransitionStartOut)
+			s.transition.SetPauseTime(1000.0)
+			s.transition.Reset()
 		}
 		s.pretendWorkCnt += msPerUpdate
 	case api.SceneTransitioningIn:
-		if s.transitionInCnt > s.transitionInDelay {
+		if s.transition.ReadyToTransition() {
 			tn := s.textureNode.(*extras.BitmapFont9x9Node)
 			tn.SetText("OnStage")
 			s.setState("Update: ", api.SceneOnStage)
 		}
-		s.transitionInCnt += msPerUpdate
+		s.transition.UpdateTransition(msPerUpdate)
 		// Update animation properties
 	case api.SceneTransitioningOut:
 		// Update animation
-		if s.transitionOutCnt > s.transitionOutDelay {
+		if s.transition.ReadyToTransition() {
 			s.setState("Update: ", api.SceneExitedStage)
 		}
-		s.transitionOutCnt += msPerUpdate
+		s.transition.UpdateTransition(msPerUpdate)
 	}
 
 	s.animate(msPerUpdate)
@@ -135,6 +133,7 @@ func (s *sceneBoot) Notify(state int) {
 	switch s.CurrentState() {
 	case api.SceneTransitionStartIn:
 		// Configure animation properties for entering the stage.
+		s.transition.SetPauseTime(1000.0)
 		s.setState("Notify T: ", api.SceneTransitioningIn)
 	}
 }
@@ -149,7 +148,7 @@ func (s *sceneBoot) setState(header string, state int) {
 // -----------------------------------------------------
 
 // EnterNode called when a node is entering the stage
-func (s *sceneBoot) EnterNode(man api.INodeManager) {
+func (s *sceneBoot) EnterScene(man api.INodeManager) {
 	// fmt.Println("sceneboot EnterNode")
 	man.RegisterTarget(s)
 }
@@ -157,10 +156,12 @@ func (s *sceneBoot) EnterNode(man api.INodeManager) {
 // ExitNode called when a node is exiting stage.
 // Return true if this node is to be "repooled" to avoid
 // being destroyed.
-func (s *sceneBoot) ExitNode(man api.INodeManager) {
+func (s *sceneBoot) ExitScene(man api.INodeManager) bool {
 	// fmt.Println("sceneboot exit")
 	man.UnRegisterTarget(s)
 	s.setState("ExitNode: ", api.SceneOffStage)
+
+	return false
 }
 
 func (s *sceneBoot) buildScanThingy(world api.IWorld) {

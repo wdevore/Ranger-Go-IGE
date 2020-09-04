@@ -10,16 +10,11 @@ import (
 type sceneExit struct {
 	nodes.Node
 	nodes.Scene
-	// nodes.Transition
 
 	pretendWorkCnt  float64
 	pretendWorkSpan float64
 
-	currentState, previousState int
-	transitionInCnt             float64
-	transitionInDelay           float64
-	transitionOutCnt            float64
-	transitionOutDelay          float64
+	transition api.ITransition
 }
 
 func newBasicExitScene(name string, world api.IWorld, fontRenderer api.ITextureRenderer, replacement api.INode) (api.INode, error) {
@@ -31,12 +26,11 @@ func newBasicExitScene(name string, world api.IWorld, fontRenderer api.ITextureR
 		return nil, err
 	}
 
-	o.currentState = api.SceneOffStage
-	o.previousState = o.currentState
+	o.InitializeScene(api.SceneOffStage, api.SceneOffStage)
 
 	o.pretendWorkSpan = 1000.0
-	o.transitionInDelay = 1000.0
-	o.transitionOutDelay = 1000.0
+
+	o.transition = nodes.NewTransition()
 
 	textureMan := world.TextureManager()
 	var err error
@@ -71,28 +65,30 @@ func (s *sceneExit) build(world api.IWorld) error {
 }
 
 func (s *sceneExit) Update(msPerUpdate, secPerUpdate float64) {
-	switch s.currentState {
+	switch s.CurrentState() {
 	case api.SceneOffStage:
 		return
 	case api.SceneOnStage:
 		if s.pretendWorkCnt > s.pretendWorkSpan {
 			// Tell NM that we want to transition off the stage.
 			s.setState("Update: ", api.SceneTransitionStartOut)
+			s.transition.SetPauseTime(1000.0)
+			s.transition.Reset()
 		}
 
 		s.pretendWorkCnt += msPerUpdate
 	case api.SceneTransitioningIn:
-		if s.transitionInCnt > s.transitionInDelay {
+		if s.transition.ReadyToTransition() {
 			s.setState("Update: ", api.SceneOnStage)
 		}
-		s.transitionInCnt += msPerUpdate
+		s.transition.UpdateTransition(msPerUpdate)
 		// Update animation properties
 	case api.SceneTransitioningOut:
 		// Update animation
-		if s.transitionOutCnt > s.transitionOutDelay {
+		if s.transition.ReadyToTransition() {
 			s.setState("Update: ", api.SceneExitedStage)
 		}
-		s.transitionOutCnt += msPerUpdate
+		s.transition.UpdateTransition(msPerUpdate)
 	}
 }
 
@@ -100,22 +96,18 @@ func (s *sceneExit) Update(msPerUpdate, secPerUpdate float64) {
 // Transitioning
 // --------------------------------------------------------
 
-func (s *sceneExit) State() (current, previous int) {
-	return s.currentState, s.previousState
-}
-
 func (s *sceneExit) setState(header string, state int) {
-	s.previousState = s.currentState
-	s.currentState = state
+	s.SetCurrentState(state)
 	// nodes.ShowState(header, s, "")
 }
 
 func (s *sceneExit) Notify(state int) {
 	s.setState("Notify: ", state)
 
-	switch s.currentState {
+	switch s.CurrentState() {
 	case api.SceneTransitionStartIn:
 		// Configure animation properties for entering the stage.
+		s.transition.SetPauseTime(1000.0)
 		s.setState("Notify T: ", api.SceneTransitioningIn)
 	}
 }
@@ -125,14 +117,15 @@ func (s *sceneExit) Notify(state int) {
 // -----------------------------------------------------
 
 // EnterNode called when a node is entering the stage
-func (s *sceneExit) EnterNode(man api.INodeManager) {
+func (s *sceneExit) EnterScene(man api.INodeManager) {
 	// fmt.Println("sceneExit EnterNode")
 	man.RegisterTarget(s)
 }
 
 // ExitNode called when a node is exiting stage
-func (s *sceneExit) ExitNode(man api.INodeManager) {
+func (s *sceneExit) ExitScene(man api.INodeManager) bool {
 	// fmt.Println("sceneExit ExitNode")
 	man.UnRegisterTarget(s)
 	s.setState("ExitNode: ", api.SceneOffStage)
+	return false
 }

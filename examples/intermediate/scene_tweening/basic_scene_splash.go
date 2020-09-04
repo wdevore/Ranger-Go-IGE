@@ -10,7 +10,6 @@ import (
 type sceneSplash struct {
 	nodes.Node
 	nodes.Scene
-	nodes.Transition
 
 	// Tanema's framework
 	tween *gween.Tween

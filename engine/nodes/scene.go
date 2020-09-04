@@ -44,3 +44,16 @@ func (s *Scene) CurrentState() int {
 func (s *Scene) SetCurrentState(current int) {
 	s.currentState = current
 }
+
+// EnterScene called when it is time to transition a scene
+// onto the stage.
+func (s *Scene) EnterScene(man api.INodeManager) {
+
+}
+
+// ExitScene called when a node is exiting stage.
+// Return true if this node is to be "repooled" to avoid
+// being destroyed.
+func (s *Scene) ExitScene(man api.INodeManager) bool {
+	return true
+}
