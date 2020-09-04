@@ -68,8 +68,13 @@ func (s *sceneSplash) Update(msPerUpdate, secPerUpdate float64) {
 	switch s.CurrentState() {
 	case api.SceneOffStage:
 		return
+	case api.SceneTransitioningIn:
+		if s.transition.ReadyToTransition() {
+			s.setState("Update: ", api.SceneOnStage)
+		}
+		s.transition.UpdateTransition(msPerUpdate)
+		// Update animation properties
 	case api.SceneOnStage:
-		// fmt.Println("sceneSplash Update busy")
 		if s.pretendWorkCnt > s.pretendWorkSpan {
 			s.pretendWorkCnt = 0.0
 			s.setState("Update: ", api.SceneTransitioningOut)
@@ -77,13 +82,6 @@ func (s *sceneSplash) Update(msPerUpdate, secPerUpdate float64) {
 			s.transition.Reset()
 		}
 		s.pretendWorkCnt += msPerUpdate
-	case api.SceneTransitioningIn:
-		// fmt.Println("sceneSplash Update trans IN")
-		if s.transition.ReadyToTransition() {
-			s.setState("Update: ", api.SceneOnStage)
-		}
-		s.transition.UpdateTransition(msPerUpdate)
-		// Update animation properties
 	case api.SceneTransitioningOut:
 		// Update animation
 		if s.transition.ReadyToTransition() {
@@ -103,7 +101,6 @@ func (s *sceneSplash) setState(header string, state int) {
 }
 
 func (s *sceneSplash) Notify(state int) {
-	// Technically the boot scene never cares about Notify
 	s.setState("Notify: ", state)
 
 	switch s.CurrentState() {

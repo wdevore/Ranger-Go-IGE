@@ -68,6 +68,12 @@ func (s *sceneExit) Update(msPerUpdate, secPerUpdate float64) {
 	switch s.CurrentState() {
 	case api.SceneOffStage:
 		return
+	case api.SceneTransitioningIn:
+		if s.transition.ReadyToTransition() {
+			s.setState("Update: ", api.SceneOnStage)
+		}
+		s.transition.UpdateTransition(msPerUpdate)
+		// Update animation properties
 	case api.SceneOnStage:
 		if s.pretendWorkCnt > s.pretendWorkSpan {
 			// Tell NM that we want to transition off the stage.
@@ -77,12 +83,6 @@ func (s *sceneExit) Update(msPerUpdate, secPerUpdate float64) {
 		}
 
 		s.pretendWorkCnt += msPerUpdate
-	case api.SceneTransitioningIn:
-		if s.transition.ReadyToTransition() {
-			s.setState("Update: ", api.SceneOnStage)
-		}
-		s.transition.UpdateTransition(msPerUpdate)
-		// Update animation properties
 	case api.SceneTransitioningOut:
 		// Update animation
 		if s.transition.ReadyToTransition() {

@@ -77,14 +77,6 @@ func (s *sceneBoot) Update(msPerUpdate, secPerUpdate float64) {
 	switch s.CurrentState() {
 	case api.SceneOffStage:
 		return
-	case api.SceneOnStage:
-		if s.pretendWorkCnt > s.pretendWorkSpan {
-			// Tell NM that we want to transition off the stage.
-			s.setState("Update: ", api.SceneTransitionStartOut)
-			s.transition.SetPauseTime(1000.0)
-			s.transition.Reset()
-		}
-		s.pretendWorkCnt += msPerUpdate
 	case api.SceneTransitioningIn:
 		if s.transition.ReadyToTransition() {
 			tn := s.textureNode.(*extras.BitmapFont9x9Node)
@@ -93,6 +85,14 @@ func (s *sceneBoot) Update(msPerUpdate, secPerUpdate float64) {
 		}
 		s.transition.UpdateTransition(msPerUpdate)
 		// Update animation properties
+	case api.SceneOnStage:
+		if s.pretendWorkCnt > s.pretendWorkSpan {
+			// Tell NM that we want to transition off the stage.
+			s.setState("Update: ", api.SceneTransitionStartOut)
+			s.transition.SetPauseTime(1000.0)
+			s.transition.Reset()
+		}
+		s.pretendWorkCnt += msPerUpdate
 	case api.SceneTransitioningOut:
 		// Update animation
 		if s.transition.ReadyToTransition() {
