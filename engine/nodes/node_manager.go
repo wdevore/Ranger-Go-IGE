@@ -238,29 +238,29 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 	case api.SceneOffStage:
 		// The current scene is off stage which means we need to tell it
 		// to begin transitioning onto the stage.
-		ShowState("NM C: ", n.currentScene, " Notify SceneTransitionStartIn")
+		// ShowState("NM C: ", n.currentScene, " Notify SceneTransitionStartIn")
 		n.setSceneState(n.currentScene, api.SceneTransitionStartIn)
 	case api.SceneTransitionStartOut:
 		// The current scene wants to transition off the stage.
 		// Notify it that it can do so.
-		ShowState("NM C: ", n.currentScene, " Notify SceneTransitioningOut")
+		// ShowState("NM C: ", n.currentScene, " Notify SceneTransitioningOut")
 		n.setSceneState(n.currentScene, api.SceneTransitioningOut)
 
 		// At the same time we need to tell the next scene (if there is one) that it can
 		// start transitioning onto the stage.
 		if n.stack.isEmpty() {
-			fmt.Println("---- Stack empty ------")
+			// fmt.Println("---- Stack empty ------")
 			n.nextScene = nil
 		} else {
 			n.nextScene = n.stack.pop()
-			fmt.Println("NM C: Pop next scene: ", n.nextScene)
+			// fmt.Println("NM C: Pop next scene: ", n.nextScene)
 			n.enterNodes(n.nextScene)
-			ShowState("NM NS: ", n.nextScene, " Notify SceneTransitionStartIn")
+			// ShowState("NM NS: ", n.nextScene, " Notify SceneTransitionStartIn")
 			n.setSceneState(n.nextScene, api.SceneTransitionStartIn)
 		}
 	case api.SceneExitedStage:
 		// The current scene has finished leaving the stage.
-		ShowState("NM NS: ", n.currentScene, "")
+		// ShowState("NM NS: ", n.currentScene, "")
 		n.exitNodes(n.currentScene) // Let it cleanup and exit.
 
 		// Promote next-scene to current-scene
@@ -269,7 +269,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		// Attempt to bring another scene into play.
 		if !n.stack.isEmpty() {
 			n.nextScene = n.stack.pop()
-			fmt.Println("NM NS: Popped next scene: ", n.nextScene)
+			// fmt.Println("NM NS: Popped next scene: ", n.nextScene)
 			n.enterNodes(n.nextScene)
 		}
 	}

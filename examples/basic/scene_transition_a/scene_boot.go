@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
@@ -88,7 +86,6 @@ func (s *sceneBoot) Update(msPerUpdate, secPerUpdate float64) {
 			// Tell NM that we want to transition off the stage.
 			s.setState("Update: ", api.SceneTransitionStartOut)
 		}
-
 		s.pretendWorkCnt += msPerUpdate
 	case api.SceneTransitioningIn:
 		if s.transitionInCnt > s.transitionInDelay {
@@ -144,7 +141,7 @@ func (s *sceneBoot) Notify(state int) {
 
 func (s *sceneBoot) setState(header string, state int) {
 	s.SetCurrentState(state)
-	nodes.ShowState(header, s, "")
+	// nodes.ShowState(header, s, "")
 }
 
 // -----------------------------------------------------
@@ -153,13 +150,15 @@ func (s *sceneBoot) setState(header string, state int) {
 
 // EnterNode called when a node is entering the stage
 func (s *sceneBoot) EnterNode(man api.INodeManager) {
-	fmt.Println("sceneboot EnterNode")
+	// fmt.Println("sceneboot EnterNode")
 	man.RegisterTarget(s)
 }
 
-// ExitNode called when a node is exiting stage
+// ExitNode called when a node is exiting stage.
+// Return true if this node is to be "repooled" to avoid
+// being destroyed.
 func (s *sceneBoot) ExitNode(man api.INodeManager) {
-	fmt.Println("sceneboot exit")
+	// fmt.Println("sceneboot exit")
 	man.UnRegisterTarget(s)
 	s.setState("ExitNode: ", api.SceneOffStage)
 }

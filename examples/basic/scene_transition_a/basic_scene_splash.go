@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
@@ -110,7 +108,7 @@ func (s *sceneSplash) State() (current, previous int) {
 func (s *sceneSplash) setState(header string, state int) {
 	s.previousState = s.currentState
 	s.currentState = state
-	nodes.ShowState(header, s, "")
+	// nodes.ShowState(header, s, "")
 }
 
 func (s *sceneSplash) Notify(state int) {
@@ -130,12 +128,12 @@ func (s *sceneSplash) Notify(state int) {
 
 // EnterNode called when a node is entering the stage
 func (s *sceneSplash) EnterNode(man api.INodeManager) {
-	fmt.Println("sceneSplash EnterNode")
+	// fmt.Println("sceneSplash EnterNode")
 	man.RegisterTarget(s)
 }
 
 // ExitNode called when a node is exiting stage
 func (s *sceneSplash) ExitNode(man api.INodeManager) {
-	fmt.Println("sceneSplash ExitNode")
+	// fmt.Println("sceneSplash ExitNode")
 	man.UnRegisterTarget(s)
 }

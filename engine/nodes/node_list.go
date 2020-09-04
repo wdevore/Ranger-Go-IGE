@@ -7,6 +7,7 @@ import (
 )
 
 // NodeList is a simple list collection
+// It can be used as a simple Pool.
 type NodeList struct {
 	items []api.INode
 }
