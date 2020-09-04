@@ -21,11 +21,10 @@ type sceneBoot struct {
 	pretendWorkCnt  float64
 	pretendWorkSpan float64
 
-	currentState, previousState int
-	transitionInCnt             float64
-	transitionInDelay           float64
-	transitionOutCnt            float64
-	transitionOutDelay          float64
+	transitionInCnt    float64
+	transitionInDelay  float64
+	transitionOutCnt   float64
+	transitionOutDelay float64
 
 	scanCnt   float64
 	scanDelay float64
@@ -43,8 +42,7 @@ func NewBasicBootScene(name string, world api.IWorld, fontRenderer api.ITextureR
 	o.Initialize(name)
 	o.SetReplacement(replacement)
 
-	o.currentState = api.SceneOffStage
-	o.previousState = o.currentState
+	o.InitializeScene(api.SceneOffStage, api.SceneOffStage)
 
 	o.pretendWorkSpan = 1000.0
 	o.scanDelay = 75
@@ -82,7 +80,7 @@ func NewBasicBootScene(name string, world api.IWorld, fontRenderer api.ITextureR
 }
 
 func (s *sceneBoot) Update(msPerUpdate, secPerUpdate float64) {
-	switch s.currentState {
+	switch s.CurrentState() {
 	case api.SceneOffStage:
 		return
 	case api.SceneOnStage:
@@ -134,15 +132,10 @@ func (s *sceneBoot) animate(msPerUpdate float64) {
 // Transitioning
 // --------------------------------------------------------
 
-// Transition indicates what to transition to next
-func (s *sceneBoot) State() (current, previous int) {
-	return s.currentState, s.previousState
-}
-
 func (s *sceneBoot) Notify(state int) {
 	s.setState("Notify: ", state)
 
-	switch s.currentState {
+	switch s.CurrentState() {
 	case api.SceneTransitionStartIn:
 		// Configure animation properties for entering the stage.
 		s.setState("Notify T: ", api.SceneTransitioningIn)
@@ -150,8 +143,7 @@ func (s *sceneBoot) Notify(state int) {
 }
 
 func (s *sceneBoot) setState(header string, state int) {
-	s.previousState = s.currentState
-	s.currentState = state
+	s.SetCurrentState(state)
 	nodes.ShowState(header, s, "")
 }
 
@@ -163,15 +155,6 @@ func (s *sceneBoot) setState(header string, state int) {
 func (s *sceneBoot) EnterNode(man api.INodeManager) {
 	fmt.Println("sceneboot EnterNode")
 	man.RegisterTarget(s)
-}
-
-// EnterStageNode ---
-func (s *sceneBoot) EnterStageNode(man api.INodeManager) {
-	// fmt.Println("sceneboot EnterStageNode")
-	// Setup transition animation and start it.
-	// However, for this example the boot scene appears immediately.
-	// So we respond with transition complete.
-	// s.setState(api.SceneTransitioningIn)
 }
 
 // ExitNode called when a node is exiting stage

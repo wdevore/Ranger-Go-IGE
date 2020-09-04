@@ -135,15 +135,6 @@ func (s *sceneExit) EnterNode(man api.INodeManager) {
 	man.RegisterTarget(s)
 }
 
-// EnterStageNode ---
-func (s *sceneExit) EnterStageNode(man api.INodeManager) {
-	// fmt.Println("sceneExit EnterStageNode")
-	// // Setup transition animation and start it.
-	// // However, for this example the boot scene appears immediately.
-	// // So we respond with transition complete.
-	// s.setState(api.SceneTransitioningIn)
-}
-
 // ExitNode called when a node is exiting stage
 func (s *sceneExit) ExitNode(man api.INodeManager) {
 	fmt.Println("sceneExit ExitNode")

@@ -203,23 +203,14 @@ func (n *nodeManager) Begin() bool {
 	if n.stack.isEmpty() || n.stack.count() < 2 {
 		return false
 	}
-	// fmt.Println("S stack ", n.stack)
 
 	n.currentScene = n.stack.pop()
 	n.enterNodes(n.currentScene)
-
-	// n.nextScene = n.stack.top()
-	// n.enterNodes(n.nextScene)
 
 	return true
 }
 
 func (n *nodeManager) Visit(interpolation float64) bool {
-	// if n.stack.isEmpty() {
-	// 	return false
-	// }
-
-	// fmt.Println("NodeManager: visiting ", m.stack.runningNode)
 	n.transStack.Save()
 
 	var visitState bool
@@ -246,7 +237,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 	switch oCurrentState {
 	case api.SceneOffStage:
 		// The current scene is off stage which means we need to tell it
-		// begin transitioning onto the stage.
+		// to begin transitioning onto the stage.
 		ShowState("NM C: ", n.currentScene, " Notify SceneTransitionStartIn")
 		n.setSceneState(n.currentScene, api.SceneTransitionStartIn)
 	case api.SceneTransitionStartOut:
@@ -350,21 +341,6 @@ func ShowState(header string, no api.INode, footer string) {
 	fmt.Println(footer)
 }
 
-func (n *nodeManager) exitVisit(interpolation float64) bool {
-	// oScene, ok := n.currentScene.(api.IScene)
-	// if !ok {
-	// 	panic("Current Scene '" + n.currentScene.Name() + "' doesn't implement IScene")
-	// }
-
-	// oAction := oScene.TransitionAction()
-	// if oAction != api.SceneFinished {
-	// 	Visit(n.currentScene, n.transStack, interpolation)
-	// 	return true
-	// }
-
-	return false
-}
-
 func (n *nodeManager) PostVisit() {
 	// Custom node activities, for example, FPS visual
 	if n.postNode != nil {
@@ -378,45 +354,45 @@ func (n *nodeManager) PostVisit() {
 	}
 }
 
-func (n *nodeManager) oldVisit(interpolation float64) bool {
-	if n.stack.isEmpty() {
-		return false
-	}
+// func (n *nodeManager) oldVisit(interpolation float64) bool {
+// 	if n.stack.isEmpty() {
+// 		return false
+// 	}
 
-	// fmt.Println("NodeManager: visiting ", m.stack.runningNode)
+// 	// fmt.Println("NodeManager: visiting ", m.stack.runningNode)
 
-	if n.stack.hasNextNode() {
-		n.setNextNode()
-	}
+// 	if n.stack.hasNextNode() {
+// 		n.setNextNode()
+// 	}
 
-	n.transStack.Save()
+// 	n.transStack.Save()
 
-	runningScene := n.stack.runningNode.(api.IScene)
+// 	runningScene := n.stack.runningNode.(api.IScene)
 
-	currentState, _ := runningScene.State()
+// 	currentState, _ := runningScene.State()
 
-	if currentState == api.SceneReplaceTake {
-		repl := runningScene.GetReplacement()
-		// fmt.Println("NodeManager: SceneReplaceTake with ", repl)
-		if repl != nil {
-			n.stack.replace(repl)
-			// Immediately switch to the new replacement node
-			if n.stack.hasNextNode() {
-				n.setNextNode()
-			}
-		} else {
-			n.exitNodes(n.stack.runningNode)
-			n.stack.pop()
-		}
-	}
+// 	if currentState == api.SceneReplaceTake {
+// 		repl := runningScene.GetReplacement()
+// 		// fmt.Println("NodeManager: SceneReplaceTake with ", repl)
+// 		if repl != nil {
+// 			n.stack.replace(repl)
+// 			// Immediately switch to the new replacement node
+// 			if n.stack.hasNextNode() {
+// 				n.setNextNode()
+// 			}
+// 		} else {
+// 			n.exitNodes(n.stack.runningNode)
+// 			n.stack.pop()
+// 		}
+// 	}
 
-	// Visit the running node
-	Visit(n.stack.runningNode, n.transStack, interpolation)
+// 	// Visit the running node
+// 	Visit(n.stack.runningNode, n.transStack, interpolation)
 
-	n.transStack.Restore()
+// 	n.transStack.Restore()
 
-	return true // continue to draw.
-}
+// 	return true // continue to draw.
+// }
 
 func (n *nodeManager) setSceneState(node api.INode, state int) {
 	scene, ok := node.(api.IScene)

@@ -139,12 +139,3 @@ func (s *sceneSplash) ExitNode(man api.INodeManager) {
 	fmt.Println("sceneSplash ExitNode")
 	man.UnRegisterTarget(s)
 }
-
-// EnterStageNode ---
-func (s *sceneSplash) EnterStageNode(man api.INodeManager) {
-	// fmt.Println("sceneSplash EnterStageNode")
-	// // Setup transition animation and start it.
-	// // However, for this example the boot scene appears immediately.
-	// // So we respond with transition complete.
-	// s.setState(api.SceneTransitioningIn)
-}

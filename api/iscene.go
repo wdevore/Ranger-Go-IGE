@@ -40,6 +40,9 @@ const (
 type IScene interface {
 	State() (int, int)
 	Notify(int)
+	CurrentState() int
+	SetCurrentState(current int)
+
 	SetReplacement(INode)
 	GetReplacement() INode
 }
