@@ -11,7 +11,7 @@ type gameLayer struct {
 	nodes.Node
 }
 
-func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
+func newBasicSplashLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(gameLayer)
 	o.Initialize(name)
 	o.SetParent(parent)
@@ -33,7 +33,7 @@ func (g *gameLayer) build(world api.IWorld) error {
 	}
 
 	osql.SetScale(100.0)
-	osql.SetPosition(100.0, 100.0)
+	osql.SetPosition(-100.0, 100.0)
 	gol2 := osql.(*extras.StaticSquareNode)
 	gol2.SetColor(color.NewPaletteInt64(color.LightPurple))
 

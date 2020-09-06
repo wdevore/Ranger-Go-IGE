@@ -207,6 +207,10 @@ func (n *nodeManager) Begin() bool {
 	n.currentScene = n.stack.pop()
 	n.enterScene(n.currentScene)
 
+	// We need to set next-scene to the top incase the game
+	// starts with only two scenes.
+	n.nextScene = n.stack.top()
+
 	return true
 }
 
@@ -227,10 +231,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 	// --------------------------------------------------------
 	// Current scene
 	// --------------------------------------------------------
-	oScene, ok := n.currentScene.(api.IScene)
-	if !ok {
-		panic("Current Scene '" + n.currentScene.Name() + "' doesn't implement IScene")
-	}
+	oScene, _ := n.currentScene.(api.IScene)
 
 	oCurrentState, _ := oScene.State()
 
@@ -243,8 +244,8 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 	case api.SceneTransitionStartOut:
 		// The current scene wants to transition off the stage.
 		// Notify it that it can do so.
-		// ShowState("NM C: ", n.currentScene, " Notify SceneTransitioningOut")
-		n.setSceneState(n.currentScene, api.SceneTransitioningOut)
+		n.setSceneState(n.currentScene, api.SceneTransitionStartOut)
+		// ShowState("NM C: ", n.currentScene, " Notify SceneTransitionStartOut")
 
 		// At the same time we need to tell the next scene (if there is one) that it can
 		// start transitioning onto the stage.
@@ -253,7 +254,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 			n.nextScene = nil
 		} else {
 			n.nextScene = n.stack.pop()
-			// fmt.Println("NM C: Pop next scene: ", n.nextScene)
+			// fmt.Println("NM : Popped next scene: ", n.nextScene)
 			n.enterScene(n.nextScene)
 			// ShowState("NM NS: ", n.nextScene, " Notify SceneTransitionStartIn")
 			n.setSceneState(n.nextScene, api.SceneTransitionStartIn)
@@ -261,6 +262,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 	case api.SceneExitedStage:
 		// The current scene has finished leaving the stage.
 		// ShowState("NM NS: ", n.currentScene, "")
+		// TODO replace "pooled" with "cleanup/dispose"
 		pooled := n.exitScene(n.currentScene) // Let it cleanup and exit.
 
 		if pooled {
@@ -268,14 +270,9 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		}
 
 		// Promote next-scene to current-scene
+		// fmt.Println("NM NS: overlay ", n.currentScene, " with ", n.nextScene)
 		n.currentScene = n.nextScene
-
-		// Attempt to bring another scene into play.
-		if !n.stack.isEmpty() {
-			n.nextScene = n.stack.pop()
-			// fmt.Println("NM NS: Popped next scene: ", n.nextScene)
-			n.enterScene(n.nextScene)
-		}
+		n.nextScene = nil // This isn't actually needed but it is good form.
 	}
 
 	if n.currentScene != nil && oCurrentState != api.SceneOffStage {
@@ -286,10 +283,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 	// Incoming or next scene
 	// --------------------------------------------------------
 	if n.nextScene != nil {
-		iScene, ok := n.nextScene.(api.IScene)
-		if !ok {
-			panic("Incoming Scene '" + n.nextScene.Name() + "' doesn't implement IScene")
-		}
+		iScene, _ := n.nextScene.(api.IScene)
 
 		iNextState, _ := iScene.State()
 
@@ -298,17 +292,17 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		}
 	}
 
-	// When the current scene is nil then there are no more scenes
-	// to visit, it's time to end the game.
+	// When the current scene is the last scene to exit the stage
+	// then the game is over.
 	return n.currentScene != nil
 }
 
-// ShowState ---
+// ShowState is for debugging purposes only
 func ShowState(header string, no api.INode, footer string) {
 	scene, _ := no.(api.IScene)
 
 	curr, prev := scene.State()
-	fmt.Print(no, " -- ", header)
+	fmt.Print(no, " -- ", header, " {Curr: ")
 	switch curr {
 	case api.SceneOffStage:
 		fmt.Print("SceneOffStage,")
@@ -325,6 +319,8 @@ func ShowState(header string, no api.INode, footer string) {
 	case api.SceneExitedStage:
 		fmt.Print("SceneExitedStage,")
 	}
+
+	fmt.Print(" Prev: ")
 	switch prev {
 	case api.SceneOffStage:
 		fmt.Print("SceneOffStage")
@@ -342,7 +338,7 @@ func ShowState(header string, no api.INode, footer string) {
 		fmt.Print("SceneExitedStage")
 	}
 
-	fmt.Println(footer)
+	fmt.Println("} ", footer)
 }
 
 func (n *nodeManager) PostVisit() {
@@ -399,10 +395,7 @@ func (n *nodeManager) PostVisit() {
 // }
 
 func (n *nodeManager) setSceneState(node api.INode, state int) {
-	scene, ok := node.(api.IScene)
-	if !ok {
-		panic("Scene '" + node.Name() + "' doesn't implement IScene")
-	}
+	scene, _ := node.(api.IScene)
 	scene.Notify(state)
 }
 
@@ -483,12 +476,14 @@ func (n *nodeManager) setNextNode() {
 // End cleans up NodeManager by clearing the stack and calling all Exits
 func (n *nodeManager) End() {
 	// Dump the stack
+	fmt.Println("End: Cleaning up scene stack.")
+	if !n.stack.isEmpty() {
+		pn := n.stack.top()
 
-	pn := n.PopNode()
-
-	for pn != nil {
-		n.exitScene(pn)
-		pn = n.PopNode()
+		for pn != nil {
+			n.exitScene(pn)
+			pn = n.stack.pop()
+		}
 	}
 
 	n.eventTargets = nil

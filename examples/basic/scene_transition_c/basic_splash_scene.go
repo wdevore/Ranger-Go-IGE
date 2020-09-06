@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/tanema/gween"
+	"github.com/tanema/gween/ease"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
@@ -14,13 +16,14 @@ type sceneSplash struct {
 	pretendWorkCnt  float64
 	pretendWorkSpan float64
 
-	transition api.ITransition
+	delay          api.IDelay
+	tweenOntoStage *gween.Tween
+	tweenOffStage  *gween.Tween
 }
 
-func newBasicSplashScene(name string, world api.IWorld, fontRenderer api.ITextureRenderer, replacement api.INode) (api.INode, error) {
+func newBasicSplashScene(name string, world api.IWorld, fontRenderer api.ITextureRenderer) (api.INode, error) {
 	o := new(sceneSplash)
 	o.Initialize(name)
-	o.SetReplacement(replacement)
 
 	if err := o.build(world); err != nil {
 		return nil, err
@@ -30,7 +33,7 @@ func newBasicSplashScene(name string, world api.IWorld, fontRenderer api.ITextur
 
 	o.pretendWorkSpan = 1000.0
 
-	o.transition = nodes.NewTransition()
+	o.delay = nodes.NewDelay()
 
 	textureMan := world.TextureManager()
 	var err error
@@ -56,10 +59,10 @@ func (s *sceneSplash) build(world api.IWorld) error {
 
 	dvr := s.World().Properties().Window.DeviceRes
 
-	bg := newBackgroundNode("Background", world, s)
+	bg := newBackgroundNode("Background", world, s, color.NewPaletteInt64(color.LightGray))
 	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
 
-	newBasicGameLayer("Game Layer", world, s)
+	newBasicSplashLayer("Game Layer", world, s)
 
 	return nil
 }
@@ -69,25 +72,31 @@ func (s *sceneSplash) Update(msPerUpdate, secPerUpdate float64) {
 	case api.SceneOffStage:
 		return
 	case api.SceneTransitioningIn:
-		if s.transition.ReadyToTransition() {
+		value, isFinished := s.tweenOntoStage.Update(float32(msPerUpdate))
+
+		// Update animation properties
+		if isFinished {
 			s.setState("Update: ", api.SceneOnStage)
 		}
-		s.transition.UpdateTransition(msPerUpdate)
-		// Update animation properties
+		s.SetPosition(value, s.Position().Y())
 	case api.SceneOnStage:
 		if s.pretendWorkCnt > s.pretendWorkSpan {
-			s.pretendWorkCnt = 0.0
-			s.setState("Update: ", api.SceneTransitioningOut)
-			s.transition.SetPauseTime(1000.0)
-			s.transition.Reset()
+			// Tell NM that we want to transition off the stage.
+			s.setState("Update: ", api.SceneTransitionStartOut)
+			s.delay.SetPauseTime(1000.0)
+			s.delay.Reset()
 		}
+
 		s.pretendWorkCnt += msPerUpdate
 	case api.SceneTransitioningOut:
 		// Update animation
-		if s.transition.ReadyToTransition() {
+		value, isFinished := s.tweenOffStage.Update(float32(msPerUpdate))
+
+		// Update animation properties
+		if isFinished {
 			s.setState("Update: ", api.SceneExitedStage)
 		}
-		s.transition.UpdateTransition(msPerUpdate)
+		s.SetPosition(value, s.Position().Y())
 	}
 }
 
@@ -105,9 +114,18 @@ func (s *sceneSplash) Notify(state int) {
 
 	switch s.CurrentState() {
 	case api.SceneTransitionStartIn:
-		// Configure animation properties for entering the stage.
-		s.transition.SetPauseTime(1000.0)
+		// Create an animation that drags the scene onto the stage
+		// in the +X direction (enters from right)
+		vrs := s.World().Properties().Window.DeviceRes
+		s.SetPosition(-float32(vrs.Width), 0.0)
+		s.tweenOntoStage = gween.New(s.Position().X(), 0.0, s.TransitionDuration(), ease.OutCubic)
 		s.setState("Notify T: ", api.SceneTransitioningIn)
+	case api.SceneTransitionStartOut:
+		// Create an animation that drags the scene onto the stage
+		// in the +X direction (enters from right)
+		vrs := s.World().Properties().Window.DeviceRes
+		s.tweenOffStage = gween.New(s.Position().X(), float32(vrs.Width), s.TransitionDuration(), ease.OutCubic)
+		s.setState("Notify T: ", api.SceneTransitioningOut)
 	}
 }
 
@@ -118,6 +136,7 @@ func (s *sceneSplash) Notify(state int) {
 // EnterNode called when a node is entering the stage
 func (s *sceneSplash) EnterScene(man api.INodeManager) {
 	// fmt.Println("sceneSplash EnterNode")
+	s.SetVisible(true)
 	man.RegisterTarget(s)
 }
 
@@ -125,5 +144,6 @@ func (s *sceneSplash) EnterScene(man api.INodeManager) {
 func (s *sceneSplash) ExitScene(man api.INodeManager) bool {
 	// fmt.Println("sceneSplash ExitNode")
 	man.UnRegisterTarget(s)
+	s.setState("ExitNode: ", api.SceneOffStage)
 	return false
 }

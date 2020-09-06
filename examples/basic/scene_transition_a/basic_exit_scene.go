@@ -14,13 +14,12 @@ type sceneExit struct {
 	pretendWorkCnt  float64
 	pretendWorkSpan float64
 
-	transition api.ITransition
+	delay api.IDelay
 }
 
-func newBasicExitScene(name string, world api.IWorld, fontRenderer api.ITextureRenderer, replacement api.INode) (api.INode, error) {
+func newBasicExitScene(name string, world api.IWorld, fontRenderer api.ITextureRenderer) (api.INode, error) {
 	o := new(sceneExit)
 	o.Initialize(name)
-	o.SetReplacement(replacement)
 
 	if err := o.build(world); err != nil {
 		return nil, err
@@ -30,7 +29,7 @@ func newBasicExitScene(name string, world api.IWorld, fontRenderer api.ITextureR
 
 	o.pretendWorkSpan = 1000.0
 
-	o.transition = nodes.NewTransition()
+	o.delay = nodes.NewDelay()
 
 	textureMan := world.TextureManager()
 	var err error
@@ -56,7 +55,7 @@ func (s *sceneExit) build(world api.IWorld) error {
 
 	dvr := s.World().Properties().Window.DeviceRes
 
-	bg := newBackgroundNode("Background", world, s)
+	bg := newBackgroundNode("Background", world, s, color.NewPaletteInt64(color.DarkGray))
 	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
 
 	newBasicExitGameLayer("Game Layer", world, s)
@@ -69,26 +68,26 @@ func (s *sceneExit) Update(msPerUpdate, secPerUpdate float64) {
 	case api.SceneOffStage:
 		return
 	case api.SceneTransitioningIn:
-		if s.transition.ReadyToTransition() {
+		if s.delay.ReadyToTransition() {
 			s.setState("Update: ", api.SceneOnStage)
 		}
-		s.transition.UpdateTransition(msPerUpdate)
+		s.delay.UpdateTransition(msPerUpdate)
 		// Update animation properties
 	case api.SceneOnStage:
 		if s.pretendWorkCnt > s.pretendWorkSpan {
 			// Tell NM that we want to transition off the stage.
 			s.setState("Update: ", api.SceneTransitionStartOut)
-			s.transition.SetPauseTime(1000.0)
-			s.transition.Reset()
+			s.delay.SetPauseTime(1000.0)
+			s.delay.Reset()
 		}
 
 		s.pretendWorkCnt += msPerUpdate
 	case api.SceneTransitioningOut:
 		// Update animation
-		if s.transition.ReadyToTransition() {
+		if s.delay.ReadyToTransition() {
 			s.setState("Update: ", api.SceneExitedStage)
 		}
-		s.transition.UpdateTransition(msPerUpdate)
+		s.delay.UpdateTransition(msPerUpdate)
 	}
 }
 
@@ -107,8 +106,10 @@ func (s *sceneExit) Notify(state int) {
 	switch s.CurrentState() {
 	case api.SceneTransitionStartIn:
 		// Configure animation properties for entering the stage.
-		s.transition.SetPauseTime(1000.0)
+		s.delay.SetPauseTime(1000.0)
 		s.setState("Notify T: ", api.SceneTransitioningIn)
+	case api.SceneTransitionStartOut:
+		s.setState("Notify T: ", api.SceneTransitioningOut)
 	}
 }
 

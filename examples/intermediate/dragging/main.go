@@ -18,12 +18,14 @@ func main() {
 
 	world := engine.World()
 
-	splash, err := newBasicSplashScene("Splash", world, nil)
+	splash, err := newBasicSplashScene("Splash", world)
 	if err != nil {
 		panic(err)
 	}
+	engine.Push(splash)
+
 	// This example uses the super basic Boot scene that does absolutely nothing.
-	boot := extras.NewBasicBootScene("Boot", splash)
+	boot := extras.NewBasicBootScene("Boot")
 
 	nodes.PrintTree(splash)
 

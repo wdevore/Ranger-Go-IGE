@@ -25,27 +25,19 @@ const (
 
 	// SceneFinished means a scene is done. Destroy it and/or remove from pool.
 	SceneFinished
-
-	// SceneNoAction means no action is taken when transitioning
-	SceneNoAction
-	// SceneReplace ...
-	SceneReplace
-	// SceneReplaceTake ...
-	SceneReplaceTake
-	// SceneReplaceTakeUnregister ...
-	SceneReplaceTakeUnregister
 )
 
 // IScene scene management
 type IScene interface {
-	State() (int, int)
 	Notify(int)
+
+	State() (int, int)
 	CurrentState() int
 	SetCurrentState(current int)
 
+	TransitionDuration() float32
+	SetTransitionDuration(duration float32)
+
 	EnterScene(INodeManager)
 	ExitScene(INodeManager) bool
-
-	SetReplacement(INode)
-	GetReplacement() INode
 }

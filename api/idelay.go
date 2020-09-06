@@ -1,7 +1,7 @@
 package api
 
-// ITransition scene timing and transitions
-type ITransition interface {
+// IDelay scene timing and transitions
+type IDelay interface {
 	Reset()
 
 	SetPauseTime(milliseconds float64)

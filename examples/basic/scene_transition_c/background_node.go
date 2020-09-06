@@ -19,9 +19,7 @@ func newBackgroundNode(name string, world api.IWorld, parent api.INode, bgColor 
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
-
 	o.build(world, bgColor)
-
 	return o
 }
 

@@ -15,10 +15,9 @@ type sceneSplash struct {
 	tween *gween.Tween
 }
 
-func newBasicSplashScene(name string, world api.IWorld, replacement api.INode) (api.INode, error) {
+func newBasicSplashScene(name string, world api.IWorld) (api.INode, error) {
 	o := new(sceneSplash)
 	o.Initialize(name)
-	o.SetReplacement(replacement)
 
 	if err := o.build(world); err != nil {
 		return nil, err
@@ -47,11 +46,6 @@ func (s *sceneSplash) build(world api.IWorld) error {
 // Transitioning
 // --------------------------------------------------------
 
-func (s *sceneSplash) TransitionAction() int {
-	// Basically this scene never transitions to any node.
-	return api.SceneNoAction
-}
-
 // Update updates the time properties of a node.
 func (s *sceneSplash) Update(msPerUpdate, secPerUpdate float64) {
 	value, isFinished := s.tween.Update(float32(msPerUpdate))
@@ -69,15 +63,16 @@ func (s *sceneSplash) Update(msPerUpdate, secPerUpdate float64) {
 // -----------------------------------------------------
 
 // EnterNode called when a node is entering the stage
-func (s *sceneSplash) EnterNode(man api.INodeManager) {
+func (s *sceneSplash) EnterScene(man api.INodeManager) {
 	man.RegisterTarget(s)
 	man.RegisterEventTarget(s)
 }
 
 // ExitNode called when a node is exiting stage
-func (s *sceneSplash) ExitNode(man api.INodeManager) {
+func (s *sceneSplash) ExitScene(man api.INodeManager) bool {
 	man.UnRegisterTarget(s)
 	man.UnRegisterEventTarget(s)
+	return false
 }
 
 // -----------------------------------------------------

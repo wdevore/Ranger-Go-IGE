@@ -3,16 +3,10 @@ package main
 import (
 	"log"
 
+	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 )
-
-// This example shows the most basic of scene transitions.
-// The transitions are instant which means there is no animations
-// onto or off of the stage.
-// This also means that the boot scene will be covered by the
-// Exit scene while the Boot scene is exiting, so it will appear
-// as if the boot scene was only visible for 2 secs instead of 3.
 
 func main() {
 	engine, err := engine.Construct("../../..", "config.json")
@@ -34,14 +28,33 @@ func main() {
 	fontTextureRenderer := rendering.NewTextureRenderer(textureMan, world.TextureShader())
 	fontTextureRenderer.Build("Font9x9")
 
+	transitionDuration := float32(500.0)
+
 	exitScene, err := newBasicExitScene("Exit", world, fontTextureRenderer)
 	if err != nil {
 		panic(err)
 	}
+	sceneE := exitScene.(api.IScene)
+	sceneE.SetTransitionDuration(transitionDuration)
+	exitScene.SetVisible(false)
 	engine.Push(exitScene)
 
+	splash, err := newBasicSplashScene("Splash", world, fontTextureRenderer)
+	if err != nil {
+		panic(err)
+	}
+	sceneS := splash.(api.IScene)
+	sceneS.SetTransitionDuration(transitionDuration)
+	splash.SetVisible(false)
+	engine.Push(splash)
+
 	// This example uses the super basic Boot scene that does absolutely nothing.
-	boot := NewBasicBootScene("Boot", world, fontTextureRenderer)
+	boot, err := NewBasicBootScene("Boot", world, fontTextureRenderer)
+	if err != nil {
+		panic(err)
+	}
+	sceneB := boot.(api.IScene)
+	sceneB.SetTransitionDuration(transitionDuration)
 
 	// nodes.PrintTree(splash)
 

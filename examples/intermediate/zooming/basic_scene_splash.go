@@ -10,10 +10,9 @@ type sceneSplash struct {
 	nodes.Scene
 }
 
-func newBasicSplashScene(name string, world api.IWorld, replacement api.INode) (api.INode, error) {
+func newBasicSplashScene(name string, world api.IWorld) (api.INode, error) {
 	o := new(sceneSplash)
 	o.Initialize(name)
-	o.SetReplacement(replacement)
 
 	if err := o.build(world); err != nil {
 		return nil, err
@@ -39,16 +38,4 @@ func (s *sceneSplash) build(world api.IWorld) error {
 	newOverlayLayer("Overlay Layer", world, s)
 
 	return nil
-}
-
-func (s *sceneSplash) Use() {
-}
-
-// --------------------------------------------------------
-// Transitioning
-// --------------------------------------------------------
-
-func (s *sceneSplash) TransitionAction() int {
-	// Basically this scene never transitions to any node.
-	return api.SceneNoAction
 }

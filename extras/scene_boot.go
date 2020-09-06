@@ -14,10 +14,9 @@ type sceneBoot struct {
 }
 
 // NewBasicBootScene returns an IScene node of base type INode
-func NewBasicBootScene(name string, replacement api.INode) api.INode {
+func NewBasicBootScene(name string) api.INode {
 	o := new(sceneBoot)
 	o.Initialize(name)
-	o.SetReplacement(replacement)
 	return o
 }
 
@@ -25,10 +24,9 @@ func NewBasicBootScene(name string, replacement api.INode) api.INode {
 // Transitioning
 // --------------------------------------------------------
 
-// Transition indicates what to transition to next
-func (s *sceneBoot) TransitionAction() int {
-	return api.SceneReplaceTake
-}
-
 func (s *sceneBoot) Notify(state int) {
+	// This boot scene does absolutely nothing other than
+	// satisfying the NodeManager requirement for 2 scenes.
+	// So just simply exit the stage immdediately.
+	s.SetCurrentState(api.SceneExitedStage)
 }

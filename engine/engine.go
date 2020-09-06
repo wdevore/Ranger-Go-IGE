@@ -230,6 +230,11 @@ func (e *engine) SetPostNode(node api.INode) {
 }
 
 func (e *engine) Push(scene api.INode) {
+	_, ok := scene.(api.IScene)
+	if !ok {
+		panic("Scene being pushed doesn't implementing IScene interface.")
+	}
+
 	// Post process all Atlases
 	e.world.PostProcess()
 
@@ -238,6 +243,7 @@ func (e *engine) Push(scene api.INode) {
 
 func (e *engine) End() {
 	fmt.Println("Engine shutting down...")
+	e.sceneGraph.End()
 	e.windowDisplay.Shutdown()
 }
 

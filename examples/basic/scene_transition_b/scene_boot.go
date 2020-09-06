@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/tanema/gween"
+	"github.com/tanema/gween/ease"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
@@ -19,23 +21,27 @@ type sceneBoot struct {
 	pretendWorkCnt  float64
 	pretendWorkSpan float64
 
-	transition api.ITransition
+	delay api.IDelay
 
 	scanCnt   float64
 	scanDelay float64
 
 	textureNode api.INode
 
+	tweenOffStage *gween.Tween
+
 	dotScale float32
 	dots     []api.INode
 	colors   []api.IPalette
 }
 
-// NewBasicBootScene returns an IScene node of base type INode
-func NewBasicBootScene(name string, world api.IWorld, fontRenderer api.ITextureRenderer, replacement api.INode) api.INode {
+func newBasicBootScene(name string, world api.IWorld, fontRenderer api.ITextureRenderer) (api.INode, error) {
 	o := new(sceneBoot)
 	o.Initialize(name)
-	o.SetReplacement(replacement)
+
+	if err := o.build(world); err != nil {
+		return nil, err
+	}
 
 	o.InitializeScene(api.SceneOffStage, api.SceneOffStage)
 
@@ -43,7 +49,7 @@ func NewBasicBootScene(name string, world api.IWorld, fontRenderer api.ITextureR
 	o.scanDelay = 75
 	o.dotScale = 15.0
 
-	o.transition = nodes.NewTransition()
+	o.delay = nodes.NewDelay()
 
 	textureMan := world.TextureManager()
 	var err error
@@ -70,7 +76,19 @@ func NewBasicBootScene(name string, world api.IWorld, fontRenderer api.ITextureR
 	}
 
 	o.buildScanThingy(world)
-	return o
+
+	return o, nil
+}
+
+func (s *sceneBoot) build(world api.IWorld) error {
+	s.Node.Build(world)
+
+	dvr := s.World().Properties().Window.DeviceRes
+
+	bg := newBackgroundNode("Background", world, s, color.NewPaletteInt64(color.LightestGray))
+	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+
+	return nil
 }
 
 func (s *sceneBoot) Update(msPerUpdate, secPerUpdate float64) {
@@ -78,27 +96,29 @@ func (s *sceneBoot) Update(msPerUpdate, secPerUpdate float64) {
 	case api.SceneOffStage:
 		return
 	case api.SceneTransitioningIn:
-		if s.transition.ReadyToTransition() {
+		if s.delay.ReadyToTransition() {
 			tn := s.textureNode.(*extras.BitmapFont9x9Node)
 			tn.SetText("OnStage")
 			s.setState("Update: ", api.SceneOnStage)
 		}
-		s.transition.UpdateTransition(msPerUpdate)
+		s.delay.UpdateTransition(msPerUpdate)
 		// Update animation properties
 	case api.SceneOnStage:
 		if s.pretendWorkCnt > s.pretendWorkSpan {
 			// Tell NM that we want to transition off the stage.
 			s.setState("Update: ", api.SceneTransitionStartOut)
-			s.transition.SetPauseTime(1000.0)
-			s.transition.Reset()
 		}
 		s.pretendWorkCnt += msPerUpdate
 	case api.SceneTransitioningOut:
-		// Update animation
-		if s.transition.ReadyToTransition() {
+		// Transitioning out is nothing more than applying a transform
+		// to the scene's position and/or rotation and/or scale.
+		// This example animates only the position.
+		value, isFinished := s.tweenOffStage.Update(float32(msPerUpdate))
+
+		if isFinished {
 			s.setState("Update: ", api.SceneExitedStage)
 		}
-		s.transition.UpdateTransition(msPerUpdate)
+		s.SetPosition(value, s.Position().Y())
 	}
 
 	s.animate(msPerUpdate)
@@ -132,9 +152,13 @@ func (s *sceneBoot) Notify(state int) {
 
 	switch s.CurrentState() {
 	case api.SceneTransitionStartIn:
-		// Configure animation properties for entering the stage.
-		s.transition.SetPauseTime(1000.0)
+		// Create an animation that drags the scene off stage
+		// in the +X direction (leaves moving to the right)
+		vrs := s.World().Properties().Window.DeviceRes
+		s.tweenOffStage = gween.New(0.0, float32(vrs.Width), 1000, ease.OutCubic)
 		s.setState("Notify T: ", api.SceneTransitioningIn)
+	case api.SceneTransitionStartOut:
+		s.setState("Notify T: ", api.SceneTransitioningOut)
 	}
 }
 
