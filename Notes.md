@@ -130,21 +130,6 @@ Computer graphics through opengl 4.3 pg 782 2nd ed.
 * https://github.com/golang/go/wiki/Mobile
 
 ## Scenes and transitions
-Scenes are stack based.
-Scene are stored in a pool. Any scene that elects not to be placed back in the pool is destroyed.
-
-The Boot scene is special. It is the only scene that appears immediately without transitioning onto the stage. As the boot scene runs a status is sent back to the node manager (NM) indicating if it is still busy.
-When the NM receives a "done" signal from the boot scene it immediately pops the stack for the next outgoing scene.
-
-At this point there are two scenes to run: the outgoing just popped and the incoming scene on the stack top.
-
-The incoming scene can't begin entering the stage until the outgoing scene has completed its task. Once complete it sends signal to node manager.
-
-The outgoing scene can either remain on stage until the incoming scene has completed its transition or it can transition off in sync with the incoming scene. At this point the outgoing scene either vanishes or is pooled. For example, boot scene and splash scene both vanish.
-
-If there is no incoming scene then when the outgoing scene exits the game exits.
-
-#### **Scenes**
 Each scene waits to enter the stage. The NM monitors the current scene on stage and notifies the waiting scene.
 
 Scenes waiting to enter the stage are queued on a stack. Once the last scene has pulled from the stack and finishes the game is *over*.
@@ -152,15 +137,6 @@ Scenes waiting to enter the stage are queued on a stack. Once the last scene has
 Scenes are only pulled from the stack when the current scene signals *SceneTransitioningOut* or *SceneFinished*.
 
 If current scene signaled *SceneTransitioningOut* then the next scene on the stack is brought in as the **incoming** scene and the *EnterNode()* is called on the incoming scene. The incoming scene then begins to transition onto the stage. Once it has completed transitioning it signals NM which then moves it to currentScene.
-
-If a scene needs to direct to another scene, for example *Menu* ```-->``` *Settings*.
-* *Menu* first pushes itself onto the **stack**.
-* NM then pushes *Settings* onto stack.
-* *Menu* then tells NM that is it *SceneTransitioningOut* and that a ***return*** scene is queued after the stack-top.
-* This causes NM to make *Settings* the incoming scene via *EnterNode()*
-* When *Settings* indicates that it is *SceneTransitioningOut* NM pops it into the running scene and activates the stack-top (aka Menu)
-
-It is the current scene that determines what scene becomes active next. For example, *Boot* specifies that *Splash* is next by placing *Splash* on the stack, and *Splash* specifies *Menu* is next.
 
 *Menu*s can have multiple **targets** or destinations, for example, *Settings*, *HighScore*, *Game*, etc. When a user selects a destination *Menu* first pushes itself onto the stack then pushes the destination. At this point the *Menu* is both the current scene (i.e. transitioning off the stage) and is on the stack underneath the incoming scene. Both the current-scene and incoming scene are active. Once that *Menu* has finished transitioning it signals the NM and the NM pops the stack (incoming scene) into the current scene.
 ```
@@ -176,8 +152,6 @@ Stack:
 
 #### **Boot scene**
 To start a game a Boot scene must be present and appears immediately.
-
-While the boot scene runs it sends its status to NM. Status are *SceneBusy* and *SceneFinished*.
 
 #### **Splash scene**
 The splash scene waits off screen until the NM signals that the current scene (aka boot) is either transitioning off the stage or is finished.
@@ -200,38 +174,3 @@ Boot --> Splash --> Menu --> Settings -->  Menu
       Menu
       Exit
    ```
-* --On each Push NM calls the scene's *EnterNode()* for any prep work.
-* The NM pops *Boot* and makes it the current-scene and issues *EnterStageNode()* at which point Boot can start entering the stage.
-* *Boot* begins issuing *SceneTransitioningIn* signal while it transitions.
-* Once transition is complete *Boot* begins issuing *SceneBusy*.
-* When *Boot* is done it issues *SceneFinished* rather than *SceneTransitioningOut*.
-* NM detects *SceneFinished* and tells the incoming (Splash) scene that it can start transitioning onto the stage by calling *EnterStageNode()*.
-* *Splash* now begins issuing *SceneTransitioningIn* as it begins transitioning onto the stage.
-* *Splash* is now running as the current-scene and begins issuing *SceneBusy*.
-* When *Splash* is finished and is ready to leave the stage it issues *SceneFinished*.
-* NM detects this and begins running the incoming-scene (Menu) by sending *EnterStageNode()* to *Menu*.
-* Both *Splash* and *Menu* are now running.
-* *Menu* begins issuing *SceneTransitioningIn* and *Splash* begins issuing *SceneTransitioningOut*.
-* Once the incoming-scene (aka Menu) finihes transitioning issues *SceneTransitionComplete*.
-* NM makes current-scene = incoming-scene which effectively **discards** the previous current-scene (Splash) even if it hasn't completed any transitioning. No point in running a scene that can't be seen.
-* *Menu* begins issuing *SceneBusy* signal while it is running.
-* User selects **Settings**.
-* *Menu* pushes itself onto the stack.
-* *Menu* pushes *Settings* onto the stack which causes *Settings*'s *EnterNode()* to be called. *Settings* needs to track state if it has been entered prior.
-* *Menu* begins issuing *SceneTransitioningOut* and *Settings* begins issuing *SceneTransitioningIn*.
-* Once *Settings* finishes transitioning onto the stage it issues *SceneTransitionComplete*.
-* NM detect and makes current-scene = incoming-scene (Settings) and *Menu* is discarded but is held on the stack.
-* User selects to exit *Settings* scene. *Settings* scene issues the *SceneTransitioningOut*.
-* NM activates stack-top and sends *EnterStageNode()* to *Menu*.
-* Both *Settings* and *Menu* are now running.
-* *Menu* finishes transitioning and issues *SceneTransitionComplete*.
-* *Menu* is now running.
----
-
-
-* Once Boot completes its task it notifies NM, NM then notifies Splash. At the same time NM pops Splash and continues to run it, NM also begins running what is at the top which is Menu.
-* Once Splash is complete it notifies NM and may begin transitioning off the stage.
-* NM then notifies the scene on the top of the stack and pops it.
-* Menu comes off the stack as the outgoing scene and transitions onto the stage.
-* At the same time 
-* The Menu scene will typically push itself back on the stack after popping the next scene to run.

@@ -37,7 +37,7 @@ func main() {
 	sceneE := exitScene.(api.IScene)
 	sceneE.SetTransitionDuration(transitionDuration)
 	exitScene.SetVisible(false)
-	engine.Push(exitScene)
+	world.Push(exitScene)
 
 	splash, err := newBasicSplashScene("Splash", world, fontTextureRenderer)
 	if err != nil {
@@ -46,7 +46,7 @@ func main() {
 	sceneS := splash.(api.IScene)
 	sceneS.SetTransitionDuration(transitionDuration)
 	splash.SetVisible(false)
-	engine.Push(splash)
+	world.Push(splash)
 
 	// This example uses the super basic Boot scene that does absolutely nothing.
 	boot, err := NewBasicBootScene("Boot", world, fontTextureRenderer)
@@ -58,7 +58,7 @@ func main() {
 
 	// nodes.PrintTree(splash)
 
-	engine.Push(boot)
+	world.Push(boot)
 
 	engine.Begin()
 

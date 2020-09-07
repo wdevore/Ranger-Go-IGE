@@ -38,14 +38,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	engine.Push(exitScene)
+	world.Push(exitScene)
 
 	// This example uses the super basic Boot scene that does absolutely nothing.
 	boot := NewBasicBootScene("Boot", world, fontTextureRenderer)
 
 	// nodes.PrintTree(splash)
 
-	engine.Push(boot)
+	world.Push(boot)
 
 	engine.Begin()
 

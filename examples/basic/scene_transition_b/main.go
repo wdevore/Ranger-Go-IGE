@@ -33,7 +33,7 @@ func main() {
 	}
 	exitScene.SetVisible(false)
 
-	engine.Push(exitScene)
+	world.Push(exitScene)
 
 	// This example uses the super basic Boot scene that does absolutely nothing.
 	boot, err := newBasicBootScene("Boot", world, fontTextureRenderer)
@@ -41,7 +41,7 @@ func main() {
 		panic(err)
 	}
 
-	engine.Push(boot)
+	world.Push(boot)
 
 	engine.Begin()
 

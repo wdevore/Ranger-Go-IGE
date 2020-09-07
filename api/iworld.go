@@ -7,9 +7,17 @@ import (
 // IWorld represents properties of the game world
 type IWorld interface {
 	Configure() error
+	End()
 
+	NodeManager() INodeManager
 	Properties() *configuration.Properties
 	PropertiesOverride(configFiel string)
+
+	SetPreNode(node INode)
+	SetPostNode(node INode)
+	Push(scene INode)
+
+	RouteEvents(event IEvent)
 
 	GenGraphicID() int
 	AddRenderGraphic(graphic IRenderGraphic, graphicID int)

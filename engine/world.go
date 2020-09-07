@@ -11,6 +11,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/configuration"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
+	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/fonts"
 	"github.com/wdevore/Ranger-Go-IGE/engine/textures"
@@ -18,6 +19,11 @@ import (
 
 // World is the main component of ranger
 type world struct {
+	// -----------------------------------------
+	// Scene graph is a node manager
+	// -----------------------------------------
+	sceneGraph api.INodeManager
+
 	properties   *configuration.Properties
 	relativePath string
 
@@ -51,6 +57,9 @@ type world struct {
 
 func newWorld(relativePath string) api.IWorld {
 	o := new(world)
+
+	o.sceneGraph = nodes.NewNodeManager()
+
 	o.properties = &configuration.Properties{}
 	o.relativePath = relativePath
 
@@ -129,6 +138,39 @@ func (w *world) loadShaderSource(dataPath, shaderSrc string) (code *string, err 
 	sCode := string(bytes)
 
 	return &sCode, nil
+}
+
+func (w *world) NodeManager() api.INodeManager {
+	return w.sceneGraph
+}
+
+func (w *world) End() {
+	// So THIS is where the world actually comes to an END!
+	w.sceneGraph.End()
+}
+
+func (w *world) SetPreNode(node api.INode) {
+	w.sceneGraph.SetPreNode(node)
+}
+
+func (w *world) SetPostNode(node api.INode) {
+	w.sceneGraph.SetPostNode(node)
+}
+
+func (w *world) Push(scene api.INode) {
+	_, ok := scene.(api.IScene)
+	if !ok {
+		panic("Scene being pushed doesn't implementing IScene interface.")
+	}
+
+	// Post process all Atlases
+	w.PostProcess()
+
+	w.sceneGraph.PushNode(scene)
+}
+
+func (w *world) RouteEvents(event api.IEvent) {
+	w.NodeManager().RouteEvents(event)
 }
 
 func (w *world) Configure() error {

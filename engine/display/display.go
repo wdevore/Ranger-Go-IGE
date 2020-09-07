@@ -218,7 +218,7 @@ func (g *GlfwDisplay) keyCallback(glfwW *glfw.Window, key glfw.Key, scancode int
 	event.SetKeyScan(uint32(key))
 	event.SetState(uint32(action))
 	event.SetKeyMotif(uint32(mods))
-	g.engine.RouteEvents(event)
+	g.engine.World().RouteEvents(event)
 
 	if action == glfw.Press {
 		switch key {
@@ -263,7 +263,7 @@ func (g *GlfwDisplay) mouseButtonCallback(glfwW *glfw.Window, button glfw.MouseB
 	event.SetState(uint32(action))
 	event.SetKeyMotif(uint32(mods))
 
-	g.engine.RouteEvents(event)
+	g.engine.World().RouteEvents(event)
 }
 
 // Mouse wheel events
@@ -272,7 +272,7 @@ func (g *GlfwDisplay) scrollCallback(glfwW *glfw.Window, xoff float64, yoff floa
 	event.SetType(api.IOTypeMouseWheel)
 	event.SetMouseRelMovement(int32(xoff), int32(yoff))
 
-	g.engine.RouteEvents(event)
+	g.engine.World().RouteEvents(event)
 }
 
 // Mouse motion events
@@ -291,7 +291,7 @@ func (g *GlfwDisplay) cursorPosCallback(glfwW *glfw.Window, xpos float64, ypos f
 	dvr := g.engine.World().Properties().Window.DeviceRes
 	event.SetMousePosition(int32(g.xpos), int32(dvr.Height)-int32(g.ypos))
 
-	g.engine.RouteEvents(event)
+	g.engine.World().RouteEvents(event)
 }
 
 func (g *GlfwDisplay) framebufferSizeCallback(glfwW *glfw.Window, width int, height int) {

@@ -14,8 +14,6 @@ import (
 
 // The node manager is basically the SceneGraph
 type nodeManager struct {
-	world api.IWorld
-
 	clearBackground bool
 
 	// Stack of nodes
@@ -47,9 +45,8 @@ type nodeManager struct {
 
 // NewNodeManager constructs a manager for node.
 // It manages the lifecycle and events
-func NewNodeManager(world api.IWorld) api.INodeManager {
+func NewNodeManager() api.INodeManager {
 	o := new(nodeManager)
-	o.world = world
 
 	// It is very rare that the manager would clear the background
 	// because almost all nodes will handle clearing/painting their
@@ -67,15 +64,15 @@ func NewNodeManager(world api.IWorld) api.INodeManager {
 	return o
 }
 
-func (n *nodeManager) Configure() error {
+func (n *nodeManager) Configure(world api.IWorld) error {
 	// Setup view/projection matrix composition
 
-	n.configureProjections(n.world)
+	n.configureProjections(world)
 
 	// -------------------------------------------------------
 	// Default Shader
-	programID := n.world.Shader().Program()
-	n.world.Shader().Use()
+	programID := world.Shader().Program()
+	world.Shader().Use()
 
 	n.projLoc = gl.GetUniformLocation(programID, gl.Str("projection\x00"))
 	if n.projLoc < 0 {
@@ -90,14 +87,14 @@ func (n *nodeManager) Configure() error {
 	pm := n.projection.Matrix().Matrix()
 	gl.UniformMatrix4fv(n.projLoc, 1, false, &pm[0])
 
-	vm := n.world.Viewspace().Matrix()
+	vm := world.Viewspace().Matrix()
 	gl.UniformMatrix4fv(n.viewLoc, 1, false, &vm[0])
 	// -------------------------------------------------------
 
 	// -------------------------------------------------------
 	// Texture Shader
-	programID = n.world.TextureShader().Program()
-	n.world.TextureShader().Use()
+	programID = world.TextureShader().Program()
+	world.TextureShader().Use()
 
 	projLoc := gl.GetUniformLocation(programID, gl.Str("projection\x00"))
 	if projLoc < 0 {
@@ -119,7 +116,7 @@ func (n *nodeManager) Configure() error {
 	// placed on the stack on the first save() call.
 	n.transStack.Initialize(identity)
 
-	dvr := n.world.Properties().Window.DeviceRes
+	dvr := world.Properties().Window.DeviceRes
 	n.postM4.SetTranslate3Comp(float32(-dvr.Width/2+10.0), float32(-dvr.Height/2)+10.0, 0.0)
 
 	return nil
@@ -353,46 +350,6 @@ func (n *nodeManager) PostVisit() {
 		}
 	}
 }
-
-// func (n *nodeManager) oldVisit(interpolation float64) bool {
-// 	if n.stack.isEmpty() {
-// 		return false
-// 	}
-
-// 	// fmt.Println("NodeManager: visiting ", m.stack.runningNode)
-
-// 	if n.stack.hasNextNode() {
-// 		n.setNextNode()
-// 	}
-
-// 	n.transStack.Save()
-
-// 	runningScene := n.stack.runningNode.(api.IScene)
-
-// 	currentState, _ := runningScene.State()
-
-// 	if currentState == api.SceneReplaceTake {
-// 		repl := runningScene.GetReplacement()
-// 		// fmt.Println("NodeManager: SceneReplaceTake with ", repl)
-// 		if repl != nil {
-// 			n.stack.replace(repl)
-// 			// Immediately switch to the new replacement node
-// 			if n.stack.hasNextNode() {
-// 				n.setNextNode()
-// 			}
-// 		} else {
-// 			n.exitNodes(n.stack.runningNode)
-// 			n.stack.pop()
-// 		}
-// 	}
-
-// 	// Visit the running node
-// 	Visit(n.stack.runningNode, n.transStack, interpolation)
-
-// 	n.transStack.Restore()
-
-// 	return true // continue to draw.
-// }
 
 func (n *nodeManager) setSceneState(node api.INode, state int) {
 	scene, _ := node.(api.IScene)

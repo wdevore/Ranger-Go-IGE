@@ -9,7 +9,6 @@ import (
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/display"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
@@ -39,11 +38,6 @@ type engine struct {
 	windowDisplay *display.GlfwDisplay
 
 	// -----------------------------------------
-	// Scene graph is a node manager
-	// -----------------------------------------
-	sceneGraph api.INodeManager
-
-	// -----------------------------------------
 	// Debug
 	// -----------------------------------------
 	stepEnabled bool
@@ -65,7 +59,7 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		o.world.PropertiesOverride(overrides)
 	}
 
-	o.sceneGraph = nodes.NewNodeManager(o.world)
+	// o.sceneGraph = nodes.NewNodeManager()
 
 	o.windowDisplay = display.NewDisplay(o)
 	err = o.windowDisplay.Initialize(o.world)
@@ -83,6 +77,11 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		return nil, errors.New("Engine.Construct World Configure error: " + err.Error())
 	}
 
+	// The NodeManager can't configure itself until OpenGL has
+	// been initialized which happens above during display
+	// construction.
+	o.world.NodeManager().Configure(o.world)
+
 	// ---------------------------------------------------------
 	if o.world.Properties().Engine.ShowTimingInfo {
 		o.postNode, err = extras.NewDynamicTextNode("TimingInfo", 500, o.world, nil)
@@ -96,15 +95,14 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		gic := o.postNode.(api.IColor)
 		gic.SetColor(color.NewPaletteInt64(color.Peach).Array())
 
-		o.SetPostNode(o.postNode)
+		// o.SetPostNode(o.postNode)
+		o.world.SetPostNode(o.postNode)
 	}
 
 	return o, nil
 }
 
 func (e *engine) Begin() {
-	e.sceneGraph.Configure()
-
 	e.running = true
 
 	e.loop()
@@ -129,7 +127,9 @@ func (e *engine) loop() {
 	renderCnt := int64(0)
 	// avgRender := 0.0
 
-	if !e.sceneGraph.Begin() {
+	sceneGraph := e.world.NodeManager()
+
+	if !sceneGraph.Begin() {
 		panic("Not enough scenes to start engine. There must be 2 or more.")
 	}
 
@@ -154,7 +154,7 @@ func (e *engine) loop() {
 			lagging := true
 			for lagging {
 				if lag >= nsPerUpdate {
-					e.sceneGraph.Update(msPerUpdate, float64(elapsedNano)*frameScaler)
+					sceneGraph.Update(msPerUpdate, float64(elapsedNano)*frameScaler)
 					lag -= nsPerUpdate
 					upsCnt++
 				} else {
@@ -171,13 +171,13 @@ func (e *engine) loop() {
 
 		renderT := time.Now()
 
-		e.sceneGraph.PreVisit()
+		sceneGraph.PreVisit()
 
 		// Calc interpolation for nodes that need it.
 		interpolation := float64(lag) / float64(nsPerUpdate)
 
 		// Once the last scene has exited the stage we stop running.
-		moreScenes := e.sceneGraph.Visit(interpolation)
+		moreScenes := sceneGraph.Visit(interpolation)
 
 		if !moreScenes {
 			fmt.Println("Engine: no more nodes to visit. Exiting...")
@@ -188,7 +188,7 @@ func (e *engine) loop() {
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
 		// Finish rendering
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
-		e.sceneGraph.PostVisit()
+		sceneGraph.PostVisit()
 
 		if renderCnt >= renderMaxCnt {
 			e.world.SetAvgRender(float64(renderElapsedTime) / float64(renderMaxCnt) / 1000.0)
@@ -221,38 +221,16 @@ func (e *engine) loop() {
 	}
 }
 
-func (e *engine) SetPreNode(node api.INode) {
-	e.sceneGraph.SetPreNode(node)
-}
-
-func (e *engine) SetPostNode(node api.INode) {
-	e.sceneGraph.SetPostNode(node)
-}
-
-func (e *engine) Push(scene api.INode) {
-	_, ok := scene.(api.IScene)
-	if !ok {
-		panic("Scene being pushed doesn't implementing IScene interface.")
-	}
-
-	// Post process all Atlases
-	e.world.PostProcess()
-
-	e.sceneGraph.PushNode(scene)
-}
-
 func (e *engine) End() {
 	fmt.Println("Engine shutting down...")
-	e.sceneGraph.End()
+	// Oh noooo! The world is coming to an end!
+	e.world.End()
+
 	e.windowDisplay.Shutdown()
 }
 
 func (e *engine) World() api.IWorld {
 	return e.world
-}
-
-func (e *engine) RouteEvents(event api.IEvent) {
-	e.sceneGraph.RouteEvents(event)
 }
 
 func (e *engine) drawStats(fps, ups int, avgRend float64) {

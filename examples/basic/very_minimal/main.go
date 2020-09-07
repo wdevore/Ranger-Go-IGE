@@ -22,14 +22,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	engine.Push(splash)
+	world.Push(splash)
 
 	// This example uses the super basic Boot scene that does absolutely nothing.
 	boot := extras.NewBasicBootScene("Boot")
 
 	nodes.PrintTree(splash)
 
-	engine.Push(boot)
+	world.Push(boot)
 
 	engine.Begin()
 

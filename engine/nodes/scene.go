@@ -23,7 +23,9 @@ func (s *Scene) State() (current, previous int) {
 	return s.currentState, s.previousState
 }
 
-// Notify is the channel NodeManager uses to cmd the Scene
+// Notify is the channel NodeManager uses to cmd the Scene.
+// This is the minimal required for an instant transition
+// from Boot to first scene.
 func (s *Scene) Notify(state int) {
 	s.SetCurrentState(state)
 

@@ -10,13 +10,4 @@ type IEngine interface {
 
 	// World provides access to the engine's world properties
 	World() IWorld
-
-	SetPreNode(INode)
-	SetPostNode(INode)
-
-	// Push pushes the given node onto the stack as the
-	// first scene to start once the engine's configuration in complete.
-	Push(INode)
-
-	RouteEvents(event IEvent)
 }

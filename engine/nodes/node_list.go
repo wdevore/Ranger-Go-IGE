@@ -1,8 +1,6 @@
 package nodes
 
 import (
-	"fmt"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
 
@@ -35,7 +33,7 @@ func (l *NodeList) Remove(node api.INode) {
 	if idx >= 0 {
 		l.DeleteAt(idx)
 	} else {
-		fmt.Println("NodeManager: Unable to remove ", node, " node")
+		// fmt.Println("NodeManager: Unable to remove ", node, " node")
 	}
 }
 
