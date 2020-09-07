@@ -24,13 +24,13 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Zones combined with Zoom
 * **Done** Interpolation
 * **Done** Sprite Textures (quads)
-* --*Workng*-- Scene Transitioning
-* Simple motion animations
-* Physics with bitmaps
+* **Done** Scene Transitioning
 * **Done** Bitmap fonts
-* Audio (SFXR 8bit sound)
+* **Done** Simple motion animations
+* --*Workng*-- Audio (SFXR 8bit sound)
   * May build GUI using imGui
   * May use: https://github.com/faiface/beep
+* Physics with bitmaps
 * QuadTree for view-space culling
 * Simple Widget GUI framework
   * Buttons
