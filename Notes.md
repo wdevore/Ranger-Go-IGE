@@ -174,3 +174,8 @@ Boot --> Splash --> Menu --> Settings -->  Menu
       Menu
       Exit
    ```
+# Audio
+Audio has both internal and external values. 
+The audio generator works on values that aren't exactly meaningfull to users and that is what the external values are for.
+There is a converter to translate internal to external prior to viewing by a user.
+It is the internal values that are persisted.
