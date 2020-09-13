@@ -100,44 +100,44 @@ func BuildMenuBar(config *settings.ConfigJSON, generator api.ISampleGenerator) {
 		b := false
 
 		if imgui.BeginMenu("SampleRate(Hz)") {
-			b = sound.SfxrJ.SampleRate == 44100
+			b = sound.GValues.SampleRate() == 44100
 			changed := imgui.Checkbox("44k", &b)
 			if changed {
-				sound.SfxrJ.SampleRate = 44100
+				sound.GValues.SetSampleRate(44100)
 			}
 
-			b = sound.SfxrJ.SampleRate == 22050
+			b = sound.GValues.SampleRate() == 22050
 			changed = imgui.Checkbox("22k", &b)
 			if changed {
-				sound.SfxrJ.SampleRate = 22050
+				sound.GValues.SetSampleRate(22050)
 			}
 
-			b = sound.SfxrJ.SampleRate == 11025
+			b = sound.GValues.SampleRate() == 11025
 			changed = imgui.Checkbox("11k", &b)
 			if changed {
-				sound.SfxrJ.SampleRate = 11025
+				sound.GValues.SetSampleRate(11025)
 			}
 
-			b = sound.SfxrJ.SampleRate == 5512
+			b = sound.GValues.SampleRate() == 5512
 			changed = imgui.Checkbox("5.5k", &b)
 			if changed {
-				sound.SfxrJ.SampleRate = 5512
+				sound.GValues.SetSampleRate(5512)
 			}
 
 			imgui.EndMenu()
 		}
 
 		if imgui.BeginMenu("SampleSize") {
-			b = sound.SfxrJ.SampleSize == 8
+			b = sound.GValues.SampleSize() == 8
 			changed := imgui.Checkbox("8 bit", &b)
 			if changed {
-				sound.SfxrJ.SampleSize = 8
+				sound.GValues.SetSampleSize(8)
 			}
 
-			b = sound.SfxrJ.SampleSize == 16
+			b = sound.GValues.SampleSize() == 16
 			changed = imgui.Checkbox("16 bit", &b)
 			if changed {
-				sound.SfxrJ.SampleSize = 16
+				sound.GValues.SetSampleSize(16)
 			}
 
 			imgui.EndMenu()
