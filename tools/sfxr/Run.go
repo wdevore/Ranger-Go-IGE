@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/faiface/beep"
+	"github.com/faiface/beep/speaker"
 	"github.com/inkyblackness/imgui-go/v2"
+	"github.com/wdevore/Ranger-Go-IGE/engine/audio"
 	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/gui"
 	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/settings"
+	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/sound"
 )
 
 // Platform covers mouse/keyboard/gamepad inputs, cursor shape, timing, windowing.
@@ -64,7 +68,15 @@ func run(p Platform, r Renderer, config *settings.ConfigJSON) {
 
 	// // Start simulation thread. It will idle by default.
 	// go simulator.Run(ch)
-	// imgui.StyleColorsClassic()
+
+	generator := audio.NewSfxrGenerator()
+	format := beep.Format{SampleRate: 44100, NumChannels: 1, Precision: 2}
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+
+	sound.GValues = audio.ConfigureTone(465, sound.SfxrJ.WaveShape)
+	sound.UpdateSfxrData(sound.GValues)
+	sound.Generate(sound.GValues, generator)
+	sound.Play(generator)
 
 	// -------------------------------------------------------------
 	// Now start main GUI loop
@@ -80,7 +92,7 @@ func run(p Platform, r Renderer, config *settings.ConfigJSON) {
 		// ---------------------------------------------------------
 		// ---------------------------------------------------------
 
-		gui.BuildGui(config)
+		gui.DrawGui(config, generator)
 
 		imgui.EndFrame()
 		// ---------------------------------------------------------

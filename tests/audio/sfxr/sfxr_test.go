@@ -21,8 +21,9 @@ import (
 // go test -v -count=1 sfxr_test.go
 
 func TestRunner(t *testing.T) {
-	sxfrLoad()
+	// sxfrLoad()
 	// memoryBuf()
+	waveStreamWriter()
 }
 
 func sxfrLoad() {
@@ -70,7 +71,8 @@ func sxfrLoad() {
 }
 
 func waveStreamWriter() {
-	values := audio.ConfigureTone(440, api.WaveSINE)
+	values := audio.ConfigureTone(440, api.WaveSawtooth)
+	values.SetSoundVol(0.5)
 
 	generator := audio.NewSfxrGenerator()
 	generator.Generate(values)
@@ -88,7 +90,7 @@ func waveStreamWriter() {
 		log.Fatalln("ERROR:", err)
 	}
 
-	format := beep.Format{SampleRate: 44100, NumChannels: 1, Precision: 1}
+	format := beep.Format{SampleRate: 44100, NumChannels: 1, Precision: 2}
 
 	defer waveF.Close()
 	wav.Encode(waveF, generator, format)
@@ -131,8 +133,8 @@ func waveMemWriter() {
 
 func memoryBuf() {
 
-	// rand.Seed(13163)
-	// values := audio.ConfigureTone(440, api.WaveSINE)
+	rand.Seed(13163)
+	values := audio.ConfigureTone(440, api.WaveSINE)
 	// rand.Seed(13163)
 	// values := audio.ConfigureExplosion(api.WaveNoise)
 	// rand.Seed(1)
@@ -165,8 +167,8 @@ func memoryBuf() {
 	// rand.Seed(16) // Sci-Fi eery high wobble
 	// rand.Seed(18) // Short noise + Alarm
 	// rand.Seed(19) // Chirp + high ching
-	rand.Seed(21) // High + Long Low
-	values := audio.ConfigureRandom()
+	// rand.Seed(21) // High + Long Low
+	// values := audio.ConfigureRandom()
 
 	generator := audio.NewSfxrGenerator()
 	generator.Generate(values)

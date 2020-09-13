@@ -87,8 +87,8 @@ func (g *generator) setForRepeat(v api.IGeneratorValues) {
 	}
 	g.envelopePunch = v.Punch()
 
-	g.waveShape = v.WaveShape()
 	g.prevWaveShape = g.waveShape
+	g.waveShape = v.WaveShape()
 
 	g.period = 100.0 / (v.BaseFreq()*v.BaseFreq() + 0.001)
 	g.periodMax = 100.0 / (v.FreqLimit()*v.FreqLimit() + 0.001)
@@ -283,6 +283,7 @@ func (g *generator) Generate(values api.IGeneratorValues) {
 
 			// Base waveform
 			fp := float64(phase) / float64(iPeriod)
+
 			switch g.waveShape {
 			case api.WaveSQUARE:
 				if fp < g.dutyCycle {
@@ -290,14 +291,16 @@ func (g *generator) Generate(values api.IGeneratorValues) {
 				} else {
 					subSample = -0.5
 				}
-			case api.WaveSAWTOOTH:
+			case api.WaveTriangle:
 				if fp < g.dutyCycle {
 					subSample = -1.0 + 2.0*fp/g.dutyCycle
 				} else {
 					subSample = 1.0 - 2.0*(fp-g.dutyCycle)/(1.0-g.dutyCycle)
 				}
+			case api.WaveSawtooth:
+				subSample = -1.0 + 1.0*fp/g.dutyCycle
 			case api.WaveSINE:
-				subSample = math.Sin(fp * 2.0 * math.Pi)
+				subSample = math.Sin(fp*2.0*math.Pi) / 2.0
 			case api.WaveNoise, api.WaveNoisePink, api.WaveNoiseBrownian:
 				subSample = g.noiseBuffer[(phase * (noiseBufferSize / iPeriod))]
 			default:

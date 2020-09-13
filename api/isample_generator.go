@@ -7,16 +7,18 @@ const (
 
 	// WaveSQUARE a square wave
 	WaveSQUARE = 0
-	// WaveSAWTOOTH a sawtooth wave
-	WaveSAWTOOTH = 1
+	// WaveTriangle a sawtooth wave
+	WaveTriangle = 1
 	// WaveSINE a sine wave
 	WaveSINE = 2
+	// WaveSawtooth a sine wave
+	WaveSawtooth = 3
 	// WaveNoise is white noise
-	WaveNoise = 3
+	WaveNoise = 4
 	// WaveNoisePink is pink noise
-	WaveNoisePink = 4
+	WaveNoisePink = 5
 	// WaveNoiseBrownian is brownian/red noise
-	WaveNoiseBrownian = 5
+	WaveNoiseBrownian = 6
 
 	// --------------------------------
 	// Playback volume

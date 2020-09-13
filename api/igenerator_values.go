@@ -20,10 +20,14 @@ type IGeneratorValues interface {
 
 	BaseFreq() float64
 	SetBaseFreq(float64)
+	ToIBaseFreq(float64)  // Convert from External to Internal
+	ToEBaseFreq() float64 // Convert from Internal to External
 	FreqLimit() float64
 	SetFreqLimit(float64)
 	FreqRamp() float64
 	SetFreqRamp(float64)
+	ToIFreqRamp(float64) // Slide
+	ToEFreqRamp() float64
 	FreqDramp() float64
 	SetFreqDramp(float64)
 

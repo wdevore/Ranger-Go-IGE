@@ -1,25 +1,18 @@
 package gui
 
 import (
-	"github.com/wdevore/Ranger-Go-IGE/engine/audio"
+	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/settings"
 )
 
 var (
-	textBuffer = ""
-	sampleRate int
-	sampleSize int
-	autoPlay   bool
-
-	// SfxrJ holds the settings for an effect
-	SfxrJ audio.SfxrJSON
+// textBuffer = ""
 )
 
-// BuildGui ...
-func BuildGui(config *settings.ConfigJSON) {
+// DrawGui ...
+func DrawGui(config *settings.ConfigJSON, generator api.ISampleGenerator) {
 	BuildMenuBar(config)
-	BuildGeneratorsPanel()
-	BuildWaveformPanel()
-	BuildSettingsPanel()
-
+	DrawGeneratorsPanel(config, generator)
+	BuildWaveformPanel(config)
+	BuildSettingsPanel(config, generator)
 }

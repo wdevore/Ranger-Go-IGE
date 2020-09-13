@@ -310,7 +310,8 @@ func ConfigureLaserShoot() api.IGeneratorValues {
 
 	o.setToDefaults()
 
-	o.baseValues.waveShape = madRand(2.0)
+	o.baseValues.waveShape = madRand(3.0)
+
 	if o.baseValues.waveShape == api.WaveSINE && rand.Float64() > 0.5 {
 		o.baseValues.waveShape = madRand(1.0)
 	}
@@ -328,7 +329,7 @@ func ConfigureLaserShoot() api.IGeneratorValues {
 		o.freqRamp = -0.15 - rand.Float64()*0.2
 	}
 
-	if o.baseValues.waveShape == api.WaveSAWTOOTH {
+	if o.baseValues.waveShape == api.WaveTriangle {
 		o.duty = 1.0
 	}
 
@@ -407,7 +408,7 @@ func ConfigurePowerUp() api.IGeneratorValues {
 	o.setToDefaults()
 
 	if rand.Float64() > 0.5 {
-		o.baseValues.waveShape = api.WaveSAWTOOTH
+		o.baseValues.waveShape = api.WaveTriangle
 		o.duty = 1.0
 	} else {
 		o.duty = rand.Float64() * 0.6
@@ -439,17 +440,14 @@ func ConfigureHitHurt() api.IGeneratorValues {
 
 	o.setToDefaults()
 
-	o.baseValues.waveShape = madRand(2.0)
+	o.baseValues.waveShape = madRand(3.0)
 
-	if o.baseValues.waveShape == api.WaveSINE {
+	switch o.baseValues.waveShape {
+	case api.WaveSINE:
 		o.baseValues.waveShape = api.WaveNoise
-	}
-
-	if o.baseValues.waveShape == api.WaveSQUARE {
+	case api.WaveSQUARE:
 		o.duty = rand.Float64() * 0.6
-	}
-
-	if o.baseValues.waveShape == api.WaveSAWTOOTH {
+	case api.WaveTriangle, api.WaveSawtooth:
 		o.duty = 1.0
 	}
 
@@ -513,6 +511,63 @@ func ConfigureBlipSelect() api.IGeneratorValues {
 	o.baseValues.decay = rand.Float64() * 0.2
 
 	o.hpfFreq = 0.1
+
+	return o
+}
+
+// ConfigureSynth creates a random synthetic sound
+func ConfigureSynth() api.IGeneratorValues {
+	o := new(generatorValues)
+
+	o.setToDefaults()
+
+	o.baseValues.waveShape = madRand(1.0)
+	if rand.Float64() > 0.5 {
+		o.baseFreq = 0.2477
+	} else {
+		o.baseFreq = 0.1737
+	}
+
+	if madRand(4.0) > 3.0 {
+		o.baseValues.attack = frnd(0.5)
+	} else {
+		o.baseValues.attack = 0
+	}
+
+	o.baseValues.sustain = frnd(1)
+	o.baseValues.punch = frnd(1)
+	o.baseValues.decay = frnd(0.9) + 0.1
+
+	aMod := []float64{0, 0, 0, 0, -0.3162, 0.7454, 0.7454}
+	o.arpMod = aMod[madRand(6)]
+	o.arpSpeed = frnd(0.5) + 0.4
+
+	o.duty = frnd(1)
+	if madRand(2) == 2 {
+		o.dutyRamp = frnd(1)
+	} else {
+		o.dutyRamp = 0
+	}
+
+	if madRand(1) == 0 {
+		o.lpfFreq = 1
+	} else {
+		o.lpfFreq = frnd(1) * frnd(1)
+	}
+
+	o.lpfRamp = rndr(-1, 1)
+	o.lpfResonance = frnd(1)
+
+	if madRand(3) == 3 {
+		o.hpfFreq = frnd(1)
+	} else {
+		o.hpfFreq = 0
+	}
+	if madRand(3) == 3 {
+		o.hpfRamp = frnd(1)
+	} else {
+		o.hpfRamp = 0
+	}
 
 	return o
 }
@@ -586,14 +641,18 @@ func ConfigureTone(tone float64, waveShape int) api.IGeneratorValues {
 	o.sampleSize = api.StandardSampleSize
 
 	o.waveShape = waveShape
+
 	// sqrt((440Hz / (oversampling = 8) / 441) - 0.001)
-	// o.baseFreq = 0.35173364 // 440 Hz
-	o.baseFreq = math.Sqrt((tone / 8.0 / 441.0) - 0.001)
+	// o.baseFreq = 0.35173363968773563 // 440 Hz
+	o.ToIBaseFreq(tone)
+	// o.freqRamp = 0.27
 	o.attack = 0.0
+
 	// seconds = p^2 * 100000 / 44100
-	// p = sqrt(seconds / 100000 * 44100)
-	o.sustain = 0.664078309 // 1 sec
+	o.sustain = math.Sqrt(1.0 / 100000 * 44100)
+	// o.sustain = 0.664078309 // 1 sec
 	// o.sustain = 0.939148551 // 2 sec
+
 	o.decay = 0.0
 	o.punch = 0.0
 
@@ -681,3 +740,13 @@ func (i *generatorValues) WaveShape() int            { return i.waveShape }
 func (i *generatorValues) SetWaveShape(v int)        { i.waveShape = v }
 func (i *generatorValues) Noise() []float64          { return i.noise }
 func (i *generatorValues) SetNoise(v []float64)      { i.noise = v }
+
+func (g *generatorValues) ToIBaseFreq(e float64) { g.baseFreq = math.Sqrt((e / 8.0 / 441.0) - 0.001) }
+func (g *generatorValues) ToEBaseFreq() float64 {
+	return api.StandardOverSampling * 441.0 * (sqr(g.baseFreq) + 0.001)
+}
+
+func (g *generatorValues) ToIFreqRamp(e float64) { g.baseFreq = math.Sqrt((e / 8.0 / 441.0) - 0.001) }
+func (g *generatorValues) ToEFreqRamp() float64 {
+	return 44100.0 * log(1.0-cube(g.freqRamp)/100.0, 0.5)
+}

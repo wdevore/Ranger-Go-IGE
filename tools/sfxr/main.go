@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Welcome to Deuron8 Go edition")
+	fmt.Println("Welcome to Sfxr Go edition")
 
 	context := imgui.CreateContext(nil)
 	defer context.Destroy()
@@ -21,7 +21,7 @@ func main() {
 	// -------------------------------------------------------------
 	// GLFW Window
 	// -------------------------------------------------------------
-	platform, err := platforms.NewGLFW("Go-Sfxr", 600, 900, io, platforms.GLFWClientAPIOpenGL3)
+	platform, err := platforms.NewGLFW("Go-Sfxr", 650, 900, io, platforms.GLFWClientAPIOpenGL3)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(-1)

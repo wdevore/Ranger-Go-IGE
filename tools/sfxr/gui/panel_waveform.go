@@ -4,87 +4,122 @@ import (
 	"fmt"
 
 	"github.com/inkyblackness/imgui-go/v2"
+	"github.com/wdevore/Ranger-Go-IGE/api"
+	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/settings"
+	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/sound"
 )
 
-var waveForm int
-
 // BuildWaveformPanel ...
-func BuildWaveformPanel() {
+func BuildWaveformPanel(config *settings.ConfigJSON) {
 	imgui.SetNextWindowPos(imgui.Vec2{X: 130, Y: 20.0})
+	imgui.SetNextWindowSize(imgui.Vec2{X: 515, Y: 60})
 
 	// b := false
 	defaultColor := imgui.Vec4{X: 0.25, Y: 0.25, Z: 0.25, W: 1.0}
 
 	imgui.Begin("Wave Form")
 
-	if waveForm == 0 {
+	if sound.SfxrJ.WaveShape == api.WaveSQUARE {
 		imgui.PushStyleColor(imgui.StyleColorButton, imgui.Vec4{X: 1.0, Y: 0.5, Z: 0.0, W: 1.0})
 	} else {
 		imgui.PushStyleColor(imgui.StyleColorButton, defaultColor)
 	}
 	if imgui.Button("Square") {
-		waveForm = 0
-		if autoPlay {
+		sound.SfxrJ.WaveShape = api.WaveSQUARE
+		sound.GValues.SetWaveShape(sound.SfxrJ.WaveShape)
+		if config.Autoplay {
 			fmt.Println("Auto playing")
 		}
 	}
 	imgui.PopStyleColor()
 
 	imgui.SameLine()
-	if waveForm == 1 {
+	if sound.SfxrJ.WaveShape == api.WaveTriangle {
 		imgui.PushStyleColor(imgui.StyleColorButton, imgui.Vec4{X: 1.0, Y: 0.5, Z: 0.0, W: 1.0})
 	} else {
 		imgui.PushStyleColor(imgui.StyleColorButton, defaultColor)
 	}
-	if imgui.Button("Sawtooth") {
-		waveForm = 1
-		if autoPlay {
+	if imgui.Button("Triangle") {
+		sound.SfxrJ.WaveShape = api.WaveTriangle
+		sound.GValues.SetWaveShape(sound.SfxrJ.WaveShape)
+		if config.Autoplay {
 			fmt.Println("Auto playing")
 		}
 	}
 	imgui.PopStyleColor()
 
 	imgui.SameLine()
-	if waveForm == 2 {
+	if sound.SfxrJ.WaveShape == api.WaveSINE {
 		imgui.PushStyleColor(imgui.StyleColorButton, imgui.Vec4{X: 1.0, Y: 0.5, Z: 0.0, W: 1.0})
 	} else {
 		imgui.PushStyleColor(imgui.StyleColorButton, defaultColor)
 	}
 	if imgui.Button("Sine") {
-		waveForm = 2
+		sound.SfxrJ.WaveShape = api.WaveSINE
+		sound.GValues.SetWaveShape(sound.SfxrJ.WaveShape)
+		if config.Autoplay {
+			fmt.Println("Auto playing")
+		}
 	}
 	imgui.PopStyleColor()
 
 	imgui.SameLine()
-	if waveForm == 3 {
+	if sound.SfxrJ.WaveShape == api.WaveSawtooth {
+		imgui.PushStyleColor(imgui.StyleColorButton, imgui.Vec4{X: 1.0, Y: 0.5, Z: 0.0, W: 1.0})
+	} else {
+		imgui.PushStyleColor(imgui.StyleColorButton, defaultColor)
+	}
+	if imgui.Button("Sawtooth") {
+		sound.SfxrJ.WaveShape = api.WaveSawtooth
+		sound.GValues.SetWaveShape(sound.SfxrJ.WaveShape)
+		if config.Autoplay {
+			fmt.Println("Auto playing")
+		}
+	}
+	imgui.PopStyleColor()
+
+	imgui.SameLine()
+	if sound.SfxrJ.WaveShape == api.WaveNoise {
 		imgui.PushStyleColor(imgui.StyleColorButton, imgui.Vec4{X: 1.0, Y: 0.5, Z: 0.0, W: 1.0})
 	} else {
 		imgui.PushStyleColor(imgui.StyleColorButton, defaultColor)
 	}
 	if imgui.Button("White Noise") {
-		waveForm = 3
+		sound.SfxrJ.WaveShape = api.WaveNoise
+		sound.GValues.SetWaveShape(sound.SfxrJ.WaveShape)
+		if config.Autoplay {
+			fmt.Println("Auto playing")
+		}
 	}
 	imgui.PopStyleColor()
 
 	imgui.SameLine()
-	if waveForm == 4 {
+	if sound.SfxrJ.WaveShape == api.WaveNoisePink {
 		imgui.PushStyleColor(imgui.StyleColorButton, imgui.Vec4{X: 1.0, Y: 0.5, Z: 0.0, W: 1.0})
 	} else {
 		imgui.PushStyleColor(imgui.StyleColorButton, defaultColor)
 	}
 	if imgui.Button("Pink Noise") {
-		waveForm = 4
+		sound.SfxrJ.WaveShape = api.WaveNoisePink
+		sound.GValues.SetWaveShape(sound.SfxrJ.WaveShape)
+		if config.Autoplay {
+			fmt.Println("Auto playing")
+		}
 	}
 	imgui.PopStyleColor()
 
 	imgui.SameLine()
-	if waveForm == 5 {
+	if sound.SfxrJ.WaveShape == api.WaveNoiseBrownian {
 		imgui.PushStyleColor(imgui.StyleColorButton, imgui.Vec4{X: 1.0, Y: 0.5, Z: 0.0, W: 1.0})
 	} else {
 		imgui.PushStyleColor(imgui.StyleColorButton, defaultColor)
 	}
 	if imgui.Button("Red Noise") {
-		waveForm = 5
+		sound.SfxrJ.WaveShape = api.WaveNoiseBrownian
+		sound.GValues.SetWaveShape(sound.SfxrJ.WaveShape)
+		if config.Autoplay {
+			fmt.Println("Auto playing")
+		}
 	}
 	imgui.PopStyleColor()
 
