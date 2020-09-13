@@ -14,9 +14,9 @@ var (
 )
 
 type settingsWidget struct {
-	title  string
-	cTitle string
-
+	title          string
+	cTitle         string
+	format         string
 	controlChanged bool
 	min, max       float32
 	v              float32
@@ -26,12 +26,13 @@ type settingsWidget struct {
 type setValue func(v float64)
 type getValue func() float64
 
-func newSettingsWidget(title string, min, max float32) *settingsWidget {
+func newSettingsWidget(title string, min, max float32, format string) *settingsWidget {
 	o := new(settingsWidget)
 	o.title = title
 	o.cTitle = title
 	o.min = min
 	o.max = max
+	o.format = format
 	return o
 }
 
@@ -50,63 +51,81 @@ func (s *settingsWidget) check(getGValue, getExtValue getValue, setGValue setVal
 		s.controlChanged = false
 		setGValue(float64(s.c))
 		if getExtValue != nil {
-			s.cTitle = fmt.Sprintf("%s (%0.3f)", s.title, getExtValue())
+			s.cTitle = fmt.Sprintf(s.format, s.title, getExtValue())
 		}
+		generator.Init(sound.GValues)
 		sound.Generate(sound.GValues, generator)
 		sound.Play(generator)
 	}
 }
 
-var baseFrequency = newSettingsWidget("Frequency", 0.042830679660512114, 1.009657448477109) //15Hz -> 3280Hz
-var frequencyRamp = newSettingsWidget("Slide (8va/sec)", -.3, 0.3)
-var envelopeSustain = newSettingsWidget("Sustain", 0.0, 3.0)
+var envelopeAttack = newSettingsWidget("Attack", 0.0, 1.0, "%s (%0.3f)")
+var envelopeSustain = newSettingsWidget("Sustain", 0.0, 1.0, "%s (%0.3f)")
+var envelopePunch = newSettingsWidget("Sustain Punch", 0.0, 1.0, "%s (%0.3f)")
+var envelopeDecay = newSettingsWidget("Decay", 0.0, 1.0, "%s (%0.3f)")
+
+var baseFrequency = newSettingsWidget("Frequency", 0.042830679660512114, 1.009657448477109, "%s (%0.1f)") //15Hz -> 3280Hz
+var frequencyLimit = newSettingsWidget("Min cutoff", 0.0, 1.0, "%s (%0.5f)")
+var frequencyRamp = newSettingsWidget("Slide", -1.0, 1.0, "%s (%0.5f)")
+var frequencyDeltaRamp = newSettingsWidget("Delta Slide", -1.0, 1.0, "%s (%0.5f)")
+
+var vibratoStrength = newSettingsWidget("Depth", 0.0, 1.0, "%s (%0.3f)")
+var vibratoSpeed = newSettingsWidget("Speed", 0.0, 1.0, "%s (%0.3f)")
+
+var arpeggioMod = newSettingsWidget("Multiplier", -1.0, 1.0, "%s (%0.3f)")
+var arpeggioSpeed = newSettingsWidget("Speed", 0.0, 1.0, "%s (%0.7f)##1")
+
+var dutyCycle = newSettingsWidget("Duty Cycle", 0.0, 1.0, "%s (%0.4f)")
+var dutyCycleRamp = newSettingsWidget("Sweep", -1.0, 1.0, "%s (%0.4f)##1")
+
+var repeatSpeed = newSettingsWidget("Rate", 0.0, 0.96, "%s (%0.4f)")
+
+var flangerPhaseOffset = newSettingsWidget("Offset", -1.0, 1.0, "%s (%0.4f)")
+var flangerPhaseRamp = newSettingsWidget("Sweep", -1.0, 1.0, "%s (%0.4f)##2")
+
+var lowPassFilterFrequency = newSettingsWidget("Cutoff Freq", 0.0, 1.0, "%s (%0.4f)##1")
+var lowPassFilterFrequencyRamp = newSettingsWidget("Cutoff Sweep", -1.0, 1.0, "%s (%0.4f)##1")
+var lowPassFilterFrequencyResonance = newSettingsWidget("Resonance", 0.035, 1.0, "%s (%0.4f)")
+
+var highPassFilterFrequency = newSettingsWidget("Cutoff Freq", 0.0, 1.0, "%s (%0.4f)##2")
+var highPassFilterFrequencyRamp = newSettingsWidget("Cutoff Sweep", -1.0, 1.0, "%s (%0.7f)##2")
 
 // BuildSettingsPanel ...
 func BuildSettingsPanel(config *settings.ConfigJSON, generator api.ISampleGenerator) {
 	imgui.SetNextWindowPos(imgui.Vec2{X: 130, Y: 85.0})
-	imgui.SetNextWindowSize(imgui.Vec2{X: 500, Y: 770})
+	imgui.SetNextWindowSize(imgui.Vec2{X: 510, Y: 770})
 
 	imgui.Begin("Settings")
 
 	imgui.SetNextItemOpen(true, imgui.ConditionAlways)
 	if imgui.CollapsingHeader("Envelope") {
-
-		f := float32(sound.SfxrJ.EnvelopeAttack)
-		changed := imgui.SliderFloat("Attack (sec)", &f, 0.0, 3.0)
-		if changed {
-			sound.SfxrJ.EnvelopeAttack = float64(f)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		envelopeAttack.check(
+			func() float64 { return sound.GValues.Attack() },
+			func() float64 { return sound.GValues.ToEAttack() },
+			func(v float64) { sound.GValues.SetAttack(v) },
+			generator,
+		)
 
 		envelopeSustain.check(
 			func() float64 { return sound.GValues.Sustain() },
-			func() float64 { return 2.2 },
+			func() float64 { return sound.GValues.ToESustain() },
 			func(v float64) { sound.GValues.SetSustain(v) },
 			generator,
 		)
 
-		f = float32(sound.SfxrJ.EnvelopePunch)
-		changed = imgui.SliderFloat("Sustain Punch (%)", &f, 0.0, 100.0)
-		if changed {
-			sound.SfxrJ.EnvelopePunch = float64(f)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		envelopePunch.check(
+			func() float64 { return sound.GValues.Punch() },
+			func() float64 { return sound.GValues.Punch() },
+			func(v float64) { sound.GValues.SetPunch(v) },
+			generator,
+		)
 
-		f = float32(sound.SfxrJ.EnvelopeDecay)
-		changed = imgui.SliderFloat("Decay (sec)", &f, 0.0, 3.0)
-		if changed {
-			sound.SfxrJ.EnvelopeDecay = float64(f)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		envelopeDecay.check(
+			func() float64 { return sound.GValues.Decay() },
+			func() float64 { return sound.GValues.ToEDecay() },
+			func(v float64) { sound.GValues.SetDecay(v) },
+			generator,
+		)
 	}
 
 	imgui.SetNextItemOpen(true, imgui.ConditionAlways)
@@ -118,15 +137,12 @@ func BuildSettingsPanel(config *settings.ConfigJSON, generator api.ISampleGenera
 			generator,
 		)
 
-		g := float32(sound.SfxrJ.FrequencyLimit)
-		changed := imgui.SliderFloat("Min freq-cutoff (Hz)", &g, 3.0, 3600.0)
-		if changed {
-			sound.SfxrJ.FrequencyLimit = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		frequencyLimit.check(
+			func() float64 { return sound.GValues.FreqLimit() },
+			func() float64 { return sound.GValues.ToEFreqLimit() },
+			func(v float64) { sound.GValues.SetFreqLimit(v) },
+			generator,
+		)
 
 		frequencyRamp.check(
 			func() float64 { return sound.GValues.FreqRamp() },
@@ -135,186 +151,148 @@ func BuildSettingsPanel(config *settings.ConfigJSON, generator api.ISampleGenera
 			generator,
 		)
 
-		g = float32(sound.SfxrJ.FrequencyDeltaRamp)
-		changed = imgui.SliderFloat("Delta Slide (8va/sec^2)", &g, 0.09, -0.09)
-		if changed {
-			sound.SfxrJ.FrequencyDeltaRamp = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		frequencyDeltaRamp.check(
+			func() float64 { return sound.GValues.FreqDramp() },
+			func() float64 { return sound.GValues.ToEFreqDramp() },
+			func(v float64) { sound.GValues.SetFreqDramp(v) },
+			generator,
+		)
 	}
 
 	imgui.SetNextItemOpen(true, imgui.ConditionAlways)
 	if imgui.CollapsingHeader("Vibrato") {
-		g := float32(sound.SfxrJ.VibratoStrength)
-		changed := imgui.SliderFloat("Depth (%)", &g, 0.0, 50.0)
-		if changed {
-			sound.SfxrJ.VibratoStrength = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		vibratoStrength.check(
+			func() float64 { return sound.GValues.VibStrength() },
+			func() float64 { return sound.GValues.ToEVibStrength() },
+			func(v float64) { sound.GValues.SetVibStrength(v) },
+			generator,
+		)
 
-		g = float32(sound.SfxrJ.VibratoSpeed)
-		changed = imgui.SliderFloat("Speed (Hz)", &g, 0.0, 70.0)
-		if changed {
-			sound.SfxrJ.VibratoSpeed = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
-
-		g = float32(sound.SfxrJ.VibratoDelay)
-		changed = imgui.SliderFloat("Delay", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.VibratoDelay = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		vibratoSpeed.check(
+			func() float64 { return sound.GValues.VibSpeed() },
+			func() float64 { return sound.GValues.ToEVibSpeed() },
+			func(v float64) { sound.GValues.SetVibSpeed(v) },
+			generator,
+		)
 	}
 
 	imgui.SetNextItemOpen(true, imgui.ConditionAlways)
 	if imgui.CollapsingHeader("Arpeggiation") {
-		g := float32(sound.SfxrJ.ArpeggioMod)
-		changed := imgui.SliderFloat("Frequency mult", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.ArpeggioMod = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		arpeggioMod.check(
+			func() float64 { return sound.GValues.ArpMod() },
+			func() float64 { return sound.GValues.ToEArpMod() },
+			func(v float64) { sound.GValues.SetArpMod(v) },
+			generator,
+		)
 
-		g = float32(sound.SfxrJ.ArpeggioSpeed)
-		changed = imgui.SliderFloat("Change speed (sec)", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.ArpeggioSpeed = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		arpeggioSpeed.check(
+			func() float64 { return sound.GValues.ArpSpeed() },
+			func() float64 { return sound.GValues.ToEArpSpeed() },
+			func(v float64) { sound.GValues.SetArpSpeed(v) },
+			generator,
+		)
 	}
 
 	imgui.SetNextItemOpen(true, imgui.ConditionAlways)
 	if imgui.CollapsingHeader("Duty Cycle") {
-		g := float32(sound.SfxrJ.DutyCycle)
-		changed := imgui.SliderFloat("Duty cycle", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.DutyCycle = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
-
-		g = float32(sound.SfxrJ.DutyCycleRamp)
-		changed = imgui.SliderFloat("Sweep##1", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.DutyCycleRamp = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
+		switch sound.GValues.WaveShape() {
+		case api.WaveSQUARE, api.WaveSawtooth, api.WaveTriangle:
+			dutyCycle.check(
+				func() float64 { return sound.GValues.Duty() },
+				func() float64 { return sound.GValues.ToEDuty() },
+				func(v float64) { sound.GValues.SetDuty(v) },
+				generator,
+			)
+			dutyCycleRamp.check(
+				func() float64 { return sound.GValues.DutyRamp() },
+				func() float64 { return sound.GValues.ToEDutyRamp() },
+				func(v float64) { sound.GValues.SetDutyRamp(v) },
+				generator,
+			)
+		default:
+			imgui.PushStyleColor(imgui.StyleColorSliderGrab, imgui.Vec4{X: 0.75, Y: 0.75, Z: 0.75, W: 1.0})
+			dutyCycle.check(
+				func() float64 { return 1.0 },
+				nil,
+				func(v float64) { sound.GValues.SetDuty(0.0) },
+				generator,
+			)
+			dutyCycleRamp.check(
+				func() float64 { return 1.0 },
+				nil,
+				func(v float64) { sound.GValues.SetDutyRamp(0.0) },
+				generator,
+			)
+			imgui.PopStyleColor()
 		}
 	}
 
 	imgui.SetNextItemOpen(true, imgui.ConditionAlways)
 	if imgui.CollapsingHeader("Retrigger") {
-		g := float32(sound.SfxrJ.RepeatSpeed)
-		changed := imgui.SliderFloat("Rate", &g, 0.0, 1400.0)
-		if changed {
-			sound.SfxrJ.RepeatSpeed = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		repeatSpeed.check(
+			func() float64 { return sound.GValues.RepeatSpeed() },
+			func() float64 { return sound.GValues.ToERepeatSpeed() },
+			func(v float64) { sound.GValues.SetRepeatSpeed(v) },
+			generator,
+		)
 	}
 
 	imgui.SetNextItemOpen(true, imgui.ConditionAlways)
 	if imgui.CollapsingHeader("Flanger") {
-		g := float32(sound.SfxrJ.FlangerPhaseOffset)
-		changed := imgui.SliderFloat("Offset (msec)", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.FlangerPhaseOffset = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		flangerPhaseOffset.check(
+			func() float64 { return sound.GValues.PhaOffset() },
+			func() float64 { return sound.GValues.ToEPhaOffset() },
+			func(v float64) { sound.GValues.SetPhaOffset(v) },
+			generator,
+		)
 
-		g = float32(sound.SfxrJ.FlangerPhaseRamp)
-		changed = imgui.SliderFloat("Sweep (msec/sec)##2", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.FlangerPhaseRamp = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		flangerPhaseRamp.check(
+			func() float64 { return sound.GValues.PhaRamp() },
+			func() float64 { return sound.GValues.ToEPhaRamp() },
+			func(v float64) { sound.GValues.SetPhaRamp(v) },
+			generator,
+		)
 	}
 
 	imgui.SetNextItemOpen(true, imgui.ConditionAlways)
 	if imgui.CollapsingHeader("Low-Pass Filter") {
-		g := float32(sound.SfxrJ.LowPassFilterFrequency)
-		changed := imgui.SliderFloat("Cutoff frequency (Hz)##1", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.LowPassFilterFrequency = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		lowPassFilterFrequency.check(
+			func() float64 { return sound.GValues.LpfFreq() },
+			func() float64 { return sound.GValues.ToELpfFreq() },
+			func(v float64) { sound.GValues.SetLpfFreq(v) },
+			generator,
+		)
 
-		g = float32(sound.SfxrJ.LowPassFilterFrequencyRamp)
-		changed = imgui.SliderFloat("Cutoff sweep (^sec)##1", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.LowPassFilterFrequencyRamp = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		lowPassFilterFrequencyRamp.check(
+			func() float64 { return sound.GValues.LpfRamp() },
+			func() float64 { return sound.GValues.ToELpfRamp() },
+			func(v float64) { sound.GValues.SetLpfRamp(v) },
+			generator,
+		)
 
-		g = float32(sound.SfxrJ.LowPassFilterFrequencyResonance)
-		changed = imgui.SliderFloat("Resonance (%)", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.LowPassFilterFrequencyResonance = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		lowPassFilterFrequencyResonance.check(
+			func() float64 { return sound.GValues.LpfResonance() },
+			func() float64 { return sound.GValues.ToELpfResonance() },
+			func(v float64) { sound.GValues.SetLpfResonance(v) },
+			generator,
+		)
 	}
 
 	imgui.SetNextItemOpen(true, imgui.ConditionAlways)
 	if imgui.CollapsingHeader("High-Pass Filter") {
-		g := float32(sound.SfxrJ.HighPassFilterFrequency)
-		changed := imgui.SliderFloat("Cutoff frequency (Hz)##2", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.HighPassFilterFrequency = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		highPassFilterFrequency.check(
+			func() float64 { return sound.GValues.HpfFreq() },
+			func() float64 { return sound.GValues.ToEHpfFreq() },
+			func(v float64) { sound.GValues.SetHpfFreq(v) },
+			generator,
+		)
 
-		g = float32(sound.SfxrJ.HighPassFilterFrequencyRamp)
-		changed = imgui.SliderFloat("Cutoff sweep (^sec)##2", &g, 0.0, 1.0)
-		if changed {
-			sound.SfxrJ.HighPassFilterFrequencyRamp = float64(g)
-		}
-		if imgui.IsMouseReleased(0) && changed {
-			sound.Generate(sound.GValues, generator)
-			sound.Play(generator)
-		}
+		highPassFilterFrequencyRamp.check(
+			func() float64 { return sound.GValues.HpfRamp() },
+			func() float64 { return sound.GValues.ToEHpfRamp() },
+			func(v float64) { sound.GValues.SetHpfRamp(v) },
+			generator,
+		)
 	}
 
 	imgui.End()

@@ -24,10 +24,10 @@ const (
 	// Playback volume
 	// --------------------------------
 
-	// PlaybackMasterVolume is main volume level
+	// PlaybackMasterVolume is main volume level applied after
 	PlaybackMasterVolume = 1.0
-	// PlaybackSoundVolume is ???
-	PlaybackSoundVolume = 1.0
+	// PlaybackSoundVolume is the volume applied during generation
+	PlaybackSoundVolume = 0.1
 
 	// --------------------------------
 	// Sampling
@@ -57,6 +57,7 @@ const (
 
 // ISampleGenerator is a sfxr sample generator
 type ISampleGenerator interface {
+	Init(IGeneratorValues)
 	Generate(IGeneratorValues)
 	CanBeDrained(bool)
 	Samples() *[]float64

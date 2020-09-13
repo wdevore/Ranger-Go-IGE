@@ -7,6 +7,7 @@ import (
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
 	"github.com/inkyblackness/imgui-go/v2"
+	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/audio"
 	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/gui"
 	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/settings"
@@ -64,16 +65,13 @@ func run(p Platform, r Renderer, config *settings.ConfigJSON) {
 
 	clearColor := [3]float32{0.95, 0.90, 0.85}
 
-	// ch := make(chan string)
-
-	// // Start simulation thread. It will idle by default.
-	// go simulator.Run(ch)
+	sound.GValues = audio.ConfigureTone(440, api.WaveSINE)
 
 	generator := audio.NewSfxrGenerator()
+	generator.Init(sound.GValues)
 	format := beep.Format{SampleRate: 44100, NumChannels: 1, Precision: 2}
 	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
 
-	sound.GValues = audio.ConfigureTone(465, sound.SfxrJ.WaveShape)
 	sound.UpdateSfxrData(sound.GValues)
 	sound.Generate(sound.GValues, generator)
 	sound.Play(generator)
@@ -88,8 +86,7 @@ func run(p Platform, r Renderer, config *settings.ConfigJSON) {
 		imgui.NewFrame()
 
 		// ---------------------------------------------------------
-		// Draw Graph
-		// ---------------------------------------------------------
+		// TODO Draw Graph
 		// ---------------------------------------------------------
 
 		gui.DrawGui(config, generator)

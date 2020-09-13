@@ -11,7 +11,7 @@ var (
 
 // DrawGui ...
 func DrawGui(config *settings.ConfigJSON, generator api.ISampleGenerator) {
-	BuildMenuBar(config)
+	BuildMenuBar(config, generator)
 	DrawGeneratorsPanel(config, generator)
 	BuildWaveformPanel(config)
 	BuildSettingsPanel(config, generator)

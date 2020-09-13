@@ -60,7 +60,6 @@ type generator struct {
 	samples     []float64
 	noiseBuffer []float64
 
-	settings       SfxrJSON
 	streamPosition int
 	canBeDrained   bool
 }
@@ -72,14 +71,49 @@ func NewSfxrGenerator() api.ISampleGenerator {
 	return o
 }
 
+func (g *generator) Init(v api.IGeneratorValues) {
+	g.initForRepeat(v)
+	g.setForRepeat(v)
+}
+
 func (g *generator) Samples() *[]float64 {
 	return &g.samples
 }
 
-func (g *generator) SetRepeatTime() {
+func (g *generator) initForRepeat(v api.IGeneratorValues) {
+	g.elapsedSinceRepeat = 0
+
+	g.period = 100 / (v.BaseFreq()*v.BaseFreq() + 0.001)
+	g.periodMax = 100 / (v.FreqLimit()*v.FreqLimit() + 0.001)
+	g.enableFrequencyCutoff = (v.FreqLimit() > 0)
+	g.periodMult = 1 - math.Pow(v.FreqRamp(), 3)*0.01
+	g.periodMultSlide = -math.Pow(v.FreqDramp(), 3) * 0.000001
+
+	g.dutyCycle = 0.5 - v.Duty()*0.5
+	g.dutyCycleSlide = -v.DutyRamp() * 0.00005
+
+	if v.ArpMod() >= 0 {
+		g.arpeggioMultiplier = 1 - math.Pow(v.ArpMod(), 2)*.9
+	} else {
+		g.arpeggioMultiplier = 1 + math.Pow(v.ArpMod(), 2)*10
+	}
+	g.arpeggioTime = int(math.Floor(math.Pow(1-v.ArpSpeed(), 2)*20000 + 32))
+	if v.ArpSpeed() == 1 {
+		g.arpeggioTime = 0
+	}
+
+	// Repeat
+	g.repeatTime = int(math.Floor(math.Pow(1.0-v.RepeatSpeed(), 2.0)*20000.0)) + 32
+	if v.RepeatSpeed() == 0.0 {
+		g.repeatTime = 0
+	}
+
+	g.enableLowPassFilter = (v.LpfFreq() != 1.0)
 }
 
 func (g *generator) setForRepeat(v api.IGeneratorValues) {
+	g.elapsedSinceRepeat = 0
+
 	g.envelopeLength = []int{
 		int(math.Floor(v.Attack() * v.Attack() * 100000.0)),
 		int(math.Floor(v.Sustain() * v.Sustain() * 100000.0)),
@@ -147,7 +181,8 @@ func (g *generator) Generate(values api.IGeneratorValues) {
 	g.bitsPerChannel = values.SampleSize()
 	g.noiseBuffer = values.Noise()
 
-	g.setForRepeat(values)
+	g.initForRepeat(values)
+	// g.setForRepeat(values)
 
 	g.samples = []float64{}
 
@@ -178,7 +213,7 @@ func (g *generator) Generate(values api.IGeneratorValues) {
 	for t := 0; ; t++ {
 		g.elapsedSinceRepeat++
 		if g.repeatTime != 0 && g.elapsedSinceRepeat >= g.repeatTime {
-			g.setForRepeat(values)
+			g.initForRepeat(values)
 		}
 
 		// -----------------------------
@@ -216,7 +251,7 @@ func (g *generator) Generate(values api.IGeneratorValues) {
 		}
 
 		// -----------------------------
-		// Square/Sawtooth wave duty cycle
+		// Square/Sawtooth/Triangle wave duty cycle
 		// -----------------------------
 		g.dutyCycle += g.dutyCycleSlide
 		g.dutyCycle = maths.Clamp(g.dutyCycle, 0.0, 0.5)
@@ -300,7 +335,7 @@ func (g *generator) Generate(values api.IGeneratorValues) {
 			case api.WaveSawtooth:
 				subSample = -1.0 + 1.0*fp/g.dutyCycle
 			case api.WaveSINE:
-				subSample = math.Sin(fp*2.0*math.Pi) / 2.0
+				subSample = math.Sin(fp * 2.0 * math.Pi)
 			case api.WaveNoise, api.WaveNoisePink, api.WaveNoiseBrownian:
 				subSample = g.noiseBuffer[(phase * (noiseBufferSize / iPeriod))]
 			default:

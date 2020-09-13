@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/inkyblackness/imgui-go/v2"
+	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/audio"
 	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/settings"
 	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/sound"
@@ -32,7 +33,7 @@ var (
 )
 
 // BuildMenuBar --
-func BuildMenuBar(config *settings.ConfigJSON) {
+func BuildMenuBar(config *settings.ConfigJSON, generator api.ISampleGenerator) {
 	// ---------------------------------------------------------
 	// Build the application GUI
 	// ---------------------------------------------------------
@@ -177,7 +178,7 @@ func BuildMenuBar(config *settings.ConfigJSON) {
 	}
 
 	if showOpenDialog {
-		drawOpenDialog(config)
+		drawOpenDialog(config, generator)
 	}
 
 	if showSaveSfxrDialog {
@@ -224,6 +225,9 @@ func drawSaveSfxrDialog(config *settings.ConfigJSON) {
 
 		file := relativePath + "/" + inputFilePath + "." + config.SfxrExtention
 
+		// Transfer GValues to SfxrJ
+		sound.SfxrJ.CopyFrom(sound.GValues)
+
 		indentedJSON, _ := json.MarshalIndent(sound.SfxrJ, "", "  ")
 
 		err := ioutil.WriteFile(file, indentedJSON, 0644)
@@ -248,7 +252,7 @@ func drawSaveSfxrDialog(config *settings.ConfigJSON) {
 	imgui.StyleColorsDark()
 }
 
-func drawOpenDialog(config *settings.ConfigJSON) {
+func drawOpenDialog(config *settings.ConfigJSON, generator api.ISampleGenerator) {
 	// Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
 	imgui.SetNextWindowSize(imgui.Vec2{X: 500, Y: 100})
 	imgui.StyleColorsLight()
@@ -316,6 +320,14 @@ func drawOpenDialog(config *settings.ConfigJSON) {
 
 			config.LastOpenedFile = inputFilePath
 			fmt.Println("Opened: ", file)
+
+			// Transfer to IGeneratorValues
+			sound.GValues = audio.NewIntervalValues(&sound.SfxrJ)
+			generator.Init(sound.GValues)
+
+			sound.UpdateSfxrData(sound.GValues)
+			sound.Generate(sound.GValues, generator)
+			sound.Play(generator)
 		}
 		imgui.SameLine()
 	}

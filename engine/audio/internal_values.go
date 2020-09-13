@@ -1,6 +1,7 @@
 package audio
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 
@@ -51,59 +52,59 @@ type generatorValues struct {
 }
 
 // NewIntervalValues create and load a new set of internal values
-func NewIntervalValues(sxfrJ *SfxrJSON) api.IGeneratorValues {
+func NewIntervalValues(sfxrJ *SfxrJSON) api.IGeneratorValues {
 	o := new(generatorValues)
 
-	o.baseValues.waveShape = sxfrJ.WaveShape
+	o.baseValues.waveShape = sfxrJ.WaveShape
 
 	// Envelope
-	o.baseValues.attack = sxfrJ.EnvelopeAttack
-	o.baseValues.sustain = sxfrJ.EnvelopeSustain
-	o.baseValues.punch = sxfrJ.EnvelopePunch
-	o.baseValues.decay = sxfrJ.EnvelopeDecay
+	o.baseValues.attack = sfxrJ.EnvelopeAttack
+	o.baseValues.sustain = sfxrJ.EnvelopeSustain
+	o.baseValues.punch = sfxrJ.EnvelopePunch
+	o.baseValues.decay = sfxrJ.EnvelopeDecay
 
 	// Tone
-	o.baseFreq = sxfrJ.BaseFrequency       // Start frequency
-	o.freqLimit = sxfrJ.FrequencyLimit     // Min frequency cutoff
-	o.freqRamp = sxfrJ.FrequencyRamp       // Slide (SIGNED)
-	o.freqDramp = sxfrJ.FrequencyDeltaRamp // Delta slide (SIGNED)
+	o.baseFreq = sfxrJ.BaseFrequency       // Start frequency
+	o.freqLimit = sfxrJ.FrequencyLimit     // Min frequency cutoff
+	o.freqRamp = sfxrJ.FrequencyRamp       // Slide (SIGNED)
+	o.freqDramp = sfxrJ.FrequencyDeltaRamp // Delta slide (SIGNED)
 
 	// Vibrato
-	o.vibStrength = sxfrJ.VibratoStrength // Vibrato depth
-	o.vibSpeed = sxfrJ.VibratoSpeed       // Vibrato speed
-	o.vibDelay = sxfrJ.VibratoDelay
+	o.vibStrength = sfxrJ.VibratoStrength // Vibrato depth
+	o.vibSpeed = sfxrJ.VibratoSpeed       // Vibrato speed
+	o.vibDelay = sfxrJ.VibratoDelay
 
 	// Tonal change
-	o.arpMod = sxfrJ.ArpeggioMod     // Change amount (SIGNED)
-	o.arpSpeed = sxfrJ.ArpeggioSpeed // Change speed
+	o.arpMod = sfxrJ.ArpeggioMod     // Change amount (SIGNED)
+	o.arpSpeed = sfxrJ.ArpeggioSpeed // Change speed
 
 	// Square wave duty (proportion of time signal is high vs. low)
-	o.duty = sxfrJ.DutyCycle         // Square duty
-	o.dutyRamp = sxfrJ.DutyCycleRamp // Duty sweep (SIGNED)
+	o.duty = sfxrJ.DutyCycle         // Square duty
+	o.dutyRamp = sfxrJ.DutyCycleRamp // Duty sweep (SIGNED)
 
 	// Repeat
-	o.repeatSpeed = sxfrJ.RepeatSpeed // Repeat speed
+	o.repeatSpeed = sfxrJ.RepeatSpeed // Repeat speed
 
 	// Flanger
-	o.phaOffset = sxfrJ.FlangerPhaseOffset // Flanger offset (SIGNED)
-	o.phaRamp = sxfrJ.FlangerPhaseRamp     // Flanger sweep (SIGNED)
+	o.phaOffset = sfxrJ.FlangerPhaseOffset // Flanger offset (SIGNED)
+	o.phaRamp = sfxrJ.FlangerPhaseRamp     // Flanger sweep (SIGNED)
 
 	// Low-pass filter
-	o.lpfFreq = sxfrJ.LowPassFilterFrequency               // Low-pass filter cutoff
-	o.lpfRamp = sxfrJ.LowPassFilterFrequencyRamp           // Low-pass filter cutoff sweep (SIGNED)
-	o.lpfResonance = sxfrJ.LowPassFilterFrequencyResonance // Low-pass filter resonance
+	o.lpfFreq = sfxrJ.LowPassFilterFrequency               // Low-pass filter cutoff
+	o.lpfRamp = sfxrJ.LowPassFilterFrequencyRamp           // Low-pass filter cutoff sweep (SIGNED)
+	o.lpfResonance = sfxrJ.LowPassFilterFrequencyResonance // Low-pass filter resonance
 
 	// High-pass filter
-	o.hpfFreq = sxfrJ.HighPassFilterFrequency     // High-pass filter cutoff
-	o.hpfRamp = sxfrJ.HighPassFilterFrequencyRamp // High-pass filter cutoff sweep (SIGNED)
+	o.hpfFreq = sfxrJ.HighPassFilterFrequency     // High-pass filter cutoff
+	o.hpfRamp = sfxrJ.HighPassFilterFrequencyRamp // High-pass filter cutoff sweep (SIGNED)
 
 	// Sample parameters
-	o.soundVol = sxfrJ.SoundVolume
+	o.soundVol = sfxrJ.SoundVolume
 
-	o.sampleRate = sxfrJ.SampleRate
-	o.sampleSize = sxfrJ.SampleSize
+	o.sampleRate = sfxrJ.SampleRate
+	o.sampleSize = sfxrJ.SampleSize
 
-	o.noise = sxfrJ.Noise
+	o.noise = sfxrJ.Noise
 	return o
 }
 
@@ -132,7 +133,7 @@ func (i *generatorValues) setToDefaults() {
 	i.arpSpeed = 0.0 // Change speed
 
 	// Square wave duty (proportion of time signal is high vs. low)
-	i.duty = 0.0     // Square duty
+	i.duty = 1.0     // Square duty
 	i.dutyRamp = 0.0 // Duty sweep (SIGNED)
 
 	// Repeat
@@ -151,7 +152,7 @@ func (i *generatorValues) setToDefaults() {
 	i.hpfRamp = 0.0 // High-pass filter cutoff sweep (SIGNED)
 
 	// Sample parameters
-	i.soundVol = 1.0
+	i.soundVol = 0.1
 
 	i.sampleRate = 44100
 	i.sampleSize = 8
@@ -160,7 +161,6 @@ func (i *generatorValues) setToDefaults() {
 func (i *generatorValues) setForRepeat(sg *generator) {
 	sg.setForRepeat(i)
 
-	sg.settings.WaveShape = i.waveShape
 	sg.elapsedSinceRepeat = 0.0
 
 	sg.period = 100.0 / (i.baseFreq*i.baseFreq + 0.001)
@@ -189,6 +189,8 @@ func (i *generatorValues) setForRepeat(sg *generator) {
 
 	// Repeat
 	sg.repeatTime = int(math.Floor(math.Pow(1.0-i.repeatSpeed, 2.0)*20000.0)) + 32
+	fmt.Println("setfor: reptim ", sg.repeatTime)
+	fmt.Println("setfor: speed ", i.repeatSpeed)
 	if i.repeatSpeed == 0.0 {
 		sg.repeatTime = 0
 	}
@@ -285,12 +287,12 @@ func (i *generatorValues) Mutate() {
 }
 
 // ConfigurePickupCoin create internal values for sound type.
-func ConfigurePickupCoin(waveShape int, withArp bool) api.IGeneratorValues {
+func ConfigurePickupCoin(withArp bool) api.IGeneratorValues {
 	o := new(generatorValues)
 
 	o.setToDefaults()
 
-	o.baseValues.waveShape = waveShape
+	o.baseValues.waveShape = api.WaveSINE
 	o.baseFreq = 0.4 + rand.Float64()*0.5
 	o.baseValues.attack = 0.0
 	o.baseValues.sustain = rand.Float64() * 0.1
@@ -357,11 +359,11 @@ func ConfigureLaserShoot() api.IGeneratorValues {
 }
 
 // ConfigureExplosion create internal values for sound type.
-func ConfigureExplosion(waveShape int) api.IGeneratorValues {
+func ConfigureExplosion() api.IGeneratorValues {
 	o := new(generatorValues)
 
 	o.setToDefaults()
-	o.baseValues.waveShape = waveShape
+	o.baseValues.waveShape = api.WaveNoise
 
 	if rand.Float64() > 0.5 {
 		o.baseFreq = sqr(0.1 + rand.Float64()*0.4)
@@ -645,7 +647,6 @@ func ConfigureTone(tone float64, waveShape int) api.IGeneratorValues {
 	// sqrt((440Hz / (oversampling = 8) / 441) - 0.001)
 	// o.baseFreq = 0.35173363968773563 // 440 Hz
 	o.ToIBaseFreq(tone)
-	// o.freqRamp = 0.27
 	o.attack = 0.0
 
 	// seconds = p^2 * 100000 / 44100
@@ -684,8 +685,18 @@ func frnd(rang float64) float64 {
 	return rand.Float64() * rang
 }
 
+func sign(v float64) float64 {
+	if v == 0.0 {
+		return 0.0
+	} else if v < 0.0 {
+		return -1.0
+	}
+
+	return 1.0
+}
+
 func (i *generatorValues) Attack() float64           { return i.baseValues.attack }
-func (i *generatorValues) SetAttach(v float64)       { i.baseValues.attack = v }
+func (i *generatorValues) SetAttack(v float64)       { i.baseValues.attack = v }
 func (i *generatorValues) Sustain() float64          { return i.baseValues.sustain }
 func (i *generatorValues) SetSustain(v float64)      { i.baseValues.sustain = v }
 func (i *generatorValues) Punch() float64            { return i.baseValues.punch }
@@ -741,6 +752,17 @@ func (i *generatorValues) SetWaveShape(v int)        { i.waveShape = v }
 func (i *generatorValues) Noise() []float64          { return i.noise }
 func (i *generatorValues) SetNoise(v []float64)      { i.noise = v }
 
+func (g *generatorValues) ToEAttack() float64 {
+	return sqr(g.baseValues.attack) * 100000.0 / 44100.0
+}
+
+func (g *generatorValues) ToESustain() float64 {
+	return sqr(g.baseValues.sustain) * 100000.0 / 44100.0
+}
+func (g *generatorValues) ToEDecay() float64 {
+	return sqr(g.baseValues.decay) * 100000.0 / 44100.0
+}
+
 func (g *generatorValues) ToIBaseFreq(e float64) { g.baseFreq = math.Sqrt((e / 8.0 / 441.0) - 0.001) }
 func (g *generatorValues) ToEBaseFreq() float64 {
 	return api.StandardOverSampling * 441.0 * (sqr(g.baseFreq) + 0.001)
@@ -749,4 +771,94 @@ func (g *generatorValues) ToEBaseFreq() float64 {
 func (g *generatorValues) ToIFreqRamp(e float64) { g.baseFreq = math.Sqrt((e / 8.0 / 441.0) - 0.001) }
 func (g *generatorValues) ToEFreqRamp() float64 {
 	return 44100.0 * log(1.0-cube(g.freqRamp)/100.0, 0.5)
+}
+
+func (g *generatorValues) ToEFreqLimit() float64 {
+	if g.freqLimit > 0.0 {
+		return api.StandardOverSampling * 441.0 * (sqr(g.freqLimit) + 0.001)
+	}
+
+	return 0.0
+}
+func (g *generatorValues) ToEFreqDramp() float64 {
+	return -cube(g.freqDramp) / 1000000.0 * 44100.0 * math.Pow(2.0, 44101.0/44100.0)
+}
+
+// Vibrato
+func (g *generatorValues) ToEVibStrength() float64 {
+	return g.vibStrength * 50.0
+}
+func (g *generatorValues) ToEVibSpeed() float64 {
+	return 44100.0 * 10.0 / 64.0 * sqr(g.vibSpeed) / 100.0
+}
+
+// Arpeggiation
+func (g *generatorValues) ToEArpMod() float64 {
+	d := 0.0
+
+	if g.arpMod >= 0.0 {
+		d = 1.0 - sqr(g.arpMod)*0.9
+	} else {
+		d = 1.0 + sqr(g.arpMod)*10.0
+	}
+
+	return 1 / d
+}
+func (g *generatorValues) ToEArpSpeed() float64 {
+	if g.arpSpeed == 1.0 {
+		return 0.0
+	}
+
+	return (sqr(1-g.arpSpeed)*20000.0 + 32.0) / 44100.0
+}
+
+// Duty
+func (g *generatorValues) ToEDuty() float64 {
+	return (1.0 - g.duty) / 2.0 * 100.0
+}
+func (g *generatorValues) ToEDutyRamp() float64 {
+	return api.StandardOverSampling * 44100.0 * -g.dutyRamp / 20000.0
+}
+
+// Retrigger
+func (g *generatorValues) ToERepeatSpeed() float64 {
+	if g.repeatSpeed == 0.0 {
+		return 0.0
+	}
+	return 44100.0/(sqr(1-g.repeatSpeed)*20000.0) + 32.0
+}
+
+// Flanger
+func (g *generatorValues) ToEPhaOffset() float64 {
+	return sign(g.phaOffset) * sqr(g.phaOffset) * 1020.0 / 44100.0 * 1000.0
+}
+
+func (g *generatorValues) ToEPhaRamp() float64 {
+	return sign(g.phaRamp) * sqr(g.phaRamp) * 1000.0
+}
+
+// Low pass filter
+func (g *generatorValues) ToELpfFreq() float64 {
+	if g.lpfFreq == 1.0 {
+		return 44100.0
+	}
+
+	return api.StandardOverSampling * 44100.0 * flurp(cube(g.lpfFreq)/10.0)
+}
+
+func (g *generatorValues) ToELpfRamp() float64 {
+	return math.Pow(1.0+g.lpfRamp/10000.0, 44100.0)
+}
+
+func (g *generatorValues) ToELpfResonance() float64 {
+	return (1.0 - (5.0/(1.0+sqr(g.lpfResonance)*20.0))/9.0) * 100.0
+}
+
+// High pass filter
+func (g *generatorValues) ToEHpfFreq() float64 {
+	return api.StandardOverSampling * 44100.0 * flurp(sqr(g.hpfFreq)/10.0)
+}
+
+func (g *generatorValues) ToEHpfRamp() float64 {
+	return math.Pow(1.0+g.hpfRamp*0.0003, 44100.0)
 }
