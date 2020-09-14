@@ -18,20 +18,19 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Zoom Node
 * **Done** Filters: transform and translate
 * **Done** Particles
-* **Done** Animation (tweening) -- Using tanema's library
-* **Done** Animation (tweening) -- Scene (manual)
+* **Done** Animation (tweening) *Using tanema's library*: https://github.com/tanema/gween
 * **Done** Box2D physics (with space ship)
+  * Uses: https://github.com/ByteArena/box2d
 * **Done** Zones combined with Zoom
 * **Done** Interpolation
 * **Done** Sprite Textures (quads)
 * **Done** Scene Transitioning
 * **Done** Bitmap fonts
 * **Done** Simple motion animations
-* --*Workng*-- Audio (SFXR 8bit sound)
-  * May build GUI using imGui
-  * May use: https://github.com/faiface/beep
-* Physics with bitmaps
-* QuadTree for view-space culling
+* **Done** Audio (SFXR 8bit sound: https://sfxr.me/) (However, 16bit stills needs completion)
+  * built GUI using imGui: https://github.com/inkyblackness/imgui-go
+  * build using: https://github.com/faiface/beep
+* <b style="color:red">*working*</b> QuadTree for view-space culling
 * Simple Widget GUI framework
   * Buttons
   * Checkboxes
@@ -39,9 +38,10 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
   * Text
   * Dialog
   * Grouping (i.e. Radio buttons)
-* Shaders with interleved vertex/color, for example, checkboards
-* Stippling with OpenGL patterns
-* Custom vector font (needs lower case completion)
-* Vector Fonts via SVG import
+* Physics with bitmaps
 * Joysticks and Gamepads
 * OpenGL ES (https://github.com/golang/go/wiki/Mobile)
+* Shaders with interleved vertex/color, for example, checkboards
+* Stippling with OpenGL patterns (aka advanced shaders)
+* Custom vector font (needs lower case completion)
+* Vector Fonts via SVG import
