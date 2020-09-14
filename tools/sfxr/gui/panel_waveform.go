@@ -1,8 +1,6 @@
 package gui
 
 import (
-	"fmt"
-
 	"github.com/inkyblackness/imgui-go/v2"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/tools/sfxr/settings"
@@ -10,7 +8,7 @@ import (
 )
 
 // BuildWaveformPanel ...
-func BuildWaveformPanel(config *settings.ConfigJSON) {
+func BuildWaveformPanel(config *settings.ConfigJSON, generator api.ISampleGenerator) {
 	imgui.SetNextWindowPos(imgui.Vec2{X: 130, Y: 20.0})
 	imgui.SetNextWindowSize(imgui.Vec2{X: 515, Y: 60})
 
@@ -26,7 +24,10 @@ func BuildWaveformPanel(config *settings.ConfigJSON) {
 	if imgui.Button("Square") {
 		sound.GValues.SetWaveShape(api.WaveSQUARE)
 		if config.Autoplay {
-			fmt.Println("Auto playing")
+			generator.Init(sound.GValues)
+			sound.UpdateSfxrData(sound.GValues)
+			sound.Generate(sound.GValues, generator)
+			sound.Play(generator)
 		}
 	}
 	imgui.PopStyleColor()
@@ -40,7 +41,10 @@ func BuildWaveformPanel(config *settings.ConfigJSON) {
 	if imgui.Button("Triangle") {
 		sound.GValues.SetWaveShape(api.WaveTriangle)
 		if config.Autoplay {
-			fmt.Println("Auto playing")
+			generator.Init(sound.GValues)
+			sound.UpdateSfxrData(sound.GValues)
+			sound.Generate(sound.GValues, generator)
+			sound.Play(generator)
 		}
 	}
 	imgui.PopStyleColor()
@@ -54,7 +58,10 @@ func BuildWaveformPanel(config *settings.ConfigJSON) {
 	if imgui.Button("Sine") {
 		sound.GValues.SetWaveShape(api.WaveSINE)
 		if config.Autoplay {
-			fmt.Println("Auto playing")
+			generator.Init(sound.GValues)
+			sound.UpdateSfxrData(sound.GValues)
+			sound.Generate(sound.GValues, generator)
+			sound.Play(generator)
 		}
 	}
 	imgui.PopStyleColor()
@@ -68,7 +75,10 @@ func BuildWaveformPanel(config *settings.ConfigJSON) {
 	if imgui.Button("Sawtooth") {
 		sound.GValues.SetWaveShape(api.WaveSawtooth)
 		if config.Autoplay {
-			fmt.Println("Auto playing")
+			generator.Init(sound.GValues)
+			sound.UpdateSfxrData(sound.GValues)
+			sound.Generate(sound.GValues, generator)
+			sound.Play(generator)
 		}
 	}
 	imgui.PopStyleColor()
@@ -82,7 +92,10 @@ func BuildWaveformPanel(config *settings.ConfigJSON) {
 	if imgui.Button("White Noise") {
 		sound.GValues.SetWaveShape(api.WaveNoise)
 		if config.Autoplay {
-			fmt.Println("Auto playing")
+			generator.Init(sound.GValues)
+			sound.UpdateSfxrData(sound.GValues)
+			sound.Generate(sound.GValues, generator)
+			sound.Play(generator)
 		}
 	}
 	imgui.PopStyleColor()
@@ -96,7 +109,10 @@ func BuildWaveformPanel(config *settings.ConfigJSON) {
 	if imgui.Button("Pink Noise") {
 		sound.GValues.SetWaveShape(api.WaveNoisePink)
 		if config.Autoplay {
-			fmt.Println("Auto playing")
+			generator.Init(sound.GValues)
+			sound.UpdateSfxrData(sound.GValues)
+			sound.Generate(sound.GValues, generator)
+			sound.Play(generator)
 		}
 	}
 	imgui.PopStyleColor()
@@ -110,7 +126,10 @@ func BuildWaveformPanel(config *settings.ConfigJSON) {
 	if imgui.Button("Red Noise") {
 		sound.GValues.SetWaveShape(api.WaveNoiseBrownian)
 		if config.Autoplay {
-			fmt.Println("Auto playing")
+			generator.Init(sound.GValues)
+			sound.UpdateSfxrData(sound.GValues)
+			sound.Generate(sound.GValues, generator)
+			sound.Play(generator)
 		}
 	}
 	imgui.PopStyleColor()

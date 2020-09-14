@@ -13,6 +13,6 @@ var (
 func DrawGui(config *settings.ConfigJSON, generator api.ISampleGenerator) {
 	BuildMenuBar(config, generator)
 	DrawGeneratorsPanel(config, generator)
-	BuildWaveformPanel(config)
+	BuildWaveformPanel(config, generator)
 	BuildSettingsPanel(config, generator)
 }

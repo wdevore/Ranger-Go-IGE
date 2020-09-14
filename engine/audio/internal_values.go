@@ -133,7 +133,7 @@ func (i *generatorValues) setToDefaults() {
 	i.arpSpeed = 0.0 // Change speed
 
 	// Square wave duty (proportion of time signal is high vs. low)
-	i.duty = 1.0     // Square duty
+	i.duty = 0.5     // Square duty
 	i.dutyRamp = 0.0 // Duty sweep (SIGNED)
 
 	// Repeat
