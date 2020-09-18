@@ -312,6 +312,7 @@ func ConfigureLaserShoot() api.IGeneratorValues {
 
 	o.setToDefaults()
 
+	o.soundVol = api.PlaybackSoundVolume
 	o.baseValues.waveShape = madRand(3.0)
 
 	if o.baseValues.waveShape == api.WaveSINE && rand.Float64() > 0.5 {
@@ -363,6 +364,8 @@ func ConfigureExplosion() api.IGeneratorValues {
 	o := new(generatorValues)
 
 	o.setToDefaults()
+
+	o.soundVol = api.PlaybackSoundVolume
 	o.baseValues.waveShape = api.WaveNoise
 
 	if rand.Float64() > 0.5 {
@@ -409,6 +412,8 @@ func ConfigurePowerUp() api.IGeneratorValues {
 
 	o.setToDefaults()
 
+	o.soundVol = api.PlaybackSoundVolume
+
 	if rand.Float64() > 0.5 {
 		o.baseValues.waveShape = api.WaveTriangle
 		o.duty = 1.0
@@ -442,6 +447,7 @@ func ConfigureHitHurt() api.IGeneratorValues {
 
 	o.setToDefaults()
 
+	o.soundVol = api.PlaybackSoundVolume
 	o.baseValues.waveShape = madRand(3.0)
 
 	switch o.baseValues.waveShape {
@@ -473,6 +479,7 @@ func ConfigureJump() api.IGeneratorValues {
 
 	o.setToDefaults()
 
+	o.soundVol = api.PlaybackSoundVolume
 	o.baseValues.waveShape = api.WaveSQUARE
 
 	o.duty = rand.Float64() * 0.6
@@ -500,6 +507,7 @@ func ConfigureBlipSelect() api.IGeneratorValues {
 
 	o.setToDefaults()
 
+	o.soundVol = api.PlaybackSoundVolume
 	o.baseValues.waveShape = madRand(1.0)
 	if o.baseValues.waveShape == api.WaveSQUARE {
 		o.duty = rand.Float64() * 0.6
@@ -523,6 +531,7 @@ func ConfigureSynth() api.IGeneratorValues {
 
 	o.setToDefaults()
 
+	o.soundVol = api.PlaybackSoundVolume
 	o.baseValues.waveShape = madRand(1.0)
 	if rand.Float64() > 0.5 {
 		o.baseFreq = 0.2477
@@ -580,6 +589,7 @@ func ConfigureRandom() api.IGeneratorValues {
 
 	o.setToDefaults()
 
+	o.soundVol = api.PlaybackSoundVolume
 	if rand.Float64() > 0.5 {
 		o.baseFreq = cube(frnd(2.0)-1) + 0.5
 	} else {

@@ -97,6 +97,18 @@ func BuildMenuBar(config *settings.ConfigJSON, generator api.ISampleGenerator) {
 			imgui.EndMenu()
 		}
 
+		if imgui.BeginMenu("Waves") {
+			changed := imgui.Checkbox("Sawtooth Rising/Falling", &config.SawtoothRise)
+			if changed {
+				fmt.Println("Sawtooth rising: ", config.SawtoothRise)
+				generator.SetSawtoothRise(config.SawtoothRise)
+				generator.Init(sound.GValues)
+				sound.Generate(sound.GValues, generator)
+			}
+
+			imgui.EndMenu()
+		}
+
 		b := false
 
 		if imgui.BeginMenu("SampleRate(Hz)") {

@@ -31,6 +31,7 @@ func sxfrLoad() {
 	values := audio.NewIntervalValues(audioJ)
 
 	generator := audio.NewSfxrGenerator()
+	generator.Init(values)
 	generator.Generate(values)
 	generator.CanBeDrained(true)
 	samples := generator.Samples()
@@ -72,9 +73,10 @@ func sxfrLoad() {
 
 func waveStreamWriter() {
 	values := audio.ConfigureTone(440, api.WaveSawtooth)
-	values.SetSoundVol(0.5)
+	values.SetSoundVol(0.1)
 
 	generator := audio.NewSfxrGenerator()
+	generator.Init(values)
 	generator.Generate(values)
 	generator.CanBeDrained(true)
 	samples := generator.Samples()
@@ -102,6 +104,7 @@ func waveMemWriter() {
 	values := audio.ConfigureTone(440, api.WaveSINE)
 
 	generator := audio.NewSfxrGenerator()
+	generator.Init(values)
 	generator.Generate(values)
 	samples := generator.Samples()
 	fmt.Println("Sample size: ", len(*samples))
@@ -171,6 +174,7 @@ func memoryBuf() {
 	// values := audio.ConfigureRandom()
 
 	generator := audio.NewSfxrGenerator()
+	generator.Init(values)
 	generator.Generate(values)
 	generator.CanBeDrained(true)
 	samples := generator.Samples()
@@ -204,6 +208,7 @@ func streamer() {
 	values := audio.ConfigureTone(440, api.WaveSINE)
 
 	generator := audio.NewSfxrGenerator()
+	generator.Init(values)
 	generator.Generate(values)
 
 	samples := generator.Samples()

@@ -30,6 +30,7 @@ type generator struct {
 
 	waveShape     int
 	prevWaveShape int
+	sawtoothRise  bool
 
 	// Filter
 	fltw                float64
@@ -62,6 +63,8 @@ type generator struct {
 
 	streamPosition int
 	canBeDrained   bool
+
+	values api.IGeneratorValues
 }
 
 // NewSfxrGenerator a new samples generator
@@ -72,8 +75,18 @@ func NewSfxrGenerator() api.ISampleGenerator {
 }
 
 func (g *generator) Init(v api.IGeneratorValues) {
+	g.values = v
 	g.initForRepeat(v)
 	g.setForRepeat(v)
+}
+
+func (g *generator) ReInit() {
+	g.initForRepeat(g.values)
+	g.setForRepeat(g.values)
+}
+
+func (g *generator) SetSawtoothRise(rise bool) {
+	g.sawtoothRise = rise
 }
 
 func (g *generator) Samples() *[]float64 {
@@ -333,7 +346,11 @@ func (g *generator) Generate(values api.IGeneratorValues) {
 					subSample = 1.0 - 2.0*(fp-g.dutyCycle)/(1.0-g.dutyCycle)
 				}
 			case api.WaveSawtooth:
-				subSample = -1.0 + 1.0*fp/g.dutyCycle
+				if g.sawtoothRise {
+					subSample = -1.0 + 1.0*fp/g.dutyCycle // Rising (default)
+				} else {
+					subSample = 1.0 - 2.0*(fp-g.dutyCycle)/(1.0-g.dutyCycle) // Falling
+				}
 			case api.WaveSINE:
 				subSample = math.Sin(fp * 2.0 * math.Pi)
 			case api.WaveNoise, api.WaveNoisePink, api.WaveNoiseBrownian:

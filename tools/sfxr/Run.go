@@ -68,6 +68,7 @@ func run(p Platform, r Renderer, config *settings.ConfigJSON) {
 	sound.GValues = audio.ConfigureTone(440, api.WaveSINE)
 
 	generator := audio.NewSfxrGenerator()
+	generator.SetSawtoothRise(config.SawtoothRise)
 	generator.Init(sound.GValues)
 	format := beep.Format{SampleRate: 44100, NumChannels: 1, Precision: 2}
 	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))

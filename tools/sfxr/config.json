@@ -3,5 +3,6 @@
   "SfxrExtention": "json",
   "DefaultFile": "Sample_sfxr",
   "LastOpenedFile": "UfoLanding_sfxr",
-  "Autoplay": false
+  "Autoplay": false,
+  "SawtoothRise": true
 }

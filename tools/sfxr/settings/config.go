@@ -7,4 +7,5 @@ type ConfigJSON struct {
 	DefaultFile    string
 	LastOpenedFile string
 	Autoplay       bool
+	SawtoothRise   bool
 }

@@ -58,9 +58,11 @@ const (
 // ISampleGenerator is a sfxr sample generator
 type ISampleGenerator interface {
 	Init(IGeneratorValues)
+	ReInit()
 	Generate(IGeneratorValues)
 	CanBeDrained(bool)
 	Samples() *[]float64
+	SetSawtoothRise(rise bool)
 
 	Stream(samples [][2]float64) (n int, ok bool)
 	Err() error
