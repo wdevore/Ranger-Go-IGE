@@ -30,7 +30,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Audio (SFXR 8bit sound: https://sfxr.me/) (However, 16bit stills needs completion)
   * built GUI using imGui: https://github.com/inkyblackness/imgui-go
   * build using: https://github.com/faiface/beep
-* <b style="color:red">*working*</b> QuadTree for view-space culling
+* <b style="color:red">*working*</b> QuadTrees
   * Example 1: Random spread of points/particles into tree (with capacity)
   * Example 2: Random spread of squares
   * Example 3: Insert squares at Mouse
@@ -44,6 +44,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
   * Text
   * Dialogs (OK, Yes/No, etc.)
   * Grouping (i.e. Radio buttons)
+* Batch rendering
 * Physics with Textures
 * Joysticks and Gamepads
 * OpenGL ES (https://github.com/golang/go/wiki/Mobile)

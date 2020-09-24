@@ -22,6 +22,8 @@ type Node struct {
 
 	Transform
 	Group
+
+	bounds api.IRectangle
 }
 
 // NewNode constructs a raw base node. Only the Engine should
@@ -48,6 +50,8 @@ func (n *Node) Initialize(name string) {
 	n.name = name
 	n.visible = true
 	n.dirty = true
+
+	n.bounds = geometry.NewRectangle()
 
 	n.initializeTransform()
 	n.initializeGroup()
@@ -159,6 +163,26 @@ func (n *Node) RippleDirty(dirty bool) {
 	}
 
 	n.SetDirty(dirty)
+}
+
+// Bounds returns an AABB retangle
+func (n *Node) Bounds() api.IRectangle {
+	return n.bounds
+}
+
+// SetBoundBySize set bounds centered at node's position.
+func (n *Node) SetBoundBySize(w, h float32) {
+	hw := w / 2.0
+	hh := h / 2.0
+	n.bounds.SetMinMax(
+		n.position.X()-hw, n.position.Y()-hh,
+		n.position.X()+hw, n.position.Y()+hh,
+	)
+}
+
+// SetBoundByMinMax set bounds specifically.
+func (n *Node) SetBoundByMinMax(minX, minY, maxX, maxY float32) {
+	n.bounds.SetMinMax(minX, minY, maxX, maxY)
 }
 
 // Update updates the time properties of a node.

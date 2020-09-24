@@ -44,5 +44,9 @@ type INode interface {
 	// Children
 	IGroup
 
+	Bounds() IRectangle
+	SetBoundBySize(w, h float32)
+	SetBoundByMinMax(minX, minY, maxX, maxY float32)
+
 	Update(msPerUpdate, secPerUpdate float64)
 }

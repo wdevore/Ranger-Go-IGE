@@ -174,11 +174,14 @@ Boot --> Splash --> Menu --> Settings -->  Menu
       Menu
       Exit
    ```
-# Audio
+
+# Audio (Sfrx)
 Audio has both internal and external values. 
 The audio generator works on values that aren't exactly meaningfull to users and that is what the external values are for.
 There is a converter to translate internal to external prior to viewing by a user.
-It is the internal values that are persisted.
+It is the internal values that are persisted to json files.
+## Sfxr Presets
+There are some presets stored in the ```extras/misc/sfxr``` folder that represent some of the sounds possible.
 
 # QuadTree (QT)
 
@@ -186,3 +189,55 @@ It is the internal values that are persisted.
 * Holds a root reference to a quadTreeNode
 * Contains() uses left-top rule for both points and rectangles
 * Query returns objects within given boundary
+* As objects move QT nodes are removed and added dynamically.
+   * A small stack of nodes are maintained. If the stack is empty then new nodes are created.
+   * A max capacity is set for the stack (~100). Above that any returning nodes are thrown away.
+   * nodes are Set only when pulled from the stack
+
+Adding a node means we decend into the tree until we either reach the max depth or the node fits completely inside a quadrant.
+
+Each time we decend we sub divide the node prior to decending and then test each quadrant for a fit. If we find a quadrant the fits we decend into that quadrant which means we sub divide first and then attempt to find a quadrant that the node completely fits in. We stop when we have reach max depth or the node can't fit in any of the quadrants.
+
+---------- QuadTree ---------------
+Root {0} [500.000, 500.000] Div: true
+   |'Rect' (2)|
+   Quad1 {1}
+   Quad2 {1}
+      Quad1 {2}
+      Quad2 {2}
+      Quad3 {2}
+      Quad4 {2}
+         Quad1 {3}
+         Quad2 {3}
+         Quad3 {3}
+         Quad4 {3}
+            Quad1 {4}
+            Quad2 {4} [31.250, 31.250] Div: true
+               |'Rect' (1)|
+               Quad1 {5}
+               Quad2 {5}
+               Quad3 {5}
+               Quad4 {5}
+            Quad3 {4}
+            Quad4 {4}
+   Quad3 {1}
+      Quad1 {2}
+      Quad2 {2}
+      Quad3 {2}
+      Quad4 {2}
+         Quad1 {3}
+         Quad2 {3}
+         Quad3 {3}
+         Quad4 {3}
+            Quad1 {4}
+            Quad2 {4}
+            Quad3 {4}
+            Quad4 {4}
+               Quad1 {5}
+               Quad2 {5}
+               Quad3 {5}
+               Quad4 {5} [15.625, 15.625] Div: false
+                  |'Rect' (0)|   <-- removed
+   Quad4 {1}
+
+---------- QuadTree ---------------
