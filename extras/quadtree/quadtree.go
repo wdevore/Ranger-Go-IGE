@@ -68,6 +68,11 @@ func (q *quadTree) Boundary() api.IRectangle {
 	return q.root.boundary
 }
 
+// SetCapacity sets the limit on how many INodes can be held
+// by any one quadrant. Once a quadrant is 'filled' the quadrant
+// must be divided with all the INodes being redistributed among
+// the new divided quadrants.
+// TODO -- not implemented yet.
 func (q *quadTree) SetCapacity(capacity int) {
 	q.capacity = capacity
 }

@@ -73,7 +73,7 @@ func (q *quadTreeNode) add(node api.INode, depth int) int {
 	// If it doesn't fit then it is added to the parent.
 
 	nBounds := node.Bounds()
-	// See if the node's boundary fits this quadrant.
+	// See if the INode's boundary fits this quadrant.
 	fits := q.boundary.Contains(nBounds)
 	state := quadNoFit
 
