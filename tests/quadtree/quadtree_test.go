@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
 	"github.com/wdevore/Ranger-Go-IGE/extras/quadtree"
@@ -12,10 +13,45 @@ import (
 // go test -v -count=1 quadtree_test.go
 
 func TestRunner(t *testing.T) {
-	testQuadtree(t)
+	testQuadtreeQuery(t)
 }
 
-func testQuadtree(t *testing.T) {
+func testQuadtreeQuery(t *testing.T) {
+	tree := quadtree.NewQuadTree()
+	tree.SetMaxDepth(5)
+	tree.SetBoundary(0.0, 0.0, 500.0, 500.0)
+
+	node0, _ := extras.NewStaticNilNode("Rect")
+	node0.SetPosition(10.0+250.0, 10.0)
+	node0.SetBoundBySize(10, 10)
+	tree.Add(node0)
+
+	node1, _ := extras.NewStaticNilNode("Rect")
+	node1.SetPosition(50.0+250.0, 50.0+250.0)
+	node1.SetBoundBySize(20, 20)
+	tree.Add(node1)
+
+	// Add a node directly in the center insures that the node
+	// is placed at the root as it can't be placed in any of
+	// the quadrants.
+	node2, _ := extras.NewStaticNilNode("Rect")
+	node2.SetPosition(250.0, 250.0)
+	node2.SetBoundBySize(20, 20)
+	tree.Add(node2)
+
+	fmt.Println(tree)
+
+	boundary := geometry.NewRectangle()
+	boundary.SetMinMax(5.0+250.0, 10.0, 50.0+250.0, 50.0)
+	nodes := []api.INode{}
+
+	tree.Query(boundary, &nodes)
+	for _, n := range nodes {
+		fmt.Println(n)
+	}
+}
+
+func testQuadtreeRemoveClean(t *testing.T) {
 	tree := quadtree.NewQuadTree()
 	tree.SetMaxDepth(5)
 	tree.SetBoundary(0.0, 0.0, 500.0, 500.0)

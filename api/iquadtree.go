@@ -4,6 +4,7 @@ package api
 type IQuadTree interface {
 	Add(INode) bool
 	Remove(INode) bool
+	Query(IRectangle, *[]INode)
 
 	Clean()
 	Clear()

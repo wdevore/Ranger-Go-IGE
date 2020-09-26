@@ -167,9 +167,41 @@ func (q *quadTreeNode) remove(node api.INode) bool {
 	return false
 }
 
+func (q *quadTreeNode) query(boundary api.IRectangle, nodes *[]api.INode) {
+	// Collect INodes in this quadrant.
+	if len(q.nodes) > 0 {
+		for _, n := range q.nodes {
+			if boundary.Intersects(n.Bounds()) {
+				*nodes = append(*nodes, n)
+			}
+		}
+	}
+
+	if !q.divided {
+		return
+	}
+
+	// As long as the boundary intersects the quadrant then there is a
+	// potential for INodes to intersect 'boundary'.
+	if q.quadrant1.boundary.Intersects(boundary) {
+		q.quadrant1.query(boundary, nodes)
+	}
+
+	if q.quadrant2.boundary.Intersects(boundary) {
+		q.quadrant2.query(boundary, nodes)
+	}
+
+	if q.quadrant3.boundary.Intersects(boundary) {
+		q.quadrant3.query(boundary, nodes)
+	}
+
+	if q.quadrant4.boundary.Intersects(boundary) {
+		q.quadrant4.query(boundary, nodes)
+	}
+}
+
 func (q *quadTreeNode) removeNode(node api.INode) bool {
-	// If the node is present at this tree-node, then just remove it
-	// regardless of AABB.
+	// Does the node exist?
 	remIn := -1
 	for i, n := range q.nodes {
 		if n == node {
@@ -179,6 +211,7 @@ func (q *quadTreeNode) removeNode(node api.INode) bool {
 	}
 
 	if remIn >= 0 {
+		// Remove it and adjust array
 		q.nodes[remIn] = q.nodes[len(q.nodes)-1] // Copy last element to index i.
 		q.nodes[len(q.nodes)-1] = nil            // Erase last element (write zero value).
 		q.nodes = q.nodes[:len(q.nodes)-1]       // Truncate slice.

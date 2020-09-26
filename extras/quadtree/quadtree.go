@@ -11,7 +11,8 @@ var (
 )
 
 type quadTree struct {
-	capacity int
+	// How many items can be held
+	capacity int // Currently not used
 	maxDepth int
 
 	root *quadTreeNode
@@ -39,15 +40,22 @@ func (q *quadTree) Add(node api.INode) bool {
 	return q.root.add(node, q.maxDepth) == quadAdded
 }
 
-//
+// Remove node from tree
 func (q *quadTree) Remove(node api.INode) bool {
 	return q.root.remove(node)
 }
 
+// Query returns a collection of INodes based on a AABB rectangle.
+func (q *quadTree) Query(boundary api.IRectangle, nodes *[]api.INode) {
+	q.root.query(boundary, nodes)
+}
+
+// Clear entire tree by removing both empty quadrants and items
 func (q *quadTree) Clear() {
 	q.root.clearQuadrant(q.root, 0)
 }
 
+// Clean entire tree by removing both empty quadrants
 func (q *quadTree) Clean() {
 	q.root.cleanQuadrant(q.root, 0)
 }
@@ -118,9 +126,7 @@ func (q *quadTree) MaxDepth() int {
 //                Quad4 {5} [15.625, 15.625] Div: false
 //                   |'Rect' (0)|   <-- removed
 //    Quad4 {1}
-
 // ---------- QuadTree ---------------
-
 func (q quadTree) String() string {
 	s := fmt.Sprintf("---------- QuadTree ---------------\n")
 	s += fmt.Sprintf("%s\n", q.root.toString("Root", 0))
