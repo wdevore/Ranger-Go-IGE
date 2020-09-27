@@ -53,7 +53,7 @@ func (g *gameLayer) buildQuadtree(world api.IWorld) error {
 
 	g.tree = quadtree.NewQuadTree()
 	g.tree.SetBoundaryByMinMax(-scale, -scale, scale, scale)
-	g.tree.SetMaxDepth(5)
+	g.tree.SetMaxDepth(6)
 
 	g.quadTreeNode, err = NewQTreeNode(0.0, 0.0, 1.0, 1.0, "Quadtree", false, world, g)
 	if err != nil {
@@ -139,11 +139,14 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 
 	if handled {
 		g.tree.Remove(g.dragSquare.BaseNode())
+		// TODO Clean() should work better but it doesn't. Research it!
+		g.tree.Clear()
 		g.tree.Add(g.dragSquare.BaseNode())
 	}
 
-	// TODO fix this. I should need to set this false
+	// TODO fix this. I shouldn't need to set this to false
 	// Something isn't right with the event system.
+	// The drag pauses and trips and it shouldn't
 	handled = false
 
 	return handled

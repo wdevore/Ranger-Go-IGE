@@ -41,7 +41,7 @@ func (d *draggableSquare) Build(world api.IWorld, parent api.INode) error {
 	d.square.SetPosition(90.0, 80.0)
 	d.updateBounds()
 	gsq := d.square.(*extras.StaticSquareNode)
-	gsq.SetColor(color.NewPaletteInt64(color.LightOrange))
+	gsq.SetColor(color.NewPaletteInt64(color.Lime))
 	// gsq.SetAlpha(0.5)
 
 	d.outSquare, err = newCustomRectangleNode("OutlineSqr", true, false, world, parent)

@@ -121,7 +121,7 @@ func (r *QTreeNode) Draw(model api.IMatrix4) {
 
 	r.model.Set(model)
 
-	// Traverse decend the entire tree
+	// Traverse iterates the entire tree.
 	r.tree.Traverse(func(bounds api.IRectangle) {
 		r.model.SetTranslate3Comp(bounds.Left(), bounds.Bottom(), 0.0)
 		r.model.ScaleByComp(bounds.Width(), bounds.Height(), 1.0)

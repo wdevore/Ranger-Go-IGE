@@ -57,7 +57,7 @@ func (q *quadTree) Clear() {
 	q.root.clearQuadrant(q.root, 0)
 }
 
-// Clean entire tree by removing both empty quadrants
+// Clean entire tree by removing empty quadrants
 func (q *quadTree) Clean() {
 	q.root.cleanQuadrant(q.root, 0)
 }

@@ -290,7 +290,7 @@ func (q *quadTreeNode) cleanQuadrant(quad *quadTreeNode, lvl int) bool {
 		hi := hi1 || hi2 || hi3 || hi4
 
 		if !hi {
-			// fmt.Println("Removing quads: ", quad.id, ", Lvl: ", lvl)
+			fmt.Println("Removing quads: ", quad.id, ", Lvl: ", lvl)
 			nodeStack.push(quad.quadrant1)
 			quad.quadrant1 = nil
 			nodeStack.push(quad.quadrant2)
