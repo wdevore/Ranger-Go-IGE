@@ -135,6 +135,10 @@ func (q *quadTreeNode) remove(node api.INode) bool {
 		return true
 	}
 
+	if !q.divided {
+		return false
+	}
+
 	// Use node's AABB to determine which quadrant to check.
 	if q.quadrant1.boundary.Contains(node.Bounds()) {
 		removed = q.quadrant1.remove(node)

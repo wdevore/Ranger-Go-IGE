@@ -8,6 +8,8 @@ import (
 
 var (
 	nodeStack = newNodeStack()
+
+	initialStackSize = 100
 )
 
 type quadTree struct {
@@ -29,7 +31,7 @@ func (q *quadTree) initialize() {
 	q.root = newQuadTreeNode()
 
 	// Pre populate the stack pool
-	for i := 0; i < 100; i++ {
+	for i := 0; i < initialStackSize; i++ {
 		n := newQuadTreeNode()
 		nodeStack.push(n)
 	}
