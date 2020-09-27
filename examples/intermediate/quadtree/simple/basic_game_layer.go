@@ -1,0 +1,150 @@
+package main
+
+import (
+	"github.com/wdevore/Ranger-Go-IGE/api"
+	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/quadtree"
+)
+
+type gameLayer struct {
+	nodes.Node
+
+	dragSquare *draggableSquare
+
+	tree         api.IQuadTree
+	quadTreeNode api.INode
+}
+
+func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
+	o := new(gameLayer)
+	o.Initialize(name)
+	o.SetParent(parent)
+	parent.AddChild(o)
+	if err := o.Build(world); err != nil {
+		return nil, err
+	}
+	return o, nil
+}
+
+func (g *gameLayer) Build(world api.IWorld) error {
+	g.Node.Build(world)
+
+	err := g.buildOriginAxies(world)
+	if err != nil {
+		return err
+	}
+
+	g.buildQuadtree(world)
+
+	// Square ----------------------------------------------------
+	g.dragSquare = newDraggableSquare()
+	g.dragSquare.Build(world, g)
+
+	g.tree.Add(g.dragSquare.BaseNode())
+
+	return nil
+}
+
+func (g *gameLayer) buildQuadtree(world api.IWorld) error {
+	var err error
+	scale := float32(400.0)
+
+	g.tree = quadtree.NewQuadTree()
+	g.tree.SetBoundaryByMinMax(-scale, -scale, scale, scale)
+	g.tree.SetMaxDepth(5)
+
+	g.quadTreeNode, err = NewQTreeNode(0.0, 0.0, 1.0, 1.0, "Quadtree", false, world, g)
+	if err != nil {
+		return err
+	}
+
+	gqt := g.quadTreeNode.(*QTreeNode)
+	gqt.SetColor(color.NewPaletteInt64(color.LightOrange))
+	gqt.SetTree(g.tree)
+
+	return nil
+}
+
+func (g *gameLayer) buildOriginAxies(world api.IWorld) error {
+	var err error
+
+	dvr := world.Properties().Window.DeviceRes
+
+	// ---------------------------------------------------------
+	shline, err := extras.NewStaticHLineNode("HLine", world, g)
+	if err != nil {
+		return err
+	}
+	shline.SetScale(float32(dvr.Width))
+	ghl := shline.(*extras.StaticHLineNode)
+	ghl.SetColor(color.NewPaletteInt64(color.DarkGray))
+
+	// ---------------------------------------------------------
+	svline, err := extras.NewStaticVLineNode("VLine", world, g)
+	if err != nil {
+		return err
+	}
+	svline.SetScale(float32(dvr.Width))
+	gvl := svline.(*extras.StaticVLineNode)
+	gvl.SetColor(color.NewPaletteInt64(color.DarkGray))
+
+	return nil
+}
+
+func (g *gameLayer) buildTriangle(world api.IWorld) {
+	// ---------------------------------------------------------
+	// tri, err := extras.NewStaticTriangleNode("FilledTri", true, true, world, g)
+	// if err != nil {
+	// 	return err
+	// }
+	// tri.SetScale(100)
+	// tri.SetPosition(150.0, 0.0)
+	// gtr := tri.(*extras.StaticTriangleNode)
+	// gtr.SetColor(color.NewPaletteInt64(color.DeepPink))
+
+	// ---------------------------------------------------------
+	// otri, err := extras.NewStaticTriangleNode("OutlineTri", true, false, world, g)
+	// if err != nil {
+	// 	return err
+	// }
+	// otri.SetScale(100)
+	// otri.SetPosition(150.0, 0.0)
+	// gotr := otri.(*extras.StaticTriangleNode)
+	// gotr.SetColor(color.NewPaletteInt64(color.White))
+}
+
+// -----------------------------------------------------
+// Node lifecycles
+// -----------------------------------------------------
+
+// EnterNode called when a node is entering the stage
+func (g *gameLayer) EnterNode(man api.INodeManager) {
+	// We want the mouse events so the node can track the mouse.
+	man.RegisterEventTarget(g)
+}
+
+// ExitNode called when a node is exiting stage
+func (g *gameLayer) ExitNode(man api.INodeManager) {
+	man.UnRegisterEventTarget(g)
+}
+
+// -----------------------------------------------------
+// IO events
+// -----------------------------------------------------
+
+func (g *gameLayer) Handle(event api.IEvent) bool {
+	handled := g.dragSquare.EventHandle(event)
+
+	if handled {
+		g.tree.Remove(g.dragSquare.BaseNode())
+		g.tree.Add(g.dragSquare.BaseNode())
+	}
+
+	// TODO fix this. I should need to set this false
+	// Something isn't right with the event system.
+	handled = false
+
+	return handled
+}

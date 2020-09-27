@@ -200,6 +200,19 @@ func (q *quadTreeNode) query(boundary api.IRectangle, nodes *[]api.INode) {
 	}
 }
 
+func (q *quadTreeNode) traverse(quadrantCB api.QuadrantBoundsFunc) {
+	quadrantCB(q.boundary)
+
+	if !q.divided {
+		return
+	}
+
+	q.quadrant1.traverse(quadrantCB)
+	q.quadrant2.traverse(quadrantCB)
+	q.quadrant3.traverse(quadrantCB)
+	q.quadrant4.traverse(quadrantCB)
+}
+
 func (q *quadTreeNode) removeNode(node api.INode) bool {
 	// Does the node exist?
 	remIn := -1

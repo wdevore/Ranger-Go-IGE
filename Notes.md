@@ -241,3 +241,6 @@ Root {0} [500.000, 500.000] Div: true
    Quad4 {1}
 
 ---------- QuadTree ---------------
+
+# Example simple
+A small draggle square is moved through the tree

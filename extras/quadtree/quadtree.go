@@ -64,8 +64,16 @@ func (q *quadTree) SetBoundary(x, y, w, h float32) {
 	q.root.boundary.Set(x, y, w, h)
 }
 
+func (q *quadTree) SetBoundaryByMinMax(minX, minY, maxX, maxY float32) {
+	q.root.boundary.SetMinMax(minX, minY, maxX, maxY)
+}
+
 func (q *quadTree) Boundary() api.IRectangle {
 	return q.root.boundary
+}
+
+func (q *quadTree) Traverse(quadrantCB api.QuadrantBoundsFunc) {
+	q.root.traverse(quadrantCB)
 }
 
 // SetCapacity sets the limit on how many INodes can be held
