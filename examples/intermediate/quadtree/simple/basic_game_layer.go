@@ -31,16 +31,16 @@ func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INo
 func (g *gameLayer) Build(world api.IWorld) error {
 	g.Node.Build(world)
 
-	err := g.buildOriginAxies(world)
-	if err != nil {
-		return err
-	}
-
 	g.buildQuadtree(world)
 
 	// Square ----------------------------------------------------
 	g.dragSquare = newDraggableSquare()
 	g.dragSquare.Build(world, g)
+
+	err := g.buildOriginAxies(world)
+	if err != nil {
+		return err
+	}
 
 	g.tree.Add(g.dragSquare.BaseNode())
 
@@ -79,7 +79,8 @@ func (g *gameLayer) buildOriginAxies(world api.IWorld) error {
 	}
 	shline.SetScale(float32(dvr.Width))
 	ghl := shline.(*extras.StaticHLineNode)
-	ghl.SetColor(color.NewPaletteInt64(color.DarkGray))
+	ghl.SetColor(color.NewPaletteInt64(color.DarkBlue))
+	ghl.SetAlpha(0.25)
 
 	// ---------------------------------------------------------
 	svline, err := extras.NewStaticVLineNode("VLine", world, g)
@@ -88,7 +89,8 @@ func (g *gameLayer) buildOriginAxies(world api.IWorld) error {
 	}
 	svline.SetScale(float32(dvr.Width))
 	gvl := svline.(*extras.StaticVLineNode)
-	gvl.SetColor(color.NewPaletteInt64(color.DarkGray))
+	gvl.SetColor(color.NewPaletteInt64(color.DarkBlue))
+	gvl.SetAlpha(0.25)
 
 	return nil
 }
