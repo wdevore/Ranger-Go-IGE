@@ -10,6 +10,7 @@ import (
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/configuration"
+	"github.com/wdevore/Ranger-Go-IGE/engine/display"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
@@ -44,6 +45,7 @@ type world struct {
 	activeRenGID int
 	activeRenG   api.IRenderGraphic
 
+	projection   api.IMatrix4
 	viewSpace    api.IMatrix4
 	invViewSpace api.IMatrix4
 
@@ -232,7 +234,25 @@ func (w *world) Configure() error {
 	w.rasterFont = fonts.NewRasterFont()
 	err = w.rasterFont.Initialize("raster_font.data", w.relativePath)
 
+	// ------------------------------------------------------------
+	// Projection space
+	// ------------------------------------------------------------
+	camera := w.Properties().Camera
+	wp := w.Properties().Window
+
+	projection := display.NewCamera()
+	projection.SetProjection(
+		0.0, 0.0, // bottom,left
+		float32(wp.DeviceRes.Height), float32(wp.DeviceRes.Width), // top,right
+		camera.Depth.Near, camera.Depth.Far)
+
+	w.projection = projection.Matrix()
+
 	return err
+}
+
+func (w *world) Projection() api.IMatrix4 {
+	return w.projection
 }
 
 func (w *world) Viewspace() api.IMatrix4 {

@@ -13,7 +13,7 @@ import (
 // go test -v -count=1 quadtree_test.go
 
 func TestRunner(t *testing.T) {
-	testQuadtreeQuery(t)
+	testBounds(t)
 }
 
 func testQuadtreeQuery(t *testing.T) {
@@ -90,6 +90,29 @@ func testQuadtreeRemoveClean(t *testing.T) {
 
 	// tree.Remove(node2)
 	// fmt.Println(tree)
+}
+
+func testBounds(t *testing.T) {
+	r := geometry.NewRectangle()
+
+	vertices := []float32{
+		-1.0, 2.0,
+		2.0, 5.0,
+		-4.0, -6.0,
+		9.0, -12.0,
+	}
+
+	r.SetBounds2D(vertices)
+
+	vertices = []float32{
+		-1.0, 0.0,
+		1.0, 0.0,
+		0.0, 1.0,
+	}
+
+	r.SetBounds2D(vertices)
+
+	fmt.Println(r)
 }
 
 func testRectangleIntersects(t *testing.T) {

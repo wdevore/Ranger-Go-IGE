@@ -6,6 +6,8 @@ type IRectangle interface {
 	SetMinMax(minX, minY, maxX, maxY float32)
 	SetSize(w, h float32)
 	SetCenter(x, y float32)
+	SetBounds2D(vertices []float32)
+	SetBounds3D(vertices []float32)
 
 	Center() IPoint
 

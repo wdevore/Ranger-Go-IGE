@@ -67,7 +67,7 @@ func NewNodeManager() api.INodeManager {
 func (n *nodeManager) Configure(world api.IWorld) error {
 	// Setup view/projection matrix composition
 
-	n.configureProjections(world)
+	n.configureSpaces(world)
 
 	// -------------------------------------------------------
 	// Default Shader
@@ -84,7 +84,7 @@ func (n *nodeManager) Configure(world api.IWorld) error {
 		return errors.New("NodeManager: couldn't find 'view' uniform variable")
 	}
 
-	pm := n.projection.Matrix().Matrix()
+	pm := world.Projection().Matrix()
 	gl.UniformMatrix4fv(n.projLoc, 1, false, &pm[0])
 
 	vm := world.Viewspace().Matrix()
@@ -122,7 +122,7 @@ func (n *nodeManager) Configure(world api.IWorld) error {
 	return nil
 }
 
-func (n *nodeManager) configureProjections(world api.IWorld) {
+func (n *nodeManager) configureSpaces(world api.IWorld) {
 	wp := world.Properties().Window
 
 	// ------------------------------------------------------------
@@ -133,16 +133,7 @@ func (n *nodeManager) configureProjections(world api.IWorld) {
 	n.viewport.SetDimensions(0, 0, wp.DeviceRes.Width, wp.DeviceRes.Height)
 	n.viewport.Apply()
 
-	// ------------------------------------------------------------
-	// Projection space
-	// ------------------------------------------------------------
-	n.projection = display.NewCamera()
-
 	camera := world.Properties().Camera
-	n.projection.SetProjection(
-		0.0, 0.0, // bottom,left
-		float32(wp.DeviceRes.Height), float32(wp.DeviceRes.Width), //top,right
-		camera.Depth.Near, camera.Depth.Far)
 
 	// ------------------------------------------------------------
 	// View-space

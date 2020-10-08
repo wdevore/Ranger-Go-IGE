@@ -88,11 +88,11 @@ func (r *StaticTriangleNode) populate() {
 		}
 	}
 
+	r.Bounds().SetBounds3D(r.vertices)
+
 	r.shape.SetVertices(r.vertices)
 
-	var indices []uint32
-
-	indices = []uint32{
+	indices := []uint32{
 		0, 1, 2,
 	}
 

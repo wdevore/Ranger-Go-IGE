@@ -6,6 +6,8 @@ type IMatrix4 interface {
 	TranslateBy3Comps(x, y, z float32)
 	TranslateBy2Comps(x, y float32)
 
+	TransformVertices3D(in []float32, out []float32)
+
 	SetTranslateUsingVector(v IVector3)
 	SetTranslate3Comp(x, y, z float32)
 	PostTranslate(tx, ty, tz float32)

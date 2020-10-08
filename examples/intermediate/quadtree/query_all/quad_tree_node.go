@@ -1,15 +1,16 @@
-package extras
+package main
 
 import (
 	"github.com/go-gl/gl/v4.5-core/gl"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
+	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 )
 
-// StaticRectangleNode is a generic node
-type StaticRectangleNode struct {
+// QTreeNode is a node for rendering quadtrees
+type QTreeNode struct {
 	nodes.Node
 
 	color                  []float32
@@ -17,11 +18,15 @@ type StaticRectangleNode struct {
 
 	shape  api.IAtlasShape
 	filled bool
+
+	model api.IMatrix4
+
+	tree api.IQuadTree
 }
 
-// NewStaticRectangleNode constructs a generic shape node
-func NewStaticRectangleNode(minX, minY, maxX, maxY float32, name string, filled bool, world api.IWorld, parent api.INode) (api.INode, error) {
-	o := new(StaticRectangleNode)
+// NewQTreeNode constructs a node
+func NewQTreeNode(minX, minY, maxX, maxY float32, name string, filled bool, world api.IWorld, parent api.INode) (api.INode, error) {
+	o := new(QTreeNode)
 	o.Initialize(name)
 	o.SetParent(parent)
 
@@ -33,7 +38,7 @@ func NewStaticRectangleNode(minX, minY, maxX, maxY float32, name string, filled 
 
 	parent.AddChild(o)
 
-	if err := o.Build(world); err != nil {
+	if err := o.build(world); err != nil {
 		return nil, err
 	}
 
@@ -41,16 +46,18 @@ func NewStaticRectangleNode(minX, minY, maxX, maxY float32, name string, filled 
 }
 
 // Build configures the node
-func (r *StaticRectangleNode) Build(world api.IWorld) error {
+func (r *QTreeNode) build(world api.IWorld) error {
 	r.Node.Build(world)
+
+	r.model = maths.NewMatrix4()
 
 	r.color = color.NewPaletteInt64(color.White).Array()
 
 	if r.filled {
-		name := r.Name() + "::FilledRectangle"
+		name := "FilledRectangle"
 		r.shape = world.Atlas().GenerateShape(name, gl.TRIANGLES)
 	} else {
-		name := r.Name() + "::OutlineRectangle"
+		name := "OutlineRectangle"
 		r.shape = world.Atlas().GenerateShape(name, gl.LINE_LOOP)
 	}
 
@@ -61,7 +68,7 @@ func (r *StaticRectangleNode) Build(world api.IWorld) error {
 	return nil
 }
 
-func (r *StaticRectangleNode) populate(minX, minY, maxX, maxY float32) {
+func (r *QTreeNode) populate(minX, minY, maxX, maxY float32) {
 	var vertices []float32
 
 	vertices = []float32{
@@ -91,34 +98,33 @@ func (r *StaticRectangleNode) populate(minX, minY, maxX, maxY float32) {
 	r.shape.SetIndices(indices)
 }
 
-// Vertices returns the shape's vertices
-func (r *StaticRectangleNode) Vertices() *[]float32 {
-	return r.shape.Vertices()
-}
-
-// HorizontalLength returns the maxX-minX length.
-func (r *StaticRectangleNode) HorizontalLength() float32 {
-	return r.maxX - r.minX
-}
-
-// VerticalLength returns the maxY-minY length.
-func (r *StaticRectangleNode) VerticalLength() float32 {
-	return r.maxY - r.minY
+// SetTree assigns a quadtree to this visual node.
+func (r *QTreeNode) SetTree(tree api.IQuadTree) {
+	r.tree = tree
 }
 
 // SetColor sets square color
-func (r *StaticRectangleNode) SetColor(color api.IPalette) {
+func (r *QTreeNode) SetColor(color api.IPalette) {
 	r.color = color.Array()
 }
 
 // SetAlpha sets the current color's alpha channel 0.0->1.0
-func (r *StaticRectangleNode) SetAlpha(alpha float32) {
+func (r *QTreeNode) SetAlpha(alpha float32) {
 	r.color[3] = alpha
 }
 
 // Draw renders shape
-func (r *StaticRectangleNode) Draw(model api.IMatrix4) {
+func (r *QTreeNode) Draw(model api.IMatrix4) {
 	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
+
 	renG.SetColor(r.color)
-	renG.Render(r.shape, model)
+
+	r.model.Set(model)
+
+	// Traverse iterates the entire tree.
+	r.tree.Traverse(func(bounds api.IRectangle) {
+		r.model.SetTranslate3Comp(bounds.Left(), bounds.Bottom(), 0.0)
+		r.model.ScaleByComp(bounds.Width(), bounds.Height(), 1.0)
+		renG.Render(r.shape, r.model)
+	})
 }

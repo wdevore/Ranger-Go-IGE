@@ -2,6 +2,7 @@ package geometry
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 )
@@ -61,6 +62,51 @@ func (r *Rectangle) SetMinMax(minX, minY, maxX, maxY float32) {
 
 	r.width = maxX - minX
 	r.height = maxY - minY
+}
+
+// SetBounds2D set the min/max corners based on array of vertices.
+// [x,y,x,y...]
+func (r *Rectangle) SetBounds2D(vertices []float32) {
+	minX := math.MaxFloat32
+	minY := math.MaxFloat32
+	maxX := -math.MaxFloat32
+	maxY := -math.MaxFloat32
+
+	for i := 0; i < len(vertices); i += 2 {
+		x := float64(vertices[i])
+		y := float64(vertices[i+1])
+
+		minX = math.Min(minX, x)
+		minY = math.Min(minY, y)
+
+		maxX = math.Max(maxX, x)
+		maxY = math.Max(maxY, y)
+	}
+
+	r.SetMinMax(float32(minX), float32(minY), float32(maxX), float32(maxY))
+}
+
+// SetBounds3D set the min/max corners based on array of vertices.
+// [x,y,z,x,y,z...]
+func (r *Rectangle) SetBounds3D(vertices []float32) {
+	minX := math.MaxFloat32
+	minY := math.MaxFloat32
+	maxX := -math.MaxFloat32
+	maxY := -math.MaxFloat32
+
+	for i := 0; i < len(vertices); i += 3 {
+		x := float64(vertices[i])
+		y := float64(vertices[i+1])
+
+		minX = math.Min(minX, x)
+		minY = math.Min(minY, y)
+
+		maxX = math.Max(maxX, x)
+		maxY = math.Max(maxY, y)
+	}
+
+	r.SetMinMax(float32(minX), float32(minY), float32(maxX), float32(maxY))
+	r.SetCenter(r.left+r.width/2.0, r.bottom+r.height/2.0)
 }
 
 // SetSize sets just the width/height
@@ -138,5 +184,9 @@ func (r *Rectangle) Contains(o api.IRectangle) bool {
 }
 
 func (r Rectangle) String() string {
-	return fmt.Sprintf("LB(%0.3f,%0.3f) - RT(%0.3f,%0.3f) - Size: %0.3f x %0.3f", r.left, r.bottom, r.right, r.top, r.width, r.height)
+	return fmt.Sprintf(
+		"BL(%0.3f,%0.3f) - TR(%0.3f,%0.3f) - Width: %0.3f x Height: %0.3f | At: (%0.3f,%0.3f)",
+		r.left, r.bottom, r.right, r.top, r.width, r.height,
+		r.center.X(), r.center.Y(),
+	)
 }

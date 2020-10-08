@@ -137,6 +137,25 @@ func (at *affineTransform) SetByTransform(t api.IAffineTransform) {
 	at.m[ma], at.m[mb], at.m[mc], at.m[md], at.m[me], at.m[mf] = t.Components()
 }
 
+func (at *affineTransform) SetFromMatrix(m api.IMatrix4) {
+	at.m[0] = m.C(0)
+	at.m[1] = m.C(1)
+	at.m[2] = m.C(2)
+	at.m[3] = m.C(3)
+	at.m[4] = m.C(4)
+	at.m[5] = m.C(5)
+	at.m[6] = m.C(6)
+	at.m[7] = m.C(7)
+	at.m[8] = m.C(8)
+	at.m[9] = m.C(9)
+	at.m[10] = m.C(10)
+	at.m[11] = m.C(11)
+	at.m[12] = m.C(12)
+	at.m[13] = m.C(13)
+	at.m[14] = m.C(14)
+	at.m[15] = m.C(15)
+}
+
 func (at *affineTransform) TransformPoint(p api.IPoint) {
 	p.SetByComp(
 		(at.m[ma]*p.X())+(at.m[mc]*p.Y())+at.m[me],
@@ -153,6 +172,16 @@ func (at *affineTransform) TransformCompToPoint(x, y float32, out api.IPoint) {
 	out.SetByComp(
 		(at.m[ma]*x)+(at.m[mc]*y)+at.m[me],
 		(at.m[mb]*x)+(at.m[md]*y)+at.m[mf])
+}
+
+// TransformVertices3D in/out are {x,y,z,x,y,z...}
+func (at *affineTransform) TransformVertices3D(in []float32, out []float32) {
+	for i := 0; i < len(in); i += 3 {
+		x := in[i]
+		y := in[i+1]
+		out[i] = (at.m[ma] * x) + (at.m[mc] * y) + at.m[me]
+		out[i+1] = (at.m[mb] * x) + (at.m[md] * y) + at.m[mf]
+	}
 }
 
 func (at *affineTransform) TransformToComps(in api.IPoint) (x, y float32) {

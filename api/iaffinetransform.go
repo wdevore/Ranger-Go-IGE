@@ -16,6 +16,7 @@ type IAffineTransform interface {
 	SetByComp(float32, float32, float32, float32, float32, float32)
 	// SetByTransform sets point using another transform
 	SetByTransform(IAffineTransform)
+	SetFromMatrix(IMatrix4)
 
 	// --------------------------------------------
 	// Transforms
@@ -28,7 +29,8 @@ type IAffineTransform interface {
 	// TransformToComps applys transform and returns results, "in" is not modified
 	TransformToComps(in IPoint) (x, y float32)
 	TransformCompToPoint(x, y float32, out IPoint)
-	// TransformPolygon
+	// TransformVertices3D applys transform to vertices
+	TransformVertices3D(in []float32, out []float32)
 
 	// --------------------------------------------
 	// Mutaters

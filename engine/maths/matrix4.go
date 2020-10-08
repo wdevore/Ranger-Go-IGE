@@ -318,6 +318,18 @@ func (m *matrix4) GetPsuedoScale() float32 {
 // --------------------------------------------------------------------------
 // Transforms
 // --------------------------------------------------------------------------
+func (m *matrix4) TransformVertices3D(in []float32, out []float32) {
+	for i := 0; i < len(in); i += 3 {
+		x := in[i]
+		y := in[i+1]
+		z := in[i+2]
+
+		// http://www.c-jump.com/bcc/common/Talk3/Math/Matrices/Matrices.html
+		out[i] = m.e[M00]*x + m.e[M01]*y + m.e[M02]*z + m.e[M03]   // x
+		out[i+1] = m.e[M10]*x + m.e[M11]*y + m.e[M12]*z + m.e[M13] // y
+		out[i+2] = 0.0                                             //m.e[M20]*x + m.e[M21]*y + m.e[M22]*z + m.e[M23] // z
+	}
+}
 
 // --------------------------------------------------------------------------
 // Matrix methods

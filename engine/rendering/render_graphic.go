@@ -121,7 +121,6 @@ func (r *RenderGraphic) Render(shape api.IAtlasShape, model api.IMatrix4) {
 
 // RenderElements renders the specificied # of elemens from the shape's vertices
 func (r *RenderGraphic) RenderElements(shape api.IAtlasShape, elementCount, elementOffset int, model api.IMatrix4) {
-	// fmt.Println(elementCount, ", ", elementOffset)
 	gl.UniformMatrix4fv(r.modelLoc, 1, false, &model.Matrix()[0])
 	gl.DrawElements(shape.PrimitiveMode(), int32(elementCount), uint32(gl.UNSIGNED_INT), gl.PtrOffset(elementOffset))
 }

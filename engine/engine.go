@@ -59,8 +59,6 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		o.world.PropertiesOverride(overrides)
 	}
 
-	// o.sceneGraph = nodes.NewNodeManager()
-
 	o.windowDisplay = display.NewDisplay(o)
 	err = o.windowDisplay.Initialize(o.world)
 
@@ -95,7 +93,6 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		gic := o.postNode.(api.IColor)
 		gic.SetColor(color.NewPaletteInt64(color.Peach).Array())
 
-		// o.SetPostNode(o.postNode)
 		o.world.SetPostNode(o.postNode)
 	}
 
