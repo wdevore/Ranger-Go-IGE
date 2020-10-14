@@ -3,7 +3,7 @@ package api
 // IAtlasX is a container for shapes and renders them.
 type IAtlasX interface {
 	// Attaches shaders
-	Configure(world IWorld) error
+	Configure() error
 	AddShape(shapeName string, vertices []float32, indices []uint32, mode int) int
 	GetShapeByName(shapeName string) int
 

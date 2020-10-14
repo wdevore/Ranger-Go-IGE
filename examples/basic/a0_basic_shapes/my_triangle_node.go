@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 )
@@ -36,7 +38,11 @@ func (b *myTriangleNode) build(world api.IWorld) error {
 
 	b.atlas = world.GetAtlas(api.MonoAtlasName)
 
-	b.shapeID = b.atlas.GetShapeByName(triangleName)
+	b.shapeID = b.atlas.GetShapeByName(api.FilledTriangleShapeName)
+
+	if b.shapeID < 0 {
+		return errors.New("myTriangleNode: Could not find triangle shape")
+	}
 
 	return nil
 }

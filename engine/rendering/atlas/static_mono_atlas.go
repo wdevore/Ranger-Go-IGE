@@ -45,8 +45,8 @@ func NewStaticMonoAtlas(world api.IWorld) api.IAtlasX {
 	return o
 }
 
-func (s *staticMonoAtlas) Configure(world api.IWorld) error {
-	err := s.configureShaders(world.RelativePath(), world.Properties())
+func (s *staticMonoAtlas) Configure() error {
+	err := s.configureShaders(s.world.RelativePath(), s.world.Properties())
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func (s *staticMonoAtlas) GetShapeByName(shapeName string) int {
 }
 
 func (s *staticMonoAtlas) Burn() error {
-	err := s.Configure(s.world)
+	err := s.Configure()
 	if err != nil {
 		panic(err)
 	}

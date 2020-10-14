@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 )
@@ -36,7 +38,10 @@ func (b *mySquareNode) build(world api.IWorld) error {
 
 	b.atlas = world.GetAtlas(api.MonoAtlasName)
 
-	b.shapeID = b.atlas.GetShapeByName(centerSquareName)
+	b.shapeID = b.atlas.GetShapeByName(api.CenteredFilledSquareShapeName)
+	if b.shapeID < 0 {
+		return errors.New("mySquareNode: Could not find square shape")
+	}
 
 	return nil
 }

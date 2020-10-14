@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	centerSquareShapeName = "CenteredSquareShape"
-	triangleShapeName     = "TriangleShape"
+	centerSquareName = "CenteredSquareShape"
+	triangleName     = "TriangleShape"
 )
 
 type sceneSplash struct {
@@ -47,7 +47,6 @@ func (s *sceneSplash) build(world api.IWorld) error {
 	if err != nil {
 		return err
 	}
-
 	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
 
 	_, err = newBasicGameLayer("Game Layer", world, s)

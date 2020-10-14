@@ -12,10 +12,14 @@ var ids = 0
 
 // Node is an embedded type used by all nodes.
 type Node struct {
-	id      int
-	name    string
+	id   int
+	name string
+
+	// Associated visual
+	atlas   api.IAtlasX
 	visible bool
-	dirty   bool
+
+	dirty bool
 
 	parent api.INode
 	world  api.IWorld
@@ -101,19 +105,19 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 		// an Atlas that is already in use then we don't do anything, else
 		// if it is a different Atlas then we need to UnUse() the current
 		// Atlas and Use() the new one.
-		// atlas := node.Atlas()
-		// if atlas != nil {
-		// 	if atlas != currentAtlas {
-		// 		// UnUse the current Atlas and Use the new one.
-		// 		if currentAtlas != nil {
-		// 			currentAtlas.UnUse()
-		// 		}
-		// 		atlas.Use()
-		// 		currentAtlas = atlas
-		// 	}
-		// 	nodeRender.Draw(model)
-		// }
-		nodeRender.Draw(model)
+		atlas := node.Atlas()
+		if atlas != nil {
+			if atlas != currentAtlas {
+				// UnUse the current Atlas and Use the new one.
+				if currentAtlas != nil {
+					currentAtlas.UnUse()
+				}
+				atlas.Use()
+				currentAtlas = atlas
+			}
+			nodeRender.Draw(model)
+		}
+		// nodeRender.Draw(model)
 	} else {
 		log.Fatalf("Node: oops, %s doesn't implement IRender.Draw method", node)
 	}
@@ -211,7 +215,12 @@ func (n *Node) Update(msPerUpdate, secPerUpdate float64) {
 // is no rendering.
 func (n *Node) Atlas() api.IAtlasX {
 	// fmt.Println(n)
-	return nil
+	return n.atlas
+}
+
+// SetAtlas sets the visual for this node.
+func (n *Node) SetAtlas(atlas api.IAtlasX) {
+	n.atlas = atlas
 }
 
 // -----------------------------------------------------

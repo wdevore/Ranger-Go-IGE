@@ -7,8 +7,7 @@ import (
 )
 
 const (
-	centerSquareShapeName = "CenteredSquareShape"
-	triangleShapeName     = "TriangleShape"
+	centerSquareName = "CenteredSquareShape"
 )
 
 type sceneSplash struct {
@@ -36,12 +35,10 @@ func (s *sceneSplash) build(world api.IWorld) error {
 
 	// -----------------------------------------------------
 	// Preload any shapes the game needs.
+	// This example needs two shapes.
 	// -----------------------------------------------------
 	vertices, indices, mode := generators.GenerateUnitRectangleVectorShape(true, true)
-	atlas.AddShape(api.CenteredFilledSquareShapeName, vertices, indices, mode)
-
-	vertices, indices, mode = generators.GenerateUnitTriangleVectorShape(true)
-	atlas.AddShape(api.FilledTriangleShapeName, vertices, indices, mode)
+	atlas.AddShape(centerSquareName, vertices, indices, mode)
 
 	bg, err := newBackgroundNode("Background", world, s)
 	if err != nil {

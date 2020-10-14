@@ -9,11 +9,7 @@ import (
 type gameLayer struct {
 	nodes.Node
 
-	angle float64
-	zbar  api.INode
-	ozbar api.INode
-
-	squareShape int
+	shape int
 }
 
 func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
@@ -53,23 +49,4 @@ func (g *gameLayer) build(world api.IWorld) error {
 	golt.setColor(color.NewPaletteInt64(color.GoldYellow))
 
 	return nil
-}
-
-// Update updates the time properties of a node.
-func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
-	g.angle += 1.25
-}
-
-// -----------------------------------------------------
-// Node lifecycles
-// -----------------------------------------------------
-
-// EnterNode called when a node is entering the stage
-func (g *gameLayer) EnterNode(man api.INodeManager) {
-	man.RegisterTarget(g)
-}
-
-// ExitNode called when a node is exiting stage
-func (g *gameLayer) ExitNode(man api.INodeManager) {
-	man.UnRegisterTarget(g)
 }

@@ -139,7 +139,7 @@ func GenerateUnitZBarVectorShape(forFilling bool) (vertices []float32, indices [
 		indices = []uint32{
 			0, 1, 2, 3, 4, 5, 6, 7, // CCW
 		}
-		mode = gl.LINES
+		mode = gl.LINE_LOOP
 	}
 
 	return vertices, indices, mode
@@ -160,9 +160,9 @@ func GenerateUnitCircleVectorShape(segments int, forFilling bool) (vertices []fl
 		indices = append(indices, 0)
 
 		index++
-		mode = gl.TRIANGLES
+		mode = gl.TRIANGLE_FAN
 	} else {
-		mode = gl.LINES
+		mode = gl.LINE_LOOP
 	}
 
 	for i := 0.0; i < 2.0*math.Pi; i += step {
@@ -189,7 +189,7 @@ func GenerateUnitArcVectorShape(startAngle, endAngle float64, segments int, forF
 	indices = append(indices, 0)
 
 	if forFilling {
-		mode = gl.TRIANGLES
+		mode = gl.TRIANGLE_FAN
 	} else {
 		mode = gl.LINE_LOOP
 	}

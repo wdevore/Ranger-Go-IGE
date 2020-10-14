@@ -9,7 +9,7 @@ import (
 type backgroundNode struct {
 	nodes.Node
 
-	atlas api.IAtlasX
+	// atlas api.IAtlasX
 	shape int
 
 	color []float32
@@ -33,9 +33,9 @@ func newBackgroundNode(name string, world api.IWorld, parent api.INode) (api.INo
 func (b *backgroundNode) build(world api.IWorld) error {
 	b.Node.Build(world)
 
-	b.atlas = world.GetAtlas(api.MonoAtlasName)
+	b.Node.SetAtlas(world.GetAtlas(api.MonoAtlasName))
 
-	b.shape = b.atlas.GetShapeByName(api.CenteredFilledSquareShapeName)
+	b.shape = b.Atlas().GetShapeByName(api.CenteredFilledSquareShapeName)
 
 	// For simplicity we set the color here.
 	b.color = color.NewPaletteInt64(color.DarkGray).Array()
@@ -43,20 +43,11 @@ func (b *backgroundNode) build(world api.IWorld) error {
 	return nil
 }
 
-func (b *backgroundNode) setColor(color api.IPalette) {
-	b.color = color.Array()
-}
-
-func (b *backgroundNode) setAlpha(alpha float32) {
-	b.color[3] = alpha
-}
-
-func (b *backgroundNode) Atlas() api.IAtlasX {
-	return b.atlas
-}
-
 // Draw renders shape
 func (b *backgroundNode) Draw(model api.IMatrix4) {
-	b.atlas.SetColor(b.color)
-	b.atlas.Render(b.shape, model)
+	// Note: We don't need to call the Atlas's Use() method
+	// because the node.Visit() will do that for us.
+	atlas := b.Atlas()
+	atlas.SetColor(b.color)
+	atlas.Render(b.shape, model)
 }

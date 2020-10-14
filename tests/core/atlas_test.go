@@ -26,8 +26,8 @@ func testMonoAtlasAddShape(t *testing.T) {
 
 	world := engine.World()
 
-	mono := atlas.NewStaticMonoAtlas()
-	err = mono.Configure("../../", world.Properties())
+	mono := atlas.NewStaticMonoAtlas(world)
+	err = mono.Configure()
 	if err != nil {
 		panic(err)
 	}
@@ -57,8 +57,8 @@ func testMonoAtlasConfig(t *testing.T) {
 
 	world := engine.World()
 
-	mono := atlas.NewStaticMonoAtlas()
-	err = mono.Configure("../../", world.Properties())
+	mono := atlas.NewStaticMonoAtlas(world)
+	err = mono.Configure()
 	if err != nil {
 		panic(err)
 	}

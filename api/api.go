@@ -12,6 +12,33 @@ const (
 	MonoAtlasName = "MonoAtlas"
 )
 
+// These shape names are provided for convience. Use them for
+// learning, but typically you would create your own shapes
+// specific to your game which means you would have your own
+// shape names.
+const (
+	CenteredFilledSquareShapeName     = "CenteredFilledSquareShape"
+	CenteredOutlinedSquareShapeName   = "CenteredOutlinedSquareShape"
+	UnCenteredFilledSquareShapeName   = "UnCenteredFilledSquareShape"
+	UnCenteredOutlinedSquareShapeName = "UnCenteredOutlinedSquareShape"
+
+	FilledTriangleShapeName   = "FilledTriangleShape"
+	OutlinedTriangleShapeName = "OutlinedTriangleShape"
+
+	FilledCircleShapeName   = "FilledCircleShape"
+	OutlinedCircleShapeName = "OutlinedCircleShape"
+
+	FilledArcShapeName   = "FilledArcShape"
+	OutlinedArcShapeName = "OutlinedArcShape"
+
+	FilledZBarShapeName   = "FilledZBarShape"
+	OutlinedZBarShapeName = "OutlinedZBarShape"
+
+	HLineShapeName = "HLineShape"
+	VLineShapeName = "VLineShape"
+	PlusShapeName  = "PlusShape"
+)
+
 const (
 	// FILLED polygon
 	FILLED = 0

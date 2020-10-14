@@ -7,11 +7,17 @@
       "Height": 900,
       "Width": 1600
     },
+    "ClearColor": {
+      "R": 1.0,
+      "G": 0.5,
+      "B": 0.0,
+      "A": 1.0
+    },
     "FullScreen": false,
     "Orientation": "Landscape",
     "Position": {
-      "X": 200,
-      "Y": 200
+      "X": 100,
+      "Y": 150
     },
     "Title": "Alpha Transparency"
   }

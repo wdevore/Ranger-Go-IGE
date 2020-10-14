@@ -51,4 +51,5 @@ type INode interface {
 	Update(msPerUpdate, secPerUpdate float64)
 
 	Atlas() IAtlasX
+	SetAtlas(atlas IAtlasX)
 }

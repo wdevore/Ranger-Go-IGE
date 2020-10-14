@@ -35,7 +35,7 @@ func (b *backgroundNode) build(world api.IWorld) error {
 
 	b.atlas = world.GetAtlas(api.MonoAtlasName)
 
-	b.shape = b.atlas.GetShapeByName(api.CenteredFilledSquareShapeName)
+	b.shape = b.atlas.GetShapeByName(centerSquareName)
 
 	// For simplicity we set the color here.
 	b.color = color.NewPaletteInt64(color.DarkGray).Array()
