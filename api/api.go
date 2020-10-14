@@ -8,6 +8,11 @@ const (
 )
 
 const (
+	// MonoAtlasName is the Map name for referencing
+	MonoAtlasName = "MonoAtlas"
+)
+
+const (
 	// FILLED polygon
 	FILLED = 0
 	// OUTLINED polygon

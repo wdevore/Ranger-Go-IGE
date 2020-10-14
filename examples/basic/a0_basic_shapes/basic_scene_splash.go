@@ -32,7 +32,7 @@ func (s *sceneSplash) build(world api.IWorld) error {
 
 	dvr := world.Properties().Window.DeviceRes
 
-	atlas := world.GetAtlas(monoAtlasName)
+	atlas := world.GetAtlas(api.MonoAtlasName)
 
 	// -----------------------------------------------------
 	// Preload any shapes the game needs.

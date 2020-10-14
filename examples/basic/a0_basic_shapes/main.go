@@ -3,14 +3,11 @@ package main
 import (
 	"log"
 
+	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
-)
-
-const (
-	monoAtlasName = "MonoAtlas"
 )
 
 func main() {
@@ -30,8 +27,8 @@ func main() {
 	// -----------------------------------------------------
 	monoAtlas := atlas.NewStaticMonoAtlas(world)
 
-	// Add it to the world so Scenes/Layers can obtain access to the atlas.
-	world.AddAtlas(monoAtlasName, monoAtlas)
+	// Add Atlas to the world so Scenes/Layers can obtain access to the atlas.
+	world.AddAtlas(api.MonoAtlasName, monoAtlas)
 
 	// -----------------------------------------------------
 	// Setup scenes and layers of the game.
@@ -48,7 +45,8 @@ func main() {
 	world.Push(boot)
 
 	// -----------------------------------------------------
-	// Finally Shake and Bake any atlases we created
+	// Now that Scene and Layers have added Shapes to the
+	// Atlas we can now "Shake and Bake" it via the Burn().
 	// -----------------------------------------------------
 	err = monoAtlas.Burn()
 	if err != nil {
@@ -57,6 +55,6 @@ func main() {
 
 	nodes.PrintTree(splash)
 
+	// And finally we can start the game.
 	engine.Begin()
-
 }

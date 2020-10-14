@@ -49,4 +49,6 @@ type INode interface {
 	SetBoundByMinMax(minX, minY, maxX, maxY float32)
 
 	Update(msPerUpdate, secPerUpdate float64)
+
+	Atlas() IAtlasX
 }

@@ -76,6 +76,8 @@ func (n *Node) InitializeWithID(id int, name string) {
 	n.dirty = true
 }
 
+var currentAtlas api.IAtlasX
+
 // Visit traverses "down" the heirarchy while space-mappings traverses upward.
 func Visit(node api.INode, transStack api.ITransformStack, interpolation float64) {
 	// fmt.Println("Node: visiting ", node)
@@ -95,10 +97,22 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 
 	nodeRender, isRenderType := node.(api.IRender)
 	if isRenderType {
-		// TODO we need to ask INode what Atlas it is using. If it is
+		// we need to ask INode what Atlas it is using. If it is
 		// an Atlas that is already in use then we don't do anything, else
 		// if it is a different Atlas then we need to UnUse() the current
 		// Atlas and Use() the new one.
+		// atlas := node.Atlas()
+		// if atlas != nil {
+		// 	if atlas != currentAtlas {
+		// 		// UnUse the current Atlas and Use the new one.
+		// 		if currentAtlas != nil {
+		// 			currentAtlas.UnUse()
+		// 		}
+		// 		atlas.Use()
+		// 		currentAtlas = atlas
+		// 	}
+		// 	nodeRender.Draw(model)
+		// }
 		nodeRender.Draw(model)
 	} else {
 		log.Fatalf("Node: oops, %s doesn't implement IRender.Draw method", node)
@@ -191,6 +205,13 @@ func (n *Node) SetBoundByMinMax(minX, minY, maxX, maxY float32) {
 
 // Update updates the time properties of a node.
 func (n *Node) Update(msPerUpdate, secPerUpdate float64) {
+}
+
+// Atlas returns the Atlas this node uses to render itself. The default
+// is no rendering.
+func (n *Node) Atlas() api.IAtlasX {
+	// fmt.Println(n)
+	return nil
 }
 
 // -----------------------------------------------------

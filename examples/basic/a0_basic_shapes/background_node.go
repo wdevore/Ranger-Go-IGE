@@ -35,7 +35,7 @@ func newBackgroundNode(name string, world api.IWorld, parent api.INode) (api.INo
 func (b *backgroundNode) build(world api.IWorld) error {
 	b.Node.Build(world)
 
-	b.atlas = world.GetAtlas(monoAtlasName)
+	b.atlas = world.GetAtlas(api.MonoAtlasName)
 
 	b.squareShape = b.atlas.GetShapeByName(centerSquareName)
 
@@ -53,10 +53,12 @@ func (b *backgroundNode) setAlpha(alpha float32) {
 	b.color[3] = alpha
 }
 
+func (b *backgroundNode) Atlas() api.IAtlasX {
+	return b.atlas
+}
+
 // Draw renders shape
 func (b *backgroundNode) Draw(model api.IMatrix4) {
-	b.atlas.Use()
 	b.atlas.SetColor(b.color)
 	b.atlas.Render(b.squareShape, model)
-	b.atlas.UnUse()
 }

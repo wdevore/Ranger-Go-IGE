@@ -34,7 +34,7 @@ func newMySquareNode(name string, world api.IWorld, parent api.INode) (api.INode
 func (b *mySquareNode) build(world api.IWorld) error {
 	b.Node.Build(world)
 
-	b.atlas = world.GetAtlas(monoAtlasName)
+	b.atlas = world.GetAtlas(api.MonoAtlasName)
 
 	b.shapeID = b.atlas.GetShapeByName(centerSquareName)
 
@@ -49,10 +49,14 @@ func (b *mySquareNode) setAlpha(alpha float32) {
 	b.color[3] = alpha
 }
 
+func (b *mySquareNode) Atlas() api.IAtlasX {
+	return b.atlas
+}
+
 // Draw renders shape
 func (b *mySquareNode) Draw(model api.IMatrix4) {
-	b.atlas.Use()
+	// Note: We don't need to call the Atlas's Use() method
+	// because the node.Visit() will do that for us.
 	b.atlas.SetColor(b.color)
 	b.atlas.Render(b.shapeID, model)
-	b.atlas.UnUse()
 }
