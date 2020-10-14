@@ -12,7 +12,6 @@ type mySquareNode struct {
 
 	background api.INode
 
-	atlas   api.IAtlasX
 	shapeID int
 
 	color []float32
@@ -36,9 +35,15 @@ func newMySquareNode(name string, world api.IWorld, parent api.INode) (api.INode
 func (b *mySquareNode) build(world api.IWorld) error {
 	b.Node.Build(world)
 
-	b.atlas = world.GetAtlas(api.MonoAtlasName)
+	atlas := world.GetAtlas(api.MonoAtlasName)
 
-	b.shapeID = b.atlas.GetShapeByName(api.CenteredFilledSquareShapeName)
+	if atlas == nil {
+		return errors.New("Expected to find StaticMono Atlas")
+	}
+
+	b.SetAtlas(atlas)
+
+	b.shapeID = atlas.GetShapeByName(api.CenteredFilledSquareShapeName)
 	if b.shapeID < 0 {
 		return errors.New("mySquareNode: Could not find square shape")
 	}
@@ -54,14 +59,12 @@ func (b *mySquareNode) setAlpha(alpha float32) {
 	b.color[3] = alpha
 }
 
-func (b *mySquareNode) Atlas() api.IAtlasX {
-	return b.atlas
-}
-
 // Draw renders shape
 func (b *mySquareNode) Draw(model api.IMatrix4) {
 	// Note: We don't need to call the Atlas's Use() method
 	// because the node.Visit() will do that for us.
-	b.atlas.SetColor(b.color)
-	b.atlas.Render(b.shapeID, model)
+	atlas := b.Atlas()
+
+	atlas.SetColor(b.color)
+	atlas.Render(b.shapeID, model)
 }

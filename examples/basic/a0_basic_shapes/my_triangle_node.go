@@ -12,7 +12,6 @@ type myTriangleNode struct {
 
 	background api.INode
 
-	atlas   api.IAtlasX
 	shapeID int
 
 	color []float32
@@ -36,9 +35,15 @@ func newMyTriangleNode(name string, world api.IWorld, parent api.INode) (api.INo
 func (b *myTriangleNode) build(world api.IWorld) error {
 	b.Node.Build(world)
 
-	b.atlas = world.GetAtlas(api.MonoAtlasName)
+	atlas := world.GetAtlas(api.MonoAtlasName)
 
-	b.shapeID = b.atlas.GetShapeByName(api.FilledTriangleShapeName)
+	if atlas == nil {
+		return errors.New("Expected to find StaticMono Atlas")
+	}
+
+	b.SetAtlas(atlas)
+
+	b.shapeID = atlas.GetShapeByName(api.FilledTriangleShapeName)
 
 	if b.shapeID < 0 {
 		return errors.New("myTriangleNode: Could not find triangle shape")
@@ -55,14 +60,12 @@ func (b *myTriangleNode) setAlpha(alpha float32) {
 	b.color[3] = alpha
 }
 
-func (b *myTriangleNode) Atlas() api.IAtlasX {
-	return b.atlas
-}
-
 // Draw renders shape
 func (b *myTriangleNode) Draw(model api.IMatrix4) {
 	// Note: We don't need to call the Atlas's Use() method
 	// because the node.Visit() will do that for us.
-	b.atlas.SetColor(b.color)
-	b.atlas.Render(b.shapeID, model)
+	atlas := b.Atlas()
+
+	atlas.SetColor(b.color)
+	atlas.Render(b.shapeID, model)
 }
