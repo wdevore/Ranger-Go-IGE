@@ -67,6 +67,8 @@
     "TextureFragmentShaderSrc": "texture.fragment.glsl",
     "UseFontShader": true,
     "FontVertexShaderSrc": "texture_font.vertex.glsl",
-    "FontFragmentShaderSrc": "texture_font.fragment.glsl"
+    "FontFragmentShaderSrc": "texture_font.fragment.glsl",
+    "MonoVertexShaderFile": "mono_vertex.glsl",
+    "MonoFragmentShaderFile": "mono_fragment.glsl"
   }
 }

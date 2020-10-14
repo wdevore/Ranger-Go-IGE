@@ -31,6 +31,8 @@ type world struct {
 	defaultShader api.IShader
 	textureShader api.IShader
 
+	atlases map[string]api.IAtlasX
+
 	staticAtlas   api.IAtlas
 	dynamicAtlas  api.IAtlas
 	pixelAtlas    api.IAtlas
@@ -64,6 +66,8 @@ func newWorld(relativePath string) api.IWorld {
 
 	o.properties = &configuration.Properties{}
 	o.relativePath = relativePath
+
+	o.atlases = make(map[string]api.IAtlasX)
 
 	dataPath, err := filepath.Abs(relativePath)
 	if err != nil {
@@ -149,6 +153,10 @@ func (w *world) NodeManager() api.INodeManager {
 func (w *world) End() {
 	// So THIS is where the world actually comes to an END!
 	w.sceneGraph.End()
+}
+
+func (w *world) RelativePath() string {
+	return w.relativePath
 }
 
 func (w *world) SetPreNode(node api.INode) {
@@ -321,6 +329,14 @@ func (w *world) PostProcess() {
 		renG := w.renderRepo[api.DynamicRenderGraphic]
 		renG.Construct(api.MeshDynamicMulti, w.dynamicAtlas)
 	}
+}
+
+func (w *world) AddAtlas(name string, atlas api.IAtlasX) {
+	w.atlases[name] = atlas
+}
+
+func (w *world) GetAtlas(name string) api.IAtlasX {
+	return w.atlases[name]
 }
 
 func (w *world) Atlas() api.IAtlas {

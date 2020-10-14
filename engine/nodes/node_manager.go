@@ -1,11 +1,8 @@
 package nodes
 
 import (
-	"errors"
 	"fmt"
 	"log"
-
-	"github.com/go-gl/gl/v4.5-core/gl"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/display"
@@ -36,9 +33,6 @@ type nodeManager struct {
 	projection *display.Projection
 	viewport   *display.Viewport
 
-	projLoc int32
-	viewLoc int32
-
 	preM4  api.IMatrix4
 	postM4 api.IMatrix4
 }
@@ -68,47 +62,6 @@ func (n *nodeManager) Configure(world api.IWorld) error {
 	// Setup view/projection matrix composition
 
 	n.configureSpaces(world)
-
-	// -------------------------------------------------------
-	// Default Shader
-	programID := world.Shader().Program()
-	world.Shader().Use()
-
-	n.projLoc = gl.GetUniformLocation(programID, gl.Str("projection\x00"))
-	if n.projLoc < 0 {
-		return errors.New("NodeManager: couldn't find 'projection' uniform variable")
-	}
-
-	n.viewLoc = gl.GetUniformLocation(programID, gl.Str("view\x00"))
-	if n.viewLoc < 0 {
-		return errors.New("NodeManager: couldn't find 'view' uniform variable")
-	}
-
-	pm := world.Projection().Matrix()
-	gl.UniformMatrix4fv(n.projLoc, 1, false, &pm[0])
-
-	vm := world.Viewspace().Matrix()
-	gl.UniformMatrix4fv(n.viewLoc, 1, false, &vm[0])
-	// -------------------------------------------------------
-
-	// -------------------------------------------------------
-	// Texture Shader
-	programID = world.TextureShader().Program()
-	world.TextureShader().Use()
-
-	projLoc := gl.GetUniformLocation(programID, gl.Str("projection\x00"))
-	if projLoc < 0 {
-		return errors.New("NodeManager: couldn't find 'projection' uniform variable")
-	}
-
-	viewLoc := gl.GetUniformLocation(programID, gl.Str("view\x00"))
-	if viewLoc < 0 {
-		return errors.New("NodeManager: couldn't find 'view' uniform variable")
-	}
-
-	gl.UniformMatrix4fv(projLoc, 1, false, &pm[0])
-	gl.UniformMatrix4fv(viewLoc, 1, false, &vm[0])
-	// -------------------------------------------------------
 
 	identity := maths.NewMatrix4()
 

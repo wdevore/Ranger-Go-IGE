@@ -244,3 +244,60 @@ Root {0} [500.000, 500.000] Div: true
 
 # Example simple
 A small draggle square is moved through the tree
+
+# Render refactor
+* skip -- rewrite static nodes as a single builder
+* rewrite and simplify render graphics to remove vao, vbo abstractions etc.
+* static object are separate
+* dynamic objects are separate
+* texture are separate
+* cleanup shaders down to 2: default and texture
+* cleanup the Elementcount system. it is old and confusing.
+* We should be able to unload and re-upload atlases. This allows
+* each Node/Scene/Layer to control what resources are loaded.
+
+## Static objects
+For static objects we should have a Library/StaticAtlas. You can add or remove Shapes.
+Your game preloads any shapes it will use. The "extras" provide generators for common shapes.
+
+## Dynamic objects
+Dynamic objects are almost identical to Static except that the buffer can be updated. Each dyno object has its own buffer, for example, a Line and Rectangle each have their own buffers.
+
+## Rendering
+We should be able to render object on demand as well as via the scenegraph.
+
+## Misc
+* *done* NodeManager shouldn't have projection and view stuff in it.
+
+## Notes
+There are 4 atlases: StaticMono, StaticMulti, Dynamic and Texture.
+
+### StaticMono
+StaticMono contains a single GL buffer of vector shapes and each shapes is
+render with a single color for the whole shape
+
+### StaticMulti
+StaticMulti contains a single GL buffer but with vertex,color interleaving for each vector shape which means it requires separate shaders and Atlas.
+
+### Dyanmic
+There are two types of Dynamic Atlases: single-buffer and multi-buffers.
+A single buffer contains multiple shapes but an update causes all vertex data to be copied. It can be more efficient for some cases.
+Multi-buffers means that each shapes has it own dynamic VBO.
+
+### Texture
+Texture contains individual GL texture buffer objects
+
+## Atlas
+Atlases are libraries containing renderable objects. Each Atlas has 2 associated shaders (vertex and fragment). The shaders are closely associated with shapes in the Atlas.
+
+An Atlas has a Render method that takes an AtlasID and Model.
+
+A vector object can be rendered filled or outlined. The Atlas determines how to render the object. If filled then it may use the same vertices but different indices, as is the case for rectangles. Triangles use the same vertices and indices regardless of fill style.
+
+## Nodes
+Nodes are part of a heirarchy (aka scenegraph). When a Node is created it is given an AtlasID and Atlas.
+
+When a Node needs to draw itself it passes its AtlasID to an Atlas that will render the shape.
+
+## Game
+At startup a game loads Atlases with what ever resources it requires. If it needs a triangle then it either sets up it own or uses one from a builder. If it needs a texture then it uses the TextureAtlas to load and configure texture and in return it gets an AtlasID.

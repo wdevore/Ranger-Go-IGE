@@ -8,6 +8,7 @@ import (
 type IWorld interface {
 	Configure() error
 	End()
+	RelativePath() string
 
 	NodeManager() INodeManager
 	Properties() *configuration.Properties
@@ -29,6 +30,9 @@ type IWorld interface {
 	Projection() IMatrix4
 	Viewspace() IMatrix4
 	InvertedViewspace() IMatrix4
+
+	AddAtlas(name string, atlas IAtlasX)
+	GetAtlas(name string) IAtlasX
 
 	Atlas() IAtlas        // Static atlas
 	DynoAtlas() IAtlas    // DynamicMulti atlas

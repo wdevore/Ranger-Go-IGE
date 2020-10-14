@@ -31,7 +31,7 @@ func NewShaderFromCode(vertexCode, fragmentCode string) api.IShader {
 }
 
 // NewShader creates a blank shader. You must call Load before that shader is valid.
-func NewShader(vertexSrc, fragmentSrc string) *Shader {
+func NewShader(vertexSrc, fragmentSrc string) api.IShader {
 	s := new(Shader)
 	s.vertexSrc = vertexSrc
 	s.fragmentSrc = fragmentSrc
@@ -39,10 +39,10 @@ func NewShader(vertexSrc, fragmentSrc string) *Shader {
 }
 
 // Load reads and compiles shader programs
-func (s *Shader) Load() error {
+func (s *Shader) Load(relativePath string) error {
 
 	var err error
-	s.vertexCode, s.fragmentCode, err = fetch(s.vertexSrc, s.fragmentSrc)
+	s.vertexCode, s.fragmentCode, err = fetch(relativePath, s.vertexSrc, s.fragmentSrc)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func (s *Shader) Load() error {
 
 // Compile compiles shader programs
 func (s *Shader) Compile() error {
-	fmt.Println("Shader: compiling...")
+	// fmt.Println("Shader: compiling...")
 	var err error
 
 	s.program, err = newProgram(s.vertexCode, s.fragmentCode)
@@ -60,7 +60,7 @@ func (s *Shader) Compile() error {
 		return err
 	}
 
-	fmt.Println("Shader compiling complete for ID:", s.program)
+	// fmt.Println("Shader compiling complete for ID:", s.program)
 	return nil
 }
 
@@ -74,9 +74,10 @@ func (s *Shader) Program() uint32 {
 	return s.program
 }
 
-func fetch(vertexSrc, fragmentSrc string) (vCode, fCode string, err error) {
+func fetch(relativePath string, vertexSrc, fragmentSrc string) (vCode, fCode string, err error) {
+
 	// Vertex source -----------------------------------------------
-	filePath := fmt.Sprintf("./assets/%s", vertexSrc)
+	filePath := fmt.Sprintf(relativePath+api.RelativeShaderPath+"%s", vertexSrc)
 
 	var bytes []byte
 	bytes, err = ioutil.ReadFile(filePath)
@@ -89,7 +90,7 @@ func fetch(vertexSrc, fragmentSrc string) (vCode, fCode string, err error) {
 	vCode = string(bytes)
 
 	// Fragment source -----------------------------------------------
-	filePath = fmt.Sprintf("./assets/%s", fragmentSrc)
+	filePath = fmt.Sprintf(relativePath+api.RelativeShaderPath+"%s", fragmentSrc)
 
 	bytes, err = ioutil.ReadFile(filePath)
 

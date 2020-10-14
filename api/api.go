@@ -1,5 +1,12 @@
 package api
 
+// ------------------------------------------------------
+// Paths
+// ------------------------------------------------------
+const (
+	RelativeShaderPath = "/engine/assets/shaders/"
+)
+
 const (
 	// FILLED polygon
 	FILLED = 0

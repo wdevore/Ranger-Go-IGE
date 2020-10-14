@@ -95,6 +95,10 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 
 	nodeRender, isRenderType := node.(api.IRender)
 	if isRenderType {
+		// TODO we need to ask INode what Atlas it is using. If it is
+		// an Atlas that is already in use then we don't do anything, else
+		// if it is a different Atlas then we need to UnUse() the current
+		// Atlas and Use() the new one.
 		nodeRender.Draw(model)
 	} else {
 		log.Fatalf("Node: oops, %s doesn't implement IRender.Draw method", node)

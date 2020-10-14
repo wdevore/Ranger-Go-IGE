@@ -7,6 +7,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/go-gl/gl/v4.5-core/gl"
+
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/display"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
@@ -37,6 +39,9 @@ type engine struct {
 	// ---------------------------------------------------------------------
 	windowDisplay *display.GlfwDisplay
 
+	projLoc int32
+	viewLoc int32
+
 	// -----------------------------------------
 	// Debug
 	// -----------------------------------------
@@ -59,12 +64,21 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		o.world.PropertiesOverride(overrides)
 	}
 
+	// -----------------------------------------------------------
+	// Display and OpenGL
+	// -----------------------------------------------------------
 	o.windowDisplay = display.NewDisplay(o)
+
+	// Initializes GLFW and GL.
 	err = o.windowDisplay.Initialize(o.world)
 
 	if err != nil {
 		return nil, errors.New("Engine.Construct Display error: " + err.Error())
 	}
+
+	// _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+	// ---- Anything GL wise can be called after this point. -----
+	// -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 	wpc := o.world.Properties().Window.ClearColor
 	o.windowDisplay.SetClearColor(wpc.R, wpc.G, wpc.B, wpc.A)
@@ -75,12 +89,22 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		return nil, errors.New("Engine.Construct World Configure error: " + err.Error())
 	}
 
-	// The NodeManager can't configure itself until OpenGL has
-	// been initialized which happens above during display
-	// construction.
+	// The NodeManager can't configure itself until both the World and OpenGL has
+	// been initialized which happens above during display construction.
 	o.world.NodeManager().Configure(o.world)
 
-	// ---------------------------------------------------------
+	// -----------------------------------------------------------
+	// Shaders
+	// -----------------------------------------------------------
+	err = o.configureUniforms()
+
+	if err != nil {
+		return nil, errors.New("Engine.Construct Uniforms Configure error: " + err.Error())
+	}
+
+	// -----------------------------------------------------------
+	// Info
+	// -----------------------------------------------------------
 	if o.world.Properties().Engine.ShowTimingInfo {
 		o.postNode, err = extras.NewDynamicTextNode("TimingInfo", 500, o.world, nil)
 		if err != nil {
@@ -228,6 +252,51 @@ func (e *engine) End() {
 
 func (e *engine) World() api.IWorld {
 	return e.world
+}
+
+func (e *engine) configureUniforms() error {
+	// -------------------------------------------------------
+	// Default Shader
+	programID := e.world.Shader().Program()
+	e.world.Shader().Use()
+
+	e.projLoc = gl.GetUniformLocation(programID, gl.Str("projection\x00"))
+	if e.projLoc < 0 {
+		return errors.New("NodeManager: couldn't find 'projection' uniform variable")
+	}
+
+	e.viewLoc = gl.GetUniformLocation(programID, gl.Str("view\x00"))
+	if e.viewLoc < 0 {
+		return errors.New("NodeManager: couldn't find 'view' uniform variable")
+	}
+
+	pm := e.world.Projection().Matrix()
+	gl.UniformMatrix4fv(e.projLoc, 1, false, &pm[0])
+
+	vm := e.world.Viewspace().Matrix()
+	gl.UniformMatrix4fv(e.viewLoc, 1, false, &vm[0])
+	// -------------------------------------------------------
+
+	// -------------------------------------------------------
+	// Texture Shader
+	programID = e.world.TextureShader().Program()
+	e.world.TextureShader().Use()
+
+	projLoc := gl.GetUniformLocation(programID, gl.Str("projection\x00"))
+	if projLoc < 0 {
+		return errors.New("NodeManager: couldn't find 'projection' uniform variable")
+	}
+
+	viewLoc := gl.GetUniformLocation(programID, gl.Str("view\x00"))
+	if viewLoc < 0 {
+		return errors.New("NodeManager: couldn't find 'view' uniform variable")
+	}
+
+	gl.UniformMatrix4fv(projLoc, 1, false, &pm[0])
+	gl.UniformMatrix4fv(viewLoc, 1, false, &vm[0])
+	// -------------------------------------------------------
+
+	return nil
 }
 
 func (e *engine) drawStats(fps, ups int, avgRend float64) {

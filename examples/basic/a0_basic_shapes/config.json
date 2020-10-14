@@ -1,0 +1,24 @@
+{
+  "Engine": {
+    "ShowTimingInfo": true
+  },
+  "Window": {
+    "DeviceRes": {
+      "Height": 900,
+      "Width": 1600
+    },
+    "ClearColor": {
+      "R": 1.0,
+      "G": 0.5,
+      "B": 0.0,
+      "A": 1.0
+    },
+    "FullScreen": false,
+    "Orientation": "Landscape",
+    "Position": {
+      "X": 100,
+      "Y": 175
+    },
+    "Title": "Single Shape"
+  }
+}
