@@ -5,6 +5,7 @@ import (
 	"log"
 	"testing"
 
+	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
 	"github.com/wdevore/Ranger-Go-IGE/extras/generators"
@@ -31,17 +32,18 @@ func testMonoAtlasAddShape(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	atlas := mono.(api.IStaticAtlasX)
 
 	vertices, indices, mode := generators.GenerateUnitHLineVectorShape()
-	id := mono.AddShape("HLine", vertices, indices, mode)
+	id := atlas.AddShape("HLine", vertices, indices, mode)
 	fmt.Println(id)
 
 	vertices, indices, mode = generators.GenerateUnitVLineVectorShape()
-	id = mono.AddShape("VLine", vertices, indices, mode)
+	id = atlas.AddShape("VLine", vertices, indices, mode)
 	fmt.Println(id)
 
 	vertices, indices, mode = generators.GenerateUnitPlusVectorShape()
-	id = mono.AddShape("Plus", vertices, indices, mode)
+	id = atlas.AddShape("Plus", vertices, indices, mode)
 	fmt.Println(id)
 
 	mono.Shake()

@@ -45,13 +45,15 @@ func NewMonoArcNode(name string, drawStyle, segments int, startAngle, endAngle f
 func (b *MonoArcNode) build(drawStyle, segments int, startAngle, endAngle float64, world api.IWorld) error {
 	b.Node.Build(world)
 
-	atlas := world.GetAtlas(api.MonoAtlasName)
+	atl := world.GetAtlas(api.MonoAtlasName)
 
-	if atlas == nil {
+	if atl == nil {
 		return errors.New("Expected to find StaticMono Atlas")
 	}
 
-	b.SetAtlas(atlas)
+	b.SetAtlas(atl)
+
+	atlas := atl.(api.IStaticAtlasX)
 
 	if drawStyle == api.FILLED {
 		name := api.FilledArcShapeName

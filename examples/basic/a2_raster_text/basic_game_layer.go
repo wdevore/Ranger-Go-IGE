@@ -5,7 +5,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type gameLayer struct {
@@ -15,32 +15,40 @@ type gameLayer struct {
 	text  api.INode
 }
 
-func newBasicGameLayer(name string, world api.IWorld, parent api.INode) api.INode {
+func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(gameLayer)
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
-	o.Build(world)
-	return o
+
+	if err := o.build(world); err != nil {
+		return nil, err
+	}
+	return o, nil
 }
 
-func (g *gameLayer) Build(world api.IWorld) error {
+func (g *gameLayer) build(world api.IWorld) error {
 	g.Node.Build(world)
 
 	// ---------------------------------------------------------
-	osql, err := extras.NewStaticSquareNode("FilledSqr", true, true, world, g)
+	square, err := shapes.NewMonoSquareNode("Square", api.FILLED, true, world, g)
 	if err != nil {
 		return err
 	}
-	osql.SetScale(100.0)
-	osql.SetPosition(110.0, 100.0)
-	gol2 := osql.(*extras.StaticSquareNode)
-	gol2.SetColor(color.NewPaletteInt64(color.LightPurple))
+	square.SetScale(100.0)
+	square.SetPosition(110.0, 100.0)
+	gsq := square.(*shapes.MonoSquareNode)
+	gsq.SetFilledColor(color.NewPaletteInt64(color.LightPurple))
 
-	g.text, err = extras.NewDynamicTextNode("Text", 500, world, g)
+	// ---------------------------------------------------------
+	g.text, err = shapes.NewDynamicPixelTextNode("Text", world, g)
+	if err != nil {
+		return err
+	}
 	g.text.SetScale(2.0)
-	gt := g.text.(*extras.DynamicPixelTextNode)
+	gt := g.text.(*shapes.DynamicPixelPixelTextNode)
 	gt.SetText("Ranger Go!")
+	gt.SetColor(color.NewPaletteInt64(color.GoldYellow).Array())
 
 	return nil
 }

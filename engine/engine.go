@@ -12,7 +12,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/display"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 const (
@@ -106,16 +106,15 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 	// Info
 	// -----------------------------------------------------------
 	if o.world.Properties().Engine.ShowTimingInfo {
-		o.postNode, err = extras.NewDynamicTextNode("TimingInfo", 500, o.world, nil)
+		o.postNode, err = shapes.NewDynamicPixelTextNode("FPS", o.world, nil)
 		if err != nil {
 			return nil, err
 		}
-
-		gt2 := o.postNode.(api.IDynamicText)
-		gt2.SetText("")
-		gt2.SetPixelSize(2.0)
-		gic := o.postNode.(api.IColor)
-		gic.SetColor(color.NewPaletteInt64(color.Peach).Array())
+		o.postNode.SetScale(2.0)
+		gt := o.postNode.(*shapes.DynamicPixelPixelTextNode)
+		gt.SetText("FPS")
+		gt.SetColor(color.NewPaletteInt64(color.Peach).Array())
+		gt.SetPixelSize(2.0)
 
 		o.world.SetPostNode(o.postNode)
 	}
@@ -304,7 +303,11 @@ func (e *engine) drawStats(fps, ups int, avgRend float64) {
 	if e.postNode != nil {
 		w := e.world
 		if w.Properties().Engine.ShowTimingInfo {
-			gt2 := e.postNode.(api.IDynamicText)
+			// gt2, ok := e.postNode.(api.IDynamicText)
+			gt2, ok := e.postNode.(*shapes.DynamicPixelPixelTextNode)
+			if !ok {
+				panic("drawStats failed text type assertion")
+			}
 			s := fmt.Sprintf("f:%d u:%d r:%2.3f", w.Fps(), w.Ups(), w.AvgRender())
 			gt2.SetText(s)
 		}

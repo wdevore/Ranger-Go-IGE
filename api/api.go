@@ -8,8 +8,10 @@ const (
 )
 
 const (
-	// MonoAtlasName is the Map name for referencing
+	// MonoAtlasName is the Map name for StaticMono Atlas
 	MonoAtlasName = "MonoAtlas"
+	// DynamicPixelAtlasName is the Map name for DynamicPixel Atlas
+	DynamicPixelAtlasName = "DynamicPixelAtlas"
 )
 
 // These shape names are provided for convience. Use them for
@@ -37,6 +39,8 @@ const (
 	HLineShapeName = "HLineShape"
 	VLineShapeName = "VLineShape"
 	PlusShapeName  = "PlusShape"
+
+	PointsShapeName = "PointShape"
 )
 
 const (

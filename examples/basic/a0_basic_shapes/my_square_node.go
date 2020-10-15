@@ -10,8 +10,6 @@ import (
 type mySquareNode struct {
 	nodes.Node
 
-	background api.INode
-
 	shapeID int
 
 	color []float32
@@ -43,7 +41,7 @@ func (b *mySquareNode) build(world api.IWorld) error {
 
 	b.SetAtlas(atlas)
 
-	b.shapeID = atlas.GetShapeByName(api.CenteredFilledSquareShapeName)
+	b.shapeID = atlas.(api.IStaticAtlasX).GetShapeByName(api.CenteredFilledSquareShapeName)
 	if b.shapeID < 0 {
 		return errors.New("mySquareNode: Could not find square shape")
 	}

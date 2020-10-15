@@ -45,13 +45,14 @@ func NewMonoSquareNode(name string, drawStyle int, centered bool, world api.IWor
 func (b *MonoSquareNode) build(drawStyle int, centered bool, world api.IWorld) error {
 	b.Node.Build(world)
 
-	atlas := world.GetAtlas(api.MonoAtlasName)
+	atl := world.GetAtlas(api.MonoAtlasName)
 
-	if atlas == nil {
+	if atl == nil {
 		return errors.New("Expected to find StaticMono Atlas")
 	}
 
-	b.SetAtlas(atlas)
+	b.SetAtlas(atl)
+	atlas := atl.(api.IStaticAtlasX)
 
 	if drawStyle == api.FILLED {
 		name := ""

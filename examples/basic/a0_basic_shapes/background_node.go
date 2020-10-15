@@ -9,7 +9,6 @@ import (
 type backgroundNode struct {
 	nodes.Node
 
-	atlas api.IAtlasX
 	shape int
 
 	color []float32
@@ -33,9 +32,10 @@ func newBackgroundNode(name string, world api.IWorld, parent api.INode) (api.INo
 func (b *backgroundNode) build(world api.IWorld) error {
 	b.Node.Build(world)
 
-	b.atlas = world.GetAtlas(api.MonoAtlasName)
+	b.Node.SetAtlas(world.GetAtlas(api.MonoAtlasName))
 
-	b.shape = b.atlas.GetShapeByName(api.CenteredFilledSquareShapeName)
+	atlas, _ := b.Atlas().(api.IStaticAtlasX)
+	b.shape = atlas.GetShapeByName(api.CenteredFilledSquareShapeName)
 
 	// For simplicity we set the color here.
 	b.color = color.NewPaletteInt64(color.DarkGray).Array()
@@ -51,12 +51,9 @@ func (b *backgroundNode) setAlpha(alpha float32) {
 	b.color[3] = alpha
 }
 
-func (b *backgroundNode) Atlas() api.IAtlasX {
-	return b.atlas
-}
-
 // Draw renders shape
 func (b *backgroundNode) Draw(model api.IMatrix4) {
-	b.atlas.SetColor(b.color)
-	b.atlas.Render(b.shape, model)
+	atlas := b.Atlas()
+	atlas.SetColor(b.color)
+	atlas.Render(b.shape, model)
 }

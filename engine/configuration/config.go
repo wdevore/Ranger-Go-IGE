@@ -92,9 +92,11 @@ type shadersJSON struct {
 	FontVertexShaderCode   string
 	FontFragmentShaderCode string
 
-	// These properties are populated dynamically
 	MonoVertexShaderFile   string
 	MonoFragmentShaderFile string
+
+	DynamicPixelVertexShaderFile   string
+	DynamicPixelFragmentShaderFile string
 }
 
 // Properties reflects config.json

@@ -10,8 +10,6 @@ import (
 type myTriangleNode struct {
 	nodes.Node
 
-	background api.INode
-
 	shapeID int
 
 	color []float32
@@ -43,7 +41,7 @@ func (b *myTriangleNode) build(world api.IWorld) error {
 
 	b.SetAtlas(atlas)
 
-	b.shapeID = atlas.GetShapeByName(api.FilledTriangleShapeName)
+	b.shapeID = atlas.(api.IStaticAtlasX).GetShapeByName(api.FilledTriangleShapeName)
 
 	if b.shapeID < 0 {
 		return errors.New("myTriangleNode: Could not find triangle shape")

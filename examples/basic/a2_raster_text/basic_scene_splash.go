@@ -26,10 +26,16 @@ func (s *sceneSplash) build(world api.IWorld) error {
 
 	dvr := s.World().Properties().Window.DeviceRes
 
-	bg := newBackgroundNode("Background", world, s)
+	bg, err := newBackgroundNode("Background", world, s)
+	if err != nil {
+		return err
+	}
 	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
 
-	newBasicGameLayer("Game Layer", world, s)
+	_, err = newBasicGameLayer("Game Layer", world, s)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
