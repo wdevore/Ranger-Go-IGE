@@ -38,7 +38,7 @@ func (s *sceneSplash) build(world api.IWorld) error {
 	// This example needs two shapes.
 	// -----------------------------------------------------
 	vertices, indices, mode := generators.GenerateUnitRectangleVectorShape(true, true)
-	atlas.AddShape(centerSquareName, vertices, indices, mode)
+	atlas.(api.IStaticAtlasX).AddShape(centerSquareName, vertices, indices, mode)
 
 	bg, err := newBackgroundNode("Background", world, s)
 	if err != nil {

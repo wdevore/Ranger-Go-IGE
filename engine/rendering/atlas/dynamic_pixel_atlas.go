@@ -150,6 +150,7 @@ func (s *dynamicPixelAtlas) SetColor(color []float32) {
 func (s *dynamicPixelAtlas) Update() {
 	// Copy entire buffer even if just one element changed.
 	if s.dirty {
+		// fmt.Println("update: ", s.vboBufferSize)
 		gl.BindBuffer(gl.ARRAY_BUFFER, s.vboID)
 		gl.BufferSubData(gl.ARRAY_BUFFER, 0, s.vboBufferSize, gl.Ptr(s.vertices))
 		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
@@ -170,7 +171,6 @@ func (s *dynamicPixelAtlas) SetVertex(x, y float32, index int) {
 
 func (s *dynamicPixelAtlas) Render(id int, model api.IMatrix4) {
 	gl.UniformMatrix4fv(s.modelLoc, 1, false, &model.Matrix()[0])
-
 	gl.DrawElements(gl.POINTS, int32(s.indicesCount), uint32(gl.UNSIGNED_INT), gl.PtrOffset(0))
 }
 
@@ -239,5 +239,5 @@ func (s *dynamicPixelAtlas) vboBind(bufferSize int, vertices []float32) {
 func (s *dynamicPixelAtlas) eboBind(bufferSize int, indices []uint32) {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, s.eboID)
 
-	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, bufferSize, gl.Ptr(indices), gl.DYNAMIC_DRAW)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, bufferSize, gl.Ptr(indices), gl.STATIC_DRAW)
 }

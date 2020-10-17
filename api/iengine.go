@@ -3,7 +3,7 @@ package api
 // IEngine is the main engine API
 type IEngine interface {
 	// Start launches the game loop
-	Begin()
+	Begin() error
 
 	// Ends shuts down the engine
 	End()

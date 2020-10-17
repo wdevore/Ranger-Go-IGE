@@ -7,6 +7,7 @@ import (
 // IWorld represents properties of the game world
 type IWorld interface {
 	Configure() error
+	Begin() error
 	End()
 	RelativePath() string
 
@@ -14,12 +15,16 @@ type IWorld interface {
 	Properties() *configuration.Properties
 	PropertiesOverride(configFiel string)
 
-	SetPreNode(node INode)
-	SetPostNode(node INode)
+	Root() INode
+	Underlay() INode
+	Scenes() INode
+	Overlay() INode
+
 	Push(scene INode)
 
 	RouteEvents(event IEvent)
 
+	// Deprecate
 	GenGraphicID() int
 	AddRenderGraphic(graphic IRenderGraphic, graphicID int)
 	GetRenderGraphic(graphicID int) IRenderGraphic
@@ -34,6 +39,7 @@ type IWorld interface {
 	AddAtlas(name string, atlas IAtlasX)
 	GetAtlas(name string) IAtlasX
 
+	// Deprecate
 	Atlas() IAtlas        // Static atlas
 	DynoAtlas() IAtlas    // DynamicMulti atlas
 	PixelAtlas() IAtlas   // Dynamic atlas

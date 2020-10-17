@@ -1,8 +1,8 @@
 package nodes
 
 import (
+	"errors"
 	"fmt"
-	"log"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/display"
@@ -21,14 +21,11 @@ type nodeManager struct {
 	timingTargets api.INodeList
 	eventTargets  api.INodeList
 
+	root   api.INode
+	scenes api.INode
+
 	nextScene    api.INode
 	currentScene api.INode
-
-	// Used during PreVisit
-	preNode api.INode
-
-	// Used during PostVisit
-	postNode api.INode
 
 	projection *display.Projection
 	viewport   *display.Viewport
@@ -117,42 +114,26 @@ func (n *nodeManager) ClearEnabled(clear bool) {
 	n.clearBackground = clear
 }
 
-// Typically called by your "main" code
-func (n *nodeManager) SetPreNode(node api.INode) {
-	n.preNode = node
+func (n *nodeManager) SetRoot(root api.INode) {
+	n.root = root
 }
 
-func (n *nodeManager) SetPostNode(node api.INode) {
-	n.postNode = node
-}
-
-func (n *nodeManager) PreVisit() {
-	// Custom node activities, for example, clear background
-	// using custom nodes.
-	if n.preNode != nil {
-		nodeRender, isRenderType := n.preNode.(api.IRender)
-		if isRenderType {
-			n.preNode.Update(0.0, 0.0)
-			nodeRender.Draw(n.preM4)
-		} else {
-			log.Fatalf("NodeManager.PreVisit: oops, PreNode '%s' doesn't implement IRender.Draw method", n.preNode)
-		}
-	}
-}
-
-func (n *nodeManager) Begin() bool {
+func (n *nodeManager) Begin() error {
 	if n.stack.isEmpty() || n.stack.count() < 2 {
-		return false
+		return errors.New("not enough scenes to start engine. There must be 2 or more")
 	}
 
+	// The currentScene is the Incoming scene so add it first
 	n.currentScene = n.stack.pop()
 	n.enterScene(n.currentScene)
 
-	// We need to set next-scene to the top incase the game
+	// We need to set next-scene to the Top incase the game
 	// starts with only two scenes.
 	n.nextScene = n.stack.top()
 
-	return true
+	n.scenes = n.root.GetChildByName("Scenes")
+
+	return nil
 }
 
 func (n *nodeManager) Visit(interpolation float64) bool {
@@ -181,6 +162,10 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		// The current scene is off stage which means we need to tell it
 		// to begin transitioning onto the stage.
 		// ShowState("NM C: ", n.currentScene, " Notify SceneTransitionStartIn")
+		n.scenes.InsertAndShift(n.currentScene, 2)
+
+		PrintTree(n.root)
+
 		n.setSceneState(n.currentScene, api.SceneTransitionStartIn)
 	case api.SceneTransitionStartOut:
 		// The current scene wants to transition off the stage.
@@ -197,6 +182,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 			n.nextScene = n.stack.pop()
 			// fmt.Println("NM : Popped next scene: ", n.nextScene)
 			n.enterScene(n.nextScene)
+
 			// ShowState("NM NS: ", n.nextScene, " Notify SceneTransitionStartIn")
 			n.setSceneState(n.nextScene, api.SceneTransitionStartIn)
 		}
@@ -205,6 +191,8 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		// ShowState("NM NS: ", n.currentScene, "")
 		// TODO replace "pooled" with "cleanup/dispose"
 		pooled := n.exitScene(n.currentScene) // Let it cleanup and exit.
+
+		n.scenes.RemoveLast()
 
 		if pooled {
 			// fmt.Println("Returning node to pool: ", n.currentScene)
@@ -216,22 +204,28 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		n.nextScene = nil // This isn't actually needed but it is good form.
 	}
 
-	if n.currentScene != nil && oCurrentState != api.SceneOffStage {
-		Visit(n.currentScene, n.transStack, interpolation)
-	}
+	// if n.currentScene != nil && oCurrentState != api.SceneOffStage {
+	// 	Visit(n.currentScene, n.transStack, interpolation)
+	// }
 
 	// --------------------------------------------------------
 	// Incoming or next scene
 	// --------------------------------------------------------
-	if n.nextScene != nil {
-		iScene, _ := n.nextScene.(api.IScene)
+	// if n.nextScene != nil {
+	// 	iScene, _ := n.nextScene.(api.IScene)
 
-		iNextState, _ := iScene.State()
+	// 	iNextState, _ := iScene.State()
 
-		if iNextState != api.SceneOffStage {
-			Visit(n.nextScene, n.transStack, interpolation)
-		}
-	}
+	// 	if iNextState != api.SceneOffStage {
+	// 		Visit(n.nextScene, n.transStack, interpolation)
+	// 	}
+	// }
+
+	// -------------------------------------------------------
+	// Now that visible Scene(s) have been attached to the main Scene
+	// node we can Visit the "Root" node.
+	// -------------------------------------------------------
+	Visit(n.root, n.transStack, interpolation)
 
 	// When the current scene is the last scene to exit the stage
 	// then the game is over.
@@ -280,19 +274,6 @@ func ShowState(header string, no api.INode, footer string) {
 	}
 
 	fmt.Println("} ", footer)
-}
-
-func (n *nodeManager) PostVisit() {
-	// Custom node activities, for example, FPS visual
-	if n.postNode != nil {
-		nodeRender, isRenderType := n.postNode.(api.IRender)
-		if isRenderType {
-			n.postNode.Update(0.0, 0.0)
-			nodeRender.Draw(n.postM4)
-		} else {
-			log.Fatalf("NodeManager.PostVisit: oops, PostNode '%s' doesn't implement IRender.Draw method", n.postNode)
-		}
-	}
 }
 
 func (n *nodeManager) setSceneState(node api.INode, state int) {

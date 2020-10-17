@@ -1,6 +1,8 @@
 package shapes
 
 import (
+	"fmt"
+
 	"github.com/go-gl/gl/v4.5-core/gl"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
@@ -86,6 +88,7 @@ func (m *DynamicPixelPixelTextNode) build(world api.IWorld) error {
 		if err != nil {
 			return err
 		}
+		fmt.Println("Dynamic Pixel Atlas created")
 	}
 
 	m.SetAtlas(dpAtlas)

@@ -38,17 +38,18 @@ type float3DCoordJSON struct {
 }
 
 type windowJSON struct {
-	BitsPerPixel int
-	LockToVSync  bool
-	ClearColor   colorJSON
-	ClearStyle   string // "None", "SingleColor", "Checkerboard", "Custom"
-	VirtualRes   dimensionJSON
-	DeviceRes    dimensionJSON
-	FullScreen   bool
-	Orientation  string
-	ViewScale    float64
-	Position     int2DCoordJSON
-	Title        string
+	BitsPerPixel    int
+	LockToVSync     bool
+	ClearColor      colorJSON
+	ClearStyle      string // "None", "SingleColor", "Checkerboard",... "Custom"
+	BackgroundColor colorJSON
+	VirtualRes      dimensionJSON
+	DeviceRes       dimensionJSON
+	FullScreen      bool
+	Orientation     string
+	ViewScale       float64
+	Position        int2DCoordJSON
+	Title           string
 }
 
 type depthJSON struct {

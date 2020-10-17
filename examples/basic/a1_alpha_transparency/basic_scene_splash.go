@@ -30,7 +30,7 @@ func newBasicSplashScene(name string, world api.IWorld) (api.INode, error) {
 func (s *sceneSplash) build(world api.IWorld) error {
 	s.Node.Build(world)
 
-	dvr := world.Properties().Window.DeviceRes
+	// dvr := world.Properties().Window.DeviceRes
 
 	atlas := world.GetAtlas(api.MonoAtlasName).(api.IStaticAtlasX)
 
@@ -43,13 +43,11 @@ func (s *sceneSplash) build(world api.IWorld) error {
 	vertices, indices, mode = generators.GenerateUnitTriangleVectorShape(true)
 	atlas.AddShape(api.FilledTriangleShapeName, vertices, indices, mode)
 
-	bg, err := newBackgroundNode("Background", world, s)
-	if err != nil {
-		return err
-	}
-	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+	// In this example, the local config.json file specifies a default
+	// solid background via BackgroundColor and ClearStyle="SingleColor"
+	// The Engine.Begin appends a background node to the UnderLay node.
 
-	_, err = newBasicGameLayer("Game Layer", world, s)
+	_, err := newBasicGameLayer("Game Layer", world, s)
 	if err != nil {
 		return err
 	}

@@ -117,6 +117,7 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 			}
 			nodeRender.Draw(model)
 		}
+
 		// nodeRender.Draw(model)
 	} else {
 		log.Fatalf("Node: oops, %s doesn't implement IRender.Draw method", node)

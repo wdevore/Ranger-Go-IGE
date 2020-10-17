@@ -10,6 +10,13 @@
       "B": 0.0,
       "A": 1.0
     },
+    "BackgroundColor": {
+      "R": 0.25,
+      "G": 0.25,
+      "B": 0.25,
+      "A": 1.0
+    },
+    "ClearStyle": "SingleColor",
     "FullScreen": false,
     "Orientation": "Landscape",
     "Position": {

@@ -6,12 +6,11 @@ type INodeManager interface {
 
 	ClearEnabled(bool)
 
-	Begin() bool
-	SetPreNode(INode)
-	PreVisit()
+	SetRoot(INode)
+
+	Begin() error
+	End()
 	Visit(interpolation float64) bool
-	SetPostNode(INode)
-	PostVisit()
 
 	Update(msPerUpdate, secPerUpdate float64)
 
@@ -26,8 +25,6 @@ type INodeManager interface {
 
 	RegisterEventTarget(target INode)
 	UnRegisterEventTarget(target INode)
-
-	End()
 
 	Debug()
 }

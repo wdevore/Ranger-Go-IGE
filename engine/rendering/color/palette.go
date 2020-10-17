@@ -37,6 +37,16 @@ func NewPaletteRGBA(r, g, b uint8, alpha float32) api.IPalette {
 	return o
 }
 
+// NewPaletteFromFloats constructs an RGB color object from r,g,b,a floats
+func NewPaletteFromFloats(r, g, b, a float32) api.IPalette {
+	o := new(palette)
+	o.r = r
+	o.g = g
+	o.b = b
+	o.a = a
+	return o
+}
+
 // NewPaletteInt64 constructs an RGB color object a single 64bit int
 func NewPaletteInt64(c uint64) api.IPalette {
 	o := NewPaletteRGBA(

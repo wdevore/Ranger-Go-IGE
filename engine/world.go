@@ -16,6 +16,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/fonts"
 	"github.com/wdevore/Ranger-Go-IGE/engine/textures"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 // World is the main component of ranger
@@ -24,6 +25,10 @@ type world struct {
 	// Scene graph is a node manager
 	// -----------------------------------------
 	sceneGraph api.INodeManager
+	root       api.INode
+	underlay   api.INode
+	scenes     api.INode
+	overlay    api.INode
 
 	properties   *configuration.Properties
 	relativePath string
@@ -150,6 +155,48 @@ func (w *world) NodeManager() api.INodeManager {
 	return w.sceneGraph
 }
 
+// Begin is called by the Engine.
+func (w *world) Begin() error {
+	var err error
+
+	// The NodeManager needs to build a baseline INode structure for
+	// the runtime environment. Structure:
+	//
+	//                            Root
+	//         /-----------------/  | \-----------------\
+	//         |                    |                   |
+	//      Underlay              Scenes             Overlay
+	//                           /     \
+	//                   In:Scene       Out:Scene
+	//
+	// From here the NM's job is to Add/Remove Scenes from the Scenes-Node
+
+	// Create Root first and above all (pun intended) do it NOW! ;-)
+	w.root, err = extras.NewGroupNode("Root", w, nil)
+	if err != nil {
+		return err
+	}
+
+	w.underlay, err = extras.NewGroupNode("Underlay", w, w.root)
+	if err != nil {
+		return err
+	}
+
+	w.scenes, err = extras.NewGroupNode("Scenes", w, w.root)
+	if err != nil {
+		return err
+	}
+
+	w.overlay, err = extras.NewGroupNode("Overlay", w, w.root)
+	if err != nil {
+		return err
+	}
+
+	w.sceneGraph.SetRoot(w.root)
+
+	return nil
+}
+
 func (w *world) End() {
 	// So THIS is where the world actually comes to an END!
 	w.sceneGraph.End()
@@ -159,12 +206,17 @@ func (w *world) RelativePath() string {
 	return w.relativePath
 }
 
-func (w *world) SetPreNode(node api.INode) {
-	w.sceneGraph.SetPreNode(node)
+func (w *world) Root() api.INode {
+	return w.root
 }
-
-func (w *world) SetPostNode(node api.INode) {
-	w.sceneGraph.SetPostNode(node)
+func (w *world) Underlay() api.INode {
+	return w.underlay
+}
+func (w *world) Scenes() api.INode {
+	return w.scenes
+}
+func (w *world) Overlay() api.INode {
+	return w.overlay
 }
 
 func (w *world) Push(scene api.INode) {

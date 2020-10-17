@@ -7,4 +7,10 @@ type IGroup interface {
 	Children() []INode
 
 	AddChild(INode)
+
+	GetChildByID(id int) INode
+	GetChildByName(name string) INode
+
+	InsertAndShift(newNode INode, width int) INode
+	RemoveLast() INode
 }

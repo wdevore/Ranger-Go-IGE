@@ -5,7 +5,6 @@ import (
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
@@ -53,9 +52,10 @@ func main() {
 		panic(err)
 	}
 
-	nodes.PrintTree(splash)
-
 	// And finally we can start the game.
-	engine.Begin()
+	err = engine.Begin()
+	if err != nil {
+		panic(err)
+	}
 
 }

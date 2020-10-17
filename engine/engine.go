@@ -11,6 +11,7 @@ import (
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/display"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
@@ -46,7 +47,7 @@ type engine struct {
 	// Debug
 	// -----------------------------------------
 	stepEnabled bool
-	postNode    api.INode
+	infoNode    api.INode
 }
 
 // Construct creates a new Engine
@@ -102,30 +103,76 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		return nil, errors.New("Engine.Construct Uniforms Configure error: " + err.Error())
 	}
 
-	// -----------------------------------------------------------
-	// Info
-	// -----------------------------------------------------------
-	if o.world.Properties().Engine.ShowTimingInfo {
-		o.postNode, err = shapes.NewDynamicPixelTextNode("FPS", o.world, nil)
-		if err != nil {
-			return nil, err
-		}
-		o.postNode.SetScale(2.0)
-		gt := o.postNode.(*shapes.DynamicPixelPixelTextNode)
-		gt.SetText("FPS")
-		gt.SetColor(color.NewPaletteInt64(color.Peach).Array())
-		gt.SetPixelSize(2.0)
-
-		o.world.SetPostNode(o.postNode)
+	err = o.world.Begin()
+	if err != nil {
+		return nil, err
 	}
 
 	return o, nil
 }
 
-func (e *engine) Begin() {
+func (e *engine) Begin() error {
 	e.running = true
 
+	sceneGraph := e.world.NodeManager()
+
+	var err error
+
+	err = sceneGraph.Begin()
+	if err != nil {
+		return errors.New("not enough scenes to start engine. There must be 2 or more")
+	}
+
+	// -----------------------------------------------------------
+	// Timing Info.
+	// -----------------------------------------------------------
+	worldProps := e.world.Properties()
+
+	if worldProps.Engine.ShowTimingInfo {
+		e.infoNode, err = shapes.NewDynamicPixelTextNode("FPS", e.world, nil)
+		if err != nil {
+			return err
+		}
+		e.infoNode.SetScale(1.5)
+		gt := e.infoNode.(*shapes.DynamicPixelPixelTextNode)
+		gt.SetText("FPS...")
+		gt.SetColor(color.NewPaletteInt64(color.Peach).Array())
+		gt.SetPixelSize(2.0)
+
+		dvr := e.world.Properties().Window.DeviceRes
+		e.infoNode.SetPosition(-float32(dvr.Width/2)+10.0, -float32(dvr.Height/2)+10.0)
+		e.world.Overlay().AddChild(e.infoNode)
+	}
+
+	// -----------------------------------------------------------
+	// Should we attach a default background?
+	// -----------------------------------------------------------
+	switch worldProps.Window.ClearStyle {
+	case "SingleColor":
+		// The StaticMono Atlas needs to exist BEFORE trying to create
+		// static nodes.
+		monoAtlas := e.world.GetAtlas(api.MonoAtlasName)
+		if monoAtlas == nil {
+			monoAtlas := atlas.NewStaticMonoAtlas(e.world)
+			e.world.AddAtlas(api.MonoAtlasName, monoAtlas)
+		}
+
+		square, err := shapes.NewMonoSquareNode("Background", api.FILLED, true, e.world, e.world.Underlay())
+		if err != nil {
+			return err
+		}
+		dvr := worldProps.Window.DeviceRes
+		square.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+
+		sq := square.(*shapes.MonoSquareNode)
+		bgCol := worldProps.Window.BackgroundColor
+		sq.SetFilledColor(color.NewPaletteFromFloats(bgCol.R, bgCol.G, bgCol.B, bgCol.A))
+	case "Checkerboard":
+	}
+
 	e.loop()
+
+	return nil
 }
 
 func (e *engine) loop() {
@@ -148,10 +195,6 @@ func (e *engine) loop() {
 	// avgRender := 0.0
 
 	sceneGraph := e.world.NodeManager()
-
-	if !sceneGraph.Begin() {
-		panic("Not enough scenes to start engine. There must be 2 or more.")
-	}
 
 	for !display.Closed() && e.running {
 		currentT := time.Now()
@@ -191,8 +234,6 @@ func (e *engine) loop() {
 
 		renderT := time.Now()
 
-		sceneGraph.PreVisit()
-
 		// Calc interpolation for nodes that need it.
 		interpolation := float64(lag) / float64(nsPerUpdate)
 
@@ -208,7 +249,6 @@ func (e *engine) loop() {
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
 		// Finish rendering
 		// ~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--~--
-		sceneGraph.PostVisit()
 
 		if renderCnt >= renderMaxCnt {
 			e.world.SetAvgRender(float64(renderElapsedTime) / float64(renderMaxCnt) / 1000.0)
@@ -298,13 +338,14 @@ func (e *engine) configureUniforms() error {
 	return nil
 }
 
+// TODO : This info should be on the Overlay Node.
 func (e *engine) drawStats(fps, ups int, avgRend float64) {
 	// fmt.Printf("fps (%2d), ups (%2d), rend (%2.4f)\n", fps, ups, avgRend)
-	if e.postNode != nil {
+	if e.infoNode != nil {
 		w := e.world
 		if w.Properties().Engine.ShowTimingInfo {
 			// gt2, ok := e.postNode.(api.IDynamicText)
-			gt2, ok := e.postNode.(*shapes.DynamicPixelPixelTextNode)
+			gt2, ok := e.infoNode.(*shapes.DynamicPixelPixelTextNode)
 			if !ok {
 				panic("drawStats failed text type assertion")
 			}

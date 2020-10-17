@@ -27,7 +27,7 @@ func main() {
 	grn := preNode.(*extras.StaticCheckerboardNode)
 	grn.SetSize(200)
 
-	world.SetPreNode(preNode)
+	world.Underlay().AddChild(preNode)
 
 	splash, err := newBasicSplashScene("Splash", world)
 	if err != nil {

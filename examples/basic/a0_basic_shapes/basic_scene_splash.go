@@ -43,7 +43,8 @@ func (s *sceneSplash) build(world api.IWorld) error {
 	vertices, indices, mode = generators.GenerateUnitTriangleVectorShape(true)
 	atlas.AddShape(api.FilledTriangleShapeName, vertices, indices, mode)
 
-	bg, err := newBackgroundNode("Background", world, s)
+	// This is an example of a custom background node.
+	bg, err := newBackgroundNode("Background", world, world.Underlay())
 	if err != nil {
 		return err
 	}

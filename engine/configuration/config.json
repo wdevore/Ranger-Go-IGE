@@ -21,7 +21,13 @@
       "B": 0.5,
       "A": 1.0
     },
-    "ClearStyle": "SingleColor",
+    "ClearStyle": "None",
+    "BackgroundColor": {
+      "R": 0.5,
+      "G": 0.5,
+      "B": 0.5,
+      "A": 1.0
+    },
     "VirtualRes": {
       "Height": 600,
       "Width": 1000

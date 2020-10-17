@@ -24,15 +24,15 @@ func newBasicSplashScene(name string, world api.IWorld) (api.INode, error) {
 func (s *sceneSplash) build(world api.IWorld) error {
 	s.Node.Build(world)
 
-	dvr := s.World().Properties().Window.DeviceRes
+	// dvr := s.World().Properties().Window.DeviceRes
 
-	bg, err := newBackgroundNode("Background", world, s)
-	if err != nil {
-		return err
-	}
-	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+	// bg, err := newBackgroundNode("Background", world, world.Underlay())
+	// if err != nil {
+	// 	return err
+	// }
+	// bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
 
-	_, err = newBasicGameLayer("Game Layer", world, s)
+	_, err := newBasicGameLayer("Game Layer", world, s)
 	if err != nil {
 		return err
 	}

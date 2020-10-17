@@ -9,10 +9,6 @@ import (
 // environments.
 type StaticNilNode struct {
 	nodes.Node
-
-	color []float32
-
-	shape api.IAtlasShape
 }
 
 // NewStaticNilNode constructs shapeless node
