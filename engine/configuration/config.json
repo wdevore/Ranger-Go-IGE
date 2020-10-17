@@ -16,9 +16,9 @@
     "BitsPerPixel": 32,
     "LockToVSync": true,
     "ClearColor": {
-      "R": 0.5,
+      "R": 1.0,
       "G": 0.5,
-      "B": 0.5,
+      "B": 0.0,
       "A": 1.0
     },
     "ClearStyle": "None",

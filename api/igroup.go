@@ -7,6 +7,7 @@ type IGroup interface {
 	Children() []INode
 
 	AddChild(INode)
+	PrependChild(INode)
 
 	GetChildByID(id int) INode
 	GetChildByName(name string) INode

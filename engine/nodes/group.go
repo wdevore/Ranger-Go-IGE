@@ -24,6 +24,14 @@ func (g *Group) AddChild(child api.INode) {
 	}
 }
 
+// PrependChild adds the give node to the start of the collection rather than the end.
+func (g *Group) PrependChild(child api.INode) {
+	if child != nil {
+		front := []api.INode{child}
+		g.children = append(front, g.children[1:]...)
+	}
+}
+
 // GetChildByID finds an INode by ID.
 func (g *Group) GetChildByID(id int) api.INode {
 	if len(g.children) > 0 {

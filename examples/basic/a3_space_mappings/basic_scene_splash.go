@@ -29,8 +29,6 @@ func newBasicSplashScene(name string, world api.IWorld) (api.INode, error) {
 func (s *sceneSplash) build(world api.IWorld) error {
 	s.Node.Build(world)
 
-	dvr := world.Properties().Window.DeviceRes
-
 	atlas := world.GetAtlas(api.MonoAtlasName)
 
 	// -----------------------------------------------------
@@ -40,14 +38,7 @@ func (s *sceneSplash) build(world api.IWorld) error {
 	vertices, indices, mode := generators.GenerateUnitRectangleVectorShape(true, true)
 	atlas.(api.IStaticAtlasX).AddShape(centerSquareName, vertices, indices, mode)
 
-	bg, err := newBackgroundNode("Background", world, s)
-	if err != nil {
-		return err
-	}
-
-	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
-
-	_, err = newBasicGameLayer("Game Layer", world, s)
+	_, err := newBasicGameLayer("Game Layer", world, s)
 	if err != nil {
 		return err
 	}

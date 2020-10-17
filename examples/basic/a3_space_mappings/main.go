@@ -5,7 +5,6 @@ import (
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
@@ -25,7 +24,11 @@ func main() {
 	// This example only needs the provided basic Static-Mono atlas.
 	// You are free to create your own Atlases btw.
 	// -----------------------------------------------------
-	monoAtlas := atlas.NewStaticMonoAtlas(world)
+	monoAtlas := world.GetAtlas(api.MonoAtlasName)
+	if monoAtlas == nil {
+		monoAtlas = atlas.NewStaticMonoAtlas(world)
+		world.AddAtlas(api.MonoAtlasName, monoAtlas)
+	}
 
 	// Add Atlas to the world so Scenes/Layers can obtain access to the atlas.
 	world.AddAtlas(api.MonoAtlasName, monoAtlas)
@@ -53,7 +56,7 @@ func main() {
 		panic(err)
 	}
 
-	nodes.PrintTree(splash)
+	// nodes.PrintTree(world.Root())
 
 	// And finally we can start the game.
 	engine.Begin()

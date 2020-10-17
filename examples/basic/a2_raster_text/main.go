@@ -24,7 +24,11 @@ func main() {
 	// This example only needs the provided basic Static-Mono atlas.
 	// You are free to create your own Atlases btw.
 	// -----------------------------------------------------
-	monoAtlas := atlas.NewStaticMonoAtlas(world)
+	monoAtlas := world.GetAtlas(api.MonoAtlasName)
+	if monoAtlas == nil {
+		monoAtlas = atlas.NewStaticMonoAtlas(world)
+		world.AddAtlas(api.MonoAtlasName, monoAtlas)
+	}
 
 	// Add Atlas to the world so Scenes/Layers can obtain access to the atlas.
 	world.AddAtlas(api.MonoAtlasName, monoAtlas)

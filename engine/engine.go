@@ -108,28 +108,23 @@ func Construct(relativePath string, overrides string) (eng api.IEngine, err erro
 		return nil, err
 	}
 
+	err = o.configureBackgroundForgrounds()
+	if err != nil {
+		return nil, err
+	}
+
 	return o, nil
 }
 
-func (e *engine) Begin() error {
-	e.running = true
-
-	sceneGraph := e.world.NodeManager()
-
-	var err error
-
-	err = sceneGraph.Begin()
-	if err != nil {
-		return errors.New("not enough scenes to start engine. There must be 2 or more")
-	}
-
+func (e *engine) configureBackgroundForgrounds() error {
 	// -----------------------------------------------------------
 	// Timing Info.
 	// -----------------------------------------------------------
 	worldProps := e.world.Properties()
+	var err error
 
 	if worldProps.Engine.ShowTimingInfo {
-		e.infoNode, err = shapes.NewDynamicPixelTextNode("FPS", e.world, nil)
+		e.infoNode, err = shapes.NewDynamicPixelTextNode("FPS", e.world, e.world.Overlay())
 		if err != nil {
 			return err
 		}
@@ -141,7 +136,6 @@ func (e *engine) Begin() error {
 
 		dvr := e.world.Properties().Window.DeviceRes
 		e.infoNode.SetPosition(-float32(dvr.Width/2)+10.0, -float32(dvr.Height/2)+10.0)
-		e.world.Overlay().AddChild(e.infoNode)
 	}
 
 	// -----------------------------------------------------------
@@ -168,6 +162,23 @@ func (e *engine) Begin() error {
 		bgCol := worldProps.Window.BackgroundColor
 		sq.SetFilledColor(color.NewPaletteFromFloats(bgCol.R, bgCol.G, bgCol.B, bgCol.A))
 	case "Checkerboard":
+	}
+
+	return nil
+}
+
+// Begin is called after Construct() and as the last thing the game
+// does to start the game.
+func (e *engine) Begin() error {
+	e.running = true
+
+	sceneGraph := e.world.NodeManager()
+
+	var err error
+
+	err = sceneGraph.Begin()
+	if err != nil {
+		return errors.New("not enough scenes to start engine. There must be 2 or more")
 	}
 
 	e.loop()
