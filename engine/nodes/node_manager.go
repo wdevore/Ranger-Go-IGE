@@ -163,7 +163,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		// to begin transitioning onto the stage.
 		// ShowState("NM C: ", n.currentScene, " Notify SceneTransitionStartIn")
 		n.scenes.InsertAndShift(n.currentScene, 2)
-		PrintTree(n.root)
+		// PrintTree(n.root)
 
 		n.setSceneState(n.currentScene, api.SceneTransitionStartIn)
 	case api.SceneTransitionStartOut:
@@ -186,7 +186,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 			n.setSceneState(n.nextScene, api.SceneTransitionStartIn)
 			n.scenes.InsertAndShift(n.nextScene, 2)
 		}
-		PrintTree(n.root)
+		// PrintTree(n.root)
 	case api.SceneExitedStage:
 		// The current scene has finished leaving the stage.
 		// ShowState("NM NS: ", n.currentScene, "")
@@ -203,28 +203,11 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		// fmt.Println("NM NS: overlay ", n.currentScene, " with ", n.nextScene)
 		n.currentScene = n.nextScene
 		n.nextScene = nil // This isn't actually needed but it is good form.
-		PrintTree(n.root)
+		// PrintTree(n.root)
 	}
 
-	// if n.currentScene != nil && oCurrentState != api.SceneOffStage {
-	// 	Visit(n.currentScene, n.transStack, interpolation)
-	// }
-
-	// --------------------------------------------------------
-	// Incoming or next scene
-	// --------------------------------------------------------
-	// if n.nextScene != nil {
-	// 	iScene, _ := n.nextScene.(api.IScene)
-
-	// 	iNextState, _ := iScene.State()
-
-	// 	if iNextState != api.SceneOffStage {
-	// 		Visit(n.nextScene, n.transStack, interpolation)
-	// 	}
-	// }
-
 	// -------------------------------------------------------
-	// Now that visible Scene(s) have been attached to the main Scene
+	// Now that visible Scene(s) have been attached/detached to the main Scene
 	// node we can Visit the "Root" node.
 	// -------------------------------------------------------
 	Visit(n.root, n.transStack, interpolation)

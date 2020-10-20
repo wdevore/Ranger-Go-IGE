@@ -52,7 +52,7 @@ func (s *highscoreMenu) build(world api.IWorld) error {
 	}
 	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
 	bn := bg.(*backgroundNode)
-	bn.setColor(color.NewPaletteInt64(color.Peach))
+	bn.setColor(color.NewPaletteInt64(color.Aqua))
 
 	newHighscoreLayer("Highscore Layer", s.atlas, world, s)
 
