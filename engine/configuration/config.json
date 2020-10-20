@@ -77,6 +77,8 @@
     "MonoVertexShaderFile": "mono_vertex.glsl",
     "MonoFragmentShaderFile": "mono_fragment.glsl",
     "DynamicPixelVertexShaderFile": "dynamic_pixel_vertex.glsl",
-    "DynamicPixelFragmentShaderFile": "dynamic_pixel_fragment.glsl"
+    "DynamicPixelFragmentShaderFile": "dynamic_pixel_fragment.glsl",
+    "TextureVertexShaderFile": "texture.vertex.glsl",
+    "TextureFragmentShaderFile": "texture.fragment.glsl"
   }
 }

@@ -1,0 +1,184 @@
+package main
+
+import (
+	"github.com/tanema/gween"
+	"github.com/tanema/gween/ease"
+	"github.com/wdevore/Ranger-Go-IGE/api"
+	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/fonts"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
+)
+
+type sceneSplash struct {
+	nodes.Node
+	nodes.Scene
+
+	pretendWorkCnt  float64
+	pretendWorkSpan float64
+
+	delay          api.IDelay
+	tweenOntoStage *gween.Tween
+	tweenOffStage  *gween.Tween
+}
+
+func newBasicSplashScene(name string, world api.IWorld) (api.INode, error) {
+	o := new(sceneSplash)
+	o.Initialize(name)
+
+	if err := o.build(world); err != nil {
+		return nil, err
+	}
+
+	o.InitializeScene(api.SceneOffStage, api.SceneOffStage)
+
+	o.pretendWorkSpan = 1000.0
+
+	o.delay = nodes.NewDelay()
+
+	if err := o.build(world); err != nil {
+		return nil, err
+	}
+
+	return o, nil
+}
+
+func (s *sceneSplash) build(world api.IWorld) error {
+	s.Node.Build(world)
+
+	dvr := s.World().Properties().Window.DeviceRes
+
+	// This is an example of a custom background node.
+	bg, err := newBackgroundNode("Background", world, s)
+	if err != nil {
+		return err
+	}
+	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+	bn := bg.(*backgroundNode)
+	bn.setColor(color.NewPaletteInt64(color.LightGray))
+
+	if err := s.addText(world); err != nil {
+		return err
+	}
+
+	newBasicSplashLayer("Game Layer", world, s)
+
+	return nil
+}
+
+func (s *sceneSplash) addText(world api.IWorld) error {
+	var err error
+
+	// Note: To render text you need 3 objects:
+	// SpriteSheet contains the manifest and font image.
+	// SingleTextureAtlas renders a single sub-texture (i.e. character).
+	// INode will render strings using the atlas.
+
+	name := "Font9x9"
+	// #1 SpriteSheet
+	spriteSheet := fonts.NewFont9x9SpriteSheet(name, "font9x9_sprite_sheet_manifest.json")
+	spriteSheet.Load("../../assets/", true)
+
+	// #2 TextureAtlas
+	atlas := atlas.NewSingleTextureAtlas(name, spriteSheet, world)
+	err = atlas.Burn()
+	if err != nil {
+		return err
+	}
+
+	// #3 INode
+	textureNode, err := shapes.NewBitmapFont9x9Node(name, atlas, world, s)
+	if err != nil {
+		return err
+	}
+	textureNode.SetScale(50)
+	textureNode.SetPosition(-300.0, 0.0)
+	// s.textureNode.SetRotation(20.0 * maths.DegreeToRadians)
+	bf := textureNode.(*shapes.BitmapFont9x9Node)
+	bf.SetColor(color.NewPaletteInt64(color.White).Array())
+	bf.SetText("Splash Scene")
+
+	return nil
+}
+
+func (s *sceneSplash) Update(msPerUpdate, secPerUpdate float64) {
+	switch s.CurrentState() {
+	case api.SceneOffStage:
+		return
+	case api.SceneTransitioningIn:
+		value, isFinished := s.tweenOntoStage.Update(float32(msPerUpdate))
+
+		// Update animation properties
+		if isFinished {
+			s.setState("Update: ", api.SceneOnStage)
+		}
+		s.SetPosition(value, s.Position().Y())
+	case api.SceneOnStage:
+		if s.pretendWorkCnt > s.pretendWorkSpan {
+			// Tell NM that we want to transition off the stage.
+			s.setState("Update: ", api.SceneTransitionStartOut)
+			s.delay.SetPauseTime(1000.0)
+			s.delay.Reset()
+		}
+
+		s.pretendWorkCnt += msPerUpdate
+	case api.SceneTransitioningOut:
+		// Update animation
+		value, isFinished := s.tweenOffStage.Update(float32(msPerUpdate))
+
+		// Update animation properties
+		if isFinished {
+			s.setState("Update: ", api.SceneExitedStage)
+		}
+		s.SetPosition(value, s.Position().Y())
+	}
+}
+
+// --------------------------------------------------------
+// Transitioning
+// --------------------------------------------------------
+
+func (s *sceneSplash) setState(header string, state int) {
+	s.SetCurrentState(state)
+	// nodes.ShowState(header, s, "")
+}
+
+func (s *sceneSplash) Notify(state int) {
+	s.setState("Notify: ", state)
+
+	switch s.CurrentState() {
+	case api.SceneTransitionStartIn:
+		// Create an animation that drags the scene onto the stage
+		// in the +X direction (enters from right)
+		vrs := s.World().Properties().Window.DeviceRes
+		s.SetPosition(-float32(vrs.Width), 0.0)
+		s.tweenOntoStage = gween.New(s.Position().X(), 0.0, s.TransitionDuration(), ease.OutCubic)
+		s.setState("Notify T: ", api.SceneTransitioningIn)
+	case api.SceneTransitionStartOut:
+		// Create an animation that drags the scene onto the stage
+		// in the +X direction (enters from right)
+		vrs := s.World().Properties().Window.DeviceRes
+		s.tweenOffStage = gween.New(s.Position().X(), float32(vrs.Width), s.TransitionDuration(), ease.OutCubic)
+		s.setState("Notify T: ", api.SceneTransitioningOut)
+	}
+}
+
+// -----------------------------------------------------
+// Node lifecycles
+// -----------------------------------------------------
+
+// EnterNode called when a node is entering the stage
+func (s *sceneSplash) EnterScene(man api.INodeManager) {
+	// fmt.Println("sceneSplash EnterNode")
+	s.SetVisible(true)
+	man.RegisterTarget(s)
+}
+
+// ExitNode called when a node is exiting stage
+func (s *sceneSplash) ExitScene(man api.INodeManager) bool {
+	// fmt.Println("sceneSplash ExitNode")
+	man.UnRegisterTarget(s)
+	s.setState("ExitNode: ", api.SceneOffStage)
+	return false
+}

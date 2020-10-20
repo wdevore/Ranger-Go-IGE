@@ -155,7 +155,8 @@ func (w *world) NodeManager() api.INodeManager {
 	return w.sceneGraph
 }
 
-// Begin is called by the Engine.
+// Begin is called by the Engine during Construct(). The Under/Over lays may
+// be populated afterwards.
 func (w *world) Begin() error {
 	var err error
 

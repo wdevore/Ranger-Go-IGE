@@ -98,6 +98,9 @@ type shadersJSON struct {
 
 	DynamicPixelVertexShaderFile   string
 	DynamicPixelFragmentShaderFile string
+
+	TextureVertexShaderFile   string
+	TextureFragmentShaderFile string
 }
 
 // Properties reflects config.json

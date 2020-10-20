@@ -6,7 +6,6 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 func main() {
@@ -21,7 +20,7 @@ func main() {
 
 	// -----------------------------------------------------
 	// Create any Atlases the game/example needs.
-	// This example only needs the provided basic Static-Mono atlas.
+	// This example needs the provided basic Static-Mono atlas.
 	// You are free to create your own Atlases btw.
 	// -----------------------------------------------------
 	monoAtlas := world.GetAtlas(api.MonoAtlasName)
@@ -33,18 +32,20 @@ func main() {
 	// Add Atlas to the world so Scenes/Layers can obtain access to the atlas.
 	world.AddAtlas(api.MonoAtlasName, monoAtlas)
 
-	// -----------------------------------------------------
-	// Setup scenes and layers of the game.
-	// -----------------------------------------------------
-	splash, err := newBasicSplashScene("Splash", world)
+	exitScene, err := newBasicExitScene("Exit", world)
 	if err != nil {
 		panic(err)
 	}
-	world.Push(splash)
+	exitScene.SetVisible(false)
 
-	// This example uses the super basic Boot scene that does absolutely
-	// nothing by exiting immediately.
-	boot := extras.NewBasicBootScene("Boot")
+	world.Push(exitScene)
+
+	// This example uses the super basic Boot scene that does absolutely nothing.
+	boot, err := newBasicBootScene("Boot", world)
+	if err != nil {
+		panic(err)
+	}
+
 	world.Push(boot)
 
 	// -----------------------------------------------------
@@ -57,7 +58,7 @@ func main() {
 	}
 
 	// And finally we can start the game.
-	err = engine.Begin()
+	engine.Begin()
 	if err != nil {
 		panic(err)
 	}

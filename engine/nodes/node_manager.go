@@ -163,7 +163,6 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		// to begin transitioning onto the stage.
 		// ShowState("NM C: ", n.currentScene, " Notify SceneTransitionStartIn")
 		n.scenes.InsertAndShift(n.currentScene, 2)
-
 		PrintTree(n.root)
 
 		n.setSceneState(n.currentScene, api.SceneTransitionStartIn)
@@ -185,7 +184,9 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 
 			// ShowState("NM NS: ", n.nextScene, " Notify SceneTransitionStartIn")
 			n.setSceneState(n.nextScene, api.SceneTransitionStartIn)
+			n.scenes.InsertAndShift(n.nextScene, 2)
 		}
+		PrintTree(n.root)
 	case api.SceneExitedStage:
 		// The current scene has finished leaving the stage.
 		// ShowState("NM NS: ", n.currentScene, "")
@@ -202,6 +203,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		// fmt.Println("NM NS: overlay ", n.currentScene, " with ", n.nextScene)
 		n.currentScene = n.nextScene
 		n.nextScene = nil // This isn't actually needed but it is good form.
+		PrintTree(n.root)
 	}
 
 	// if n.currentScene != nil && oCurrentState != api.SceneOffStage {

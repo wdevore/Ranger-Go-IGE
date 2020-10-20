@@ -57,8 +57,5 @@ func main() {
 	}
 
 	// And finally we can start the game.
-	err = engine.Begin()
-	if err != nil {
-		panic(err)
-	}
+	engine.Begin()
 }

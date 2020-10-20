@@ -16,6 +16,7 @@ import (
 
 type dynamicPixelAtlas struct {
 	world api.IWorld
+	burnt bool
 
 	// The backing array for the pixels. It is copied
 	// each time the array changes.
@@ -60,6 +61,10 @@ func (s *dynamicPixelAtlas) SetData(vertices []float32, indices []uint32) {
 	s.indices = indices
 }
 
+func (s *dynamicPixelAtlas) Burnt() bool {
+	return s.burnt
+}
+
 func (s *dynamicPixelAtlas) Burn() error {
 	err := s.Configure()
 	if err != nil {
@@ -71,6 +76,7 @@ func (s *dynamicPixelAtlas) Burn() error {
 		return err
 	}
 
+	s.burnt = true
 	return nil
 }
 

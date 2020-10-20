@@ -7,7 +7,6 @@ import (
 	"github.com/go-gl/gl/v4.5-core/gl"
 
 	"github.com/wdevore/Ranger-Go-IGE/api"
-	"github.com/wdevore/Ranger-Go-IGE/engine/configuration"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering"
 )
 
@@ -16,12 +15,13 @@ import (
 
 type staticMonoAtlas struct {
 	world api.IWorld
+	burnt bool
 
 	shapes map[int]*shape
 
 	nextID int
 
-	// For the baking process
+	// For the Shaking process
 	vertices []float32
 	indices  []uint32
 
@@ -46,7 +46,7 @@ func NewStaticMonoAtlas(world api.IWorld) api.IAtlasX {
 }
 
 func (s *staticMonoAtlas) Configure() error {
-	err := s.configureShaders(s.world.RelativePath(), s.world.Properties())
+	err := s.configureShaders(s.world)
 	if err != nil {
 		return err
 	}
@@ -82,6 +82,10 @@ func (s *staticMonoAtlas) GetShapeByName(shapeName string) int {
 	return -1
 }
 
+func (s *staticMonoAtlas) Burnt() bool {
+	return s.burnt
+}
+
 func (s *staticMonoAtlas) Burn() error {
 	err := s.Configure()
 	if err != nil {
@@ -94,6 +98,7 @@ func (s *staticMonoAtlas) Burn() error {
 		return err
 	}
 
+	s.burnt = true
 	return nil
 }
 
@@ -211,13 +216,13 @@ func (s *staticMonoAtlas) Render(id int, model api.IMatrix4) {
 	gl.DrawElements(shape.primitiveMode, int32(shape.indicesCount), uint32(gl.UNSIGNED_INT), gl.PtrOffset(shape.indicesOffset))
 }
 
-func (s *staticMonoAtlas) configureShaders(relativePath string, config *configuration.Properties) error {
-	dataPath, err := filepath.Abs(relativePath)
+func (s *staticMonoAtlas) configureShaders(world api.IWorld) error {
+	dataPath, err := filepath.Abs(world.RelativePath())
 	if err != nil {
 		return err
 	}
 
-	shaders := config.Shaders
+	shaders := world.Properties().Shaders
 
 	s.shader = rendering.NewShader(shaders.MonoVertexShaderFile, shaders.MonoFragmentShaderFile)
 	err = s.shader.Load(dataPath)
@@ -246,12 +251,12 @@ func (s *staticMonoAtlas) configureUniforms() error {
 	// Projection and View
 	projLoc := gl.GetUniformLocation(program, gl.Str("projection\x00"))
 	if projLoc < 0 {
-		return errors.New("NodeManager: couldn't find 'projection' uniform variable")
+		return errors.New("StaticMonoAtlas: couldn't find 'projection' uniform variable")
 	}
 
 	viewLoc := gl.GetUniformLocation(program, gl.Str("view\x00"))
 	if viewLoc < 0 {
-		return errors.New("NodeManager: couldn't find 'view' uniform variable")
+		return errors.New("StaticMonoAtlas: couldn't find 'view' uniform variable")
 	}
 
 	pm := s.world.Projection().Matrix()

@@ -43,6 +43,9 @@ type engine struct {
 	projLoc int32
 	viewLoc int32
 
+	defaultBackgroundEnabled bool
+	backgroundAtlas          api.IAtlasX
+
 	// -----------------------------------------
 	// Debug
 	// -----------------------------------------
@@ -145,10 +148,10 @@ func (e *engine) configureBackgroundForgrounds() error {
 	case "SingleColor":
 		// The StaticMono Atlas needs to exist BEFORE trying to create
 		// static nodes.
-		monoAtlas := e.world.GetAtlas(api.MonoAtlasName)
-		if monoAtlas == nil {
-			monoAtlas := atlas.NewStaticMonoAtlas(e.world)
-			e.world.AddAtlas(api.MonoAtlasName, monoAtlas)
+		e.backgroundAtlas = e.world.GetAtlas(api.MonoAtlasName)
+		if e.backgroundAtlas == nil {
+			e.backgroundAtlas = atlas.NewStaticMonoAtlas(e.world)
+			e.world.AddAtlas(api.MonoAtlasName, e.backgroundAtlas)
 		}
 
 		square, err := shapes.NewMonoSquareNode("Background", api.FILLED, true, e.world, e.world.Underlay())
@@ -161,6 +164,8 @@ func (e *engine) configureBackgroundForgrounds() error {
 		sq := square.(*shapes.MonoSquareNode)
 		bgCol := worldProps.Window.BackgroundColor
 		sq.SetFilledColor(color.NewPaletteFromFloats(bgCol.R, bgCol.G, bgCol.B, bgCol.A))
+
+		e.defaultBackgroundEnabled = true
 	case "Checkerboard":
 	}
 
@@ -179,6 +184,18 @@ func (e *engine) Begin() error {
 	err = sceneGraph.Begin()
 	if err != nil {
 		return errors.New("not enough scenes to start engine. There must be 2 or more")
+	}
+
+	// If a default background was requested via the config.json then
+	// we need to make sure that the associated atlas has been "burnt"
+	// prior to starting the loop.
+	if e.defaultBackgroundEnabled && e.backgroundAtlas != nil {
+		if !e.backgroundAtlas.Burnt() {
+			err = e.backgroundAtlas.Burn()
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	e.loop()

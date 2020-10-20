@@ -4,6 +4,7 @@ package api
 type IAtlasX interface {
 	Configure() error
 
+	Burnt() bool
 	Burn() error
 	Shake()
 	Bake() error
