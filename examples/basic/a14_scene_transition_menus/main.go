@@ -30,9 +30,6 @@ func main() {
 		world.AddAtlas(api.MonoAtlasName, monoAtlas)
 	}
 
-	// Add Atlas to the world so Scenes/Layers can obtain access to the atlas.
-	world.AddAtlas(api.MonoAtlasName, monoAtlas)
-
 	// Note: To render text you need 3 objects:
 	// SpriteSheet contains the manifest and font image.
 	// SingleTextureAtlas renders a single sub-texture (i.e. character).

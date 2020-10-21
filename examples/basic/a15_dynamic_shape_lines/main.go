@@ -6,6 +6,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/atlas"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 )
 
 func main() {
@@ -29,40 +30,39 @@ func main() {
 		world.AddAtlas(api.MonoAtlasName, monoAtlas)
 	}
 
-	transitionDuration := float32(500.0)
-
-	exitScene, err := newBasicExitScene("Exit", world)
-	if err != nil {
-		panic(err)
+	// -----------------------------------------------------
+	// Create any Atlases the game/example needs.
+	// This example needs the provided basic Static-Mono atlas.
+	// You are free to create your own Atlases btw.
+	// -----------------------------------------------------
+	dynoAtlas := world.GetAtlas(api.DynamicMonoAtlasName)
+	if dynoAtlas == nil {
+		dynoAtlas = atlas.NewDynamicMonoAtlas(world)
+		world.AddAtlas(api.DynamicMonoAtlasName, dynoAtlas)
 	}
-	sceneE := exitScene.(api.IScene)
-	sceneE.SetTransitionDuration(transitionDuration)
-	exitScene.SetVisible(false)
-	world.Push(exitScene)
 
 	splash, err := newBasicSplashScene("Splash", world)
 	if err != nil {
 		panic(err)
 	}
-	sceneS := splash.(api.IScene)
-	sceneS.SetTransitionDuration(transitionDuration)
-	splash.SetVisible(false)
 	world.Push(splash)
 
-	boot, err := newBasicBootScene("Boot", world)
-	if err != nil {
-		panic(err)
-	}
-	sceneB := boot.(api.IScene)
-	sceneB.SetTransitionDuration(transitionDuration)
+	// This example uses the super basic Boot scene that does absolutely nothing.
+	boot := extras.NewBasicBootScene("Boot")
 
 	world.Push(boot)
 
 	// -----------------------------------------------------
-	// Now that Scene and Layers have added Shapes to the
-	// Atlas we can now "Shake and Bake" it via the Burn().
+	// We don't need to burn the MonoAtlas because the config.json commands
+	// the engine to supply a background and as such the atlas will be
+	// burnt automagically.
+	// Note: that most of the time "you" will supplying your own
+	// backgrounds and as such you will need to remember to burn
+	// the atlas.
 	// -----------------------------------------------------
-	err = monoAtlas.Burn()
+
+	// We do need to burn the dynamic atlas
+	err = dynoAtlas.Burn()
 	if err != nil {
 		panic(err)
 	}

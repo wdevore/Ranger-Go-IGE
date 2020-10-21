@@ -13,6 +13,8 @@ import (
 type MonoTriangleNode struct {
 	nodes.Node
 
+	vertices []float32
+
 	filledShapeID   int
 	outlinedShapeID int
 
@@ -54,14 +56,17 @@ func (b *MonoTriangleNode) build(drawStyle int, world api.IWorld) error {
 	b.SetAtlas(atl)
 	atlas := atl.(api.IStaticAtlasX)
 
+	var indices []uint32
+	var mode int
+
 	if drawStyle == api.FILLED {
 		name := api.FilledTriangleShapeName
 
 		b.filledShapeID = atlas.GetShapeByName(name)
 		if b.filledShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitTriangleVectorShape(true)
-			b.filledShapeID = atlas.AddShape(name, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitTriangleVectorShape(true)
+			b.filledShapeID = atlas.AddShape(name, b.vertices, indices, mode)
 		}
 	} else if drawStyle == api.OUTLINED {
 		name := api.OutlinedTriangleShapeName
@@ -69,8 +74,8 @@ func (b *MonoTriangleNode) build(drawStyle int, world api.IWorld) error {
 		b.outlinedShapeID = atlas.GetShapeByName(name)
 		if b.outlinedShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitTriangleVectorShape(false)
-			b.outlinedShapeID = atlas.AddShape(name, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitTriangleVectorShape(false)
+			b.outlinedShapeID = atlas.AddShape(name, b.vertices, indices, mode)
 		}
 	} else {
 		nameF := api.FilledTriangleShapeName
@@ -79,14 +84,14 @@ func (b *MonoTriangleNode) build(drawStyle int, world api.IWorld) error {
 		b.filledShapeID = atlas.GetShapeByName(nameF)
 		if b.filledShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitTriangleVectorShape(true)
-			b.filledShapeID = atlas.AddShape(nameF, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitTriangleVectorShape(true)
+			b.filledShapeID = atlas.AddShape(nameF, b.vertices, indices, mode)
 		}
 		b.outlinedShapeID = atlas.GetShapeByName(nameO)
 		if b.outlinedShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitTriangleVectorShape(false)
-			b.outlinedShapeID = atlas.AddShape(nameO, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitTriangleVectorShape(false)
+			b.outlinedShapeID = atlas.AddShape(nameO, b.vertices, indices, mode)
 		}
 	}
 
@@ -95,6 +100,11 @@ func (b *MonoTriangleNode) build(drawStyle int, world api.IWorld) error {
 	b.outlinedColor = color.NewPaletteInt64(color.White).Array()
 
 	return nil
+}
+
+// Vertices returns local-space vertices
+func (b *MonoTriangleNode) Vertices() *[]float32 {
+	return &b.vertices
 }
 
 // SetFilledColor sets the fill color

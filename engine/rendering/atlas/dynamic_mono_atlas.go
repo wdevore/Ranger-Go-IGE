@@ -12,18 +12,23 @@ import (
 )
 
 // The atlas contains and renders shapes.
-// A DyanmicPixel Atlas uses a single color for all pixels
-//
-type dynamicPixelAtlas struct {
+// A Dyanmic Atlas uses a single color for all shapes
+
+type dynamicMonoAtlas struct {
 	world api.IWorld
 	burnt bool
+
+	shapes []*shape
+	nextID int
 
 	// The backing array for the pixels. It is copied
 	// each time the array changes.
 	vertices []float32
 	// This is updated with the number of pixels to rendered.
-	indices []uint32
+	indices       []uint32
+	primitiveMode uint32
 
+	indexOffset   int
 	indicesCount  int
 	vboBufferSize int
 
@@ -40,16 +45,47 @@ type dynamicPixelAtlas struct {
 	dirty bool
 }
 
-// NewDynamicPixelAtlas create atlas that holds a bunch of pixels all
+// NewDynamicMonoAtlas create atlas that holds a bunch of shapes all
 // of the same color.
-// This is object is also of type IDynamicPixelAtlasX.
-func NewDynamicPixelAtlas(world api.IWorld) api.IAtlasX {
-	o := new(dynamicPixelAtlas)
+// This object is also of type IDynamicAtlasX.
+func NewDynamicMonoAtlas(world api.IWorld) api.IAtlasX {
+	o := new(dynamicMonoAtlas)
+	o.shapes = []*shape{}
+
 	o.world = world
 	return o
 }
 
-func (s *dynamicPixelAtlas) Configure() error {
+// AddShape adds a set of vertices and indices to the atlas.
+func (s *dynamicMonoAtlas) AddShape(shapeName string, vertices []float32, indices []uint32, mode int) int {
+	shape := shape{
+		id:            s.nextID,
+		shapeName:     shapeName,
+		dirty:         false,
+		vertices:      vertices,
+		indices:       indices,
+		indicesCount:  len(indices),
+		primitiveMode: uint32(mode),
+	}
+
+	s.shapes = append(s.shapes, &shape)
+
+	s.nextID++
+
+	return shape.id
+}
+
+func (s *dynamicMonoAtlas) GetShapeByName(shapeName string) int {
+	for _, shape := range s.shapes {
+		if shape.shapeName == shapeName {
+			return shape.id
+		}
+	}
+
+	return -1
+}
+
+func (s *dynamicMonoAtlas) Configure() error {
 	err := s.configureShaders(s.world.RelativePath(), s.world.Properties())
 	if err != nil {
 		return err
@@ -57,20 +93,22 @@ func (s *dynamicPixelAtlas) Configure() error {
 
 	return nil
 }
-func (s *dynamicPixelAtlas) SetData(vertices []float32, indices []uint32) {
+func (s *dynamicMonoAtlas) SetData(vertices []float32, indices []uint32) {
 	s.vertices = vertices
 	s.indices = indices
 }
 
-func (s *dynamicPixelAtlas) Burnt() bool {
+func (s *dynamicMonoAtlas) Burnt() bool {
 	return s.burnt
 }
 
-func (s *dynamicPixelAtlas) Burn() error {
+func (s *dynamicMonoAtlas) Burn() error {
 	err := s.Configure()
 	if err != nil {
 		return err
 	}
+
+	s.Shake()
 
 	err = s.Bake()
 	if err != nil {
@@ -81,11 +119,40 @@ func (s *dynamicPixelAtlas) Burn() error {
 	return nil
 }
 
-func (s *dynamicPixelAtlas) Shake() {
+func (s *dynamicMonoAtlas) Shake() {
+	// ---------------------------------------------------------
+	// Collect all vertices and indices for buffers
+	// ---------------------------------------------------------
+	// The atlas has shapes and each shape has vertices. These need to be
+	// combined into a single array and later copied into GL Buffer.
+	// At the same time each shape needs to be updated
+	// to adjust element offsets and counts.
+	indicesOffset := 0
+	indiceBlockOffset := uint32(0)
+	vertexOffset := 0
+
+	for _, shape := range s.shapes {
+		shape.indicesOffset = indicesOffset
+		shape.vertexOffset = vertexOffset
+
+		vertexOffset += len(shape.vertices)
+		indicesOffset += len(shape.indices) * uintSize
+
+		s.vertices = append(s.vertices, shape.vertices...)
+
+		// The indice offset is always refering to a position within
+		// the vertices array.
+		for _, i := range shape.indices {
+			s.indices = append(s.indices, uint32(i)+indiceBlockOffset)
+		}
+
+		// Offset the indices based on the vertice block position.
+		indiceBlockOffset = uint32(len(s.vertices) / api.XYZComponentCount)
+	}
 }
 
 // Bake finalizes the Atlas by "baking" the shapes into the buffers.
-func (s *dynamicPixelAtlas) Bake() error {
+func (s *dynamicMonoAtlas) Bake() error {
 	// ---------------------------------------------------------
 	// BEGIN VAO Scope and generate buffer ids
 	// ---------------------------------------------------------
@@ -140,48 +207,88 @@ func (s *dynamicPixelAtlas) Bake() error {
 	return nil
 }
 
-func (s *dynamicPixelAtlas) Use() {
+func (s *dynamicMonoAtlas) Use() {
 	s.shader.Use()
 	gl.BindVertexArray(s.vaoID)
 }
 
-func (s *dynamicPixelAtlas) UnUse() {
+func (s *dynamicMonoAtlas) UnUse() {
 	gl.BindVertexArray(0)
 }
 
 // SetColor sets the shader's color
-func (s *dynamicPixelAtlas) SetColor(color []float32) {
+func (s *dynamicMonoAtlas) SetColor(color []float32) {
 	gl.Uniform4fv(s.colorLoc, 1, &color[0])
 }
 
-func (s *dynamicPixelAtlas) Update() {
+func (s *dynamicMonoAtlas) Update() {
 	// Copy entire buffer even if just one element changed.
 	if s.dirty {
-		// fmt.Println("update: ", s.vboBufferSize)
+		// copy changed shape(s) to backing buffer
+		s.copy()
+
+		// Now copy from backing buffer to GL buffer
 		gl.BindBuffer(gl.ARRAY_BUFFER, s.vboID)
 		gl.BufferSubData(gl.ARRAY_BUFFER, 0, s.vboBufferSize, gl.Ptr(s.vertices))
 		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+		s.dirty = false
 	}
-	s.dirty = false
 }
 
-func (s *dynamicPixelAtlas) SetPixelActiveCount(count int) {
+func (s *dynamicMonoAtlas) copy() {
+	// s.vertices = []float32{}
+	// for _, shape := range s.shapes {
+	// 	s.vertices = append(s.vertices, shape.vertices...)
+	// }
+	for _, shape := range s.shapes {
+		if shape.dirty {
+			shape.dirty = false
+			for i, v := range shape.vertices {
+				s.vertices[shape.vertexOffset+i] = v
+				i++
+			}
+		}
+	}
+}
+
+func (s *dynamicMonoAtlas) SetPrimitiveMode(mode int) {
+	s.primitiveMode = uint32(mode)
+}
+
+func (s *dynamicMonoAtlas) SetIndicesCount(count int) {
 	s.indicesCount = count
 }
 
-func (s *dynamicPixelAtlas) SetVertex(x, y float32, index int) {
+func (s *dynamicMonoAtlas) SetOffset(offset int) {
+	s.indexOffset = offset
+}
+
+func (s *dynamicMonoAtlas) SetShapeVertex(x, y float32, index, shapeID int) {
+	shape := s.shapes[shapeID]
+
+	i := index * 3
+	shape.vertices[i] = x
+	shape.vertices[i+1] = y
+	shape.dirty = true
+	s.dirty = true
+}
+
+// SetVertex directly sets the backing buffer data.
+func (s *dynamicMonoAtlas) SetVertex(x, y float32, index int) {
 	i := index * 3
 	s.vertices[i] = x
 	s.vertices[i+1] = y
 	s.dirty = true
 }
 
-func (s *dynamicPixelAtlas) Render(id int, model api.IMatrix4) {
+func (s *dynamicMonoAtlas) Render(id int, model api.IMatrix4) {
+	shape := s.shapes[id]
+
 	gl.UniformMatrix4fv(s.modelLoc, 1, false, &model.Matrix()[0])
-	gl.DrawElements(gl.POINTS, int32(s.indicesCount), uint32(gl.UNSIGNED_INT), gl.PtrOffset(0))
+	gl.DrawElements(shape.primitiveMode, int32(shape.indicesCount), uint32(gl.UNSIGNED_INT), gl.PtrOffset(shape.indicesOffset))
 }
 
-func (s *dynamicPixelAtlas) configureShaders(relativePath string, config *configuration.Properties) error {
+func (s *dynamicMonoAtlas) configureShaders(relativePath string, config *configuration.Properties) error {
 	dataPath, err := filepath.Abs(relativePath)
 	if err != nil {
 		return err
@@ -198,7 +305,7 @@ func (s *dynamicPixelAtlas) configureShaders(relativePath string, config *config
 	return nil
 }
 
-func (s *dynamicPixelAtlas) configureUniforms() error {
+func (s *dynamicMonoAtlas) configureUniforms() error {
 	s.shader.Use()
 
 	program := s.shader.Program()
@@ -233,7 +340,7 @@ func (s *dynamicPixelAtlas) configureUniforms() error {
 	return nil
 }
 
-func (s *dynamicPixelAtlas) vboBind(bufferSize int, vertices []float32) {
+func (s *dynamicMonoAtlas) vboBind(bufferSize int, vertices []float32) {
 	// the buffer type of a vertex buffer object is GL_ARRAY_BUFFER
 	// From this point on any buffer calls we make (on the GL_ARRAY_BUFFER target)
 	// will be used to configure the currently bound buffer, which is VBO
@@ -243,7 +350,7 @@ func (s *dynamicPixelAtlas) vboBind(bufferSize int, vertices []float32) {
 	gl.BufferData(gl.ARRAY_BUFFER, bufferSize, gl.Ptr(vertices), gl.DYNAMIC_DRAW)
 }
 
-func (s *dynamicPixelAtlas) eboBind(bufferSize int, indices []uint32) {
+func (s *dynamicMonoAtlas) eboBind(bufferSize int, indices []uint32) {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, s.eboID)
 
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, bufferSize, gl.Ptr(indices), gl.STATIC_DRAW)

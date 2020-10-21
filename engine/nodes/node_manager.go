@@ -163,7 +163,7 @@ func (n *nodeManager) continueVisit(interpolation float64) bool {
 		// to begin transitioning onto the stage.
 		// ShowState("NM C: ", n.currentScene, " Notify SceneTransitionStartIn")
 		n.scenes.InsertAndShift(n.currentScene, 2)
-		// PrintTree(n.root)
+		PrintTree(n.root)
 
 		n.setSceneState(n.currentScene, api.SceneTransitionStartIn)
 	case api.SceneTransitionStartOut:

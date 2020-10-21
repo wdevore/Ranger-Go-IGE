@@ -29,9 +29,6 @@ func main() {
 		world.AddAtlas(api.MonoAtlasName, monoAtlas)
 	}
 
-	// Add Atlas to the world so Scenes/Layers can obtain access to the atlas.
-	world.AddAtlas(api.MonoAtlasName, monoAtlas)
-
 	exitScene, err := newBasicExitScene("Exit", world)
 	if err != nil {
 		panic(err)

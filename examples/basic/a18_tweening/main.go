@@ -31,6 +31,18 @@ func main() {
 
 	world.Push(boot)
 
-	engine.Begin()
+	// -----------------------------------------------------
+	// We don't need to burn the MonoAtlas because the config.json commands
+	// the engine to supply a background and as such the atlas will be
+	// burnt automagically.
+	// Note: that most of the time "you" will supplying your own
+	// backgrounds and as such you will need to remember to burn
+	// the atlas.
+	// -----------------------------------------------------
 
+	// And finally we can start the game.
+	engine.Begin()
+	if err != nil {
+		panic(err)
+	}
 }

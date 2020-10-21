@@ -10,6 +10,8 @@ const (
 const (
 	// MonoAtlasName is the Map name for StaticMono Atlas
 	MonoAtlasName = "MonoAtlas"
+	// DynamicMonoAtlasName is the Map name for a DynamicMono Atlas
+	DynamicMonoAtlasName = "DynamicMonoAtlas"
 	// DynamicPixelAtlasName is the Map name for DynamicPixel Atlas
 	DynamicPixelAtlasName = "DynamicPixelAtlas"
 )
@@ -41,6 +43,11 @@ const (
 	PlusShapeName  = "PlusShape"
 
 	PointsShapeName = "PointShape"
+
+	// Dynamic shapes
+
+	LineShapeName   = "LineShape"
+	SquareShapeName = "SquareShape"
 )
 
 const (

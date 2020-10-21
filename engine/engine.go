@@ -198,6 +198,7 @@ func (e *engine) Begin() error {
 		}
 	}
 
+	// nodes.PrintTree(e.world.Root())
 	e.loop()
 
 	return nil

@@ -6,7 +6,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type gameLayer struct {
@@ -20,29 +20,32 @@ type gameLayer struct {
 
 func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(gameLayer)
+
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
-	if err := o.Build(world); err != nil {
+
+	if err := o.build(world); err != nil {
 		return nil, err
 	}
 	return o, nil
 }
 
-func (g *gameLayer) Build(world api.IWorld) error {
+func (g *gameLayer) build(world api.IWorld) error {
 	g.Node.Build(world)
 
 	var err error
 
 	// ---------------------------------------------------------
-	g.square, err = extras.NewStaticSquareNode("FilledSqr", true, true, world, g)
+	g.square, err = shapes.NewMonoSquareNode("Square", api.FILLED, true, world, g)
 	if err != nil {
 		return err
 	}
 	g.square.SetScale(100.0)
 	g.square.SetPosition(100.0, 100.0)
-	gol2 := g.square.(*extras.StaticSquareNode)
-	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
+	gsq := g.square.(*shapes.MonoSquareNode)
+	gsq.SetFilledColor(color.NewPaletteInt64(color.GoldYellow))
+	gsq.SetFilledAlpha(0.5)
 
 	// 5s = 5000ms
 	g.tween = gween.New(float32(g.square.Position().X()), -600.0, 5000, ease.OutExpo)

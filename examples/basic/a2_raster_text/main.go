@@ -30,9 +30,6 @@ func main() {
 		world.AddAtlas(api.MonoAtlasName, monoAtlas)
 	}
 
-	// Add Atlas to the world so Scenes/Layers can obtain access to the atlas.
-	world.AddAtlas(api.MonoAtlasName, monoAtlas)
-
 	// -----------------------------------------------------
 	// Setup scenes and layers of the game.
 	// -----------------------------------------------------

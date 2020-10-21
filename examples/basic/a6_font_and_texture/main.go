@@ -18,13 +18,6 @@ func main() {
 	world := engine.World()
 
 	// ------------------------------------------------------------
-	// Load any textures we need
-	// ------------------------------------------------------------
-	// textureMan := world.TextureManager()
-	// textureMan.AddAtlas("Font9x9", "../../../assets/images/atlas/", "font9x9_texture_manifest.json", true)
-	// textureMan.AddAtlas("StarShip", "../../../assets/images/atlas/", "starship_texture_manifest.json", true)
-
-	// ------------------------------------------------------------
 	// Set a custom background clear effect
 	// preNode, err := extras.NewStaticCheckerboardNode("CheckBackground", world, nil)
 	// if err != nil {
