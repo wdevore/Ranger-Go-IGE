@@ -81,6 +81,7 @@ func (ps *ParticleSystem) TriggerOneshot() {
 
 // TriggerAt activates a single particle at a specific position
 func (ps *ParticleSystem) TriggerAt(pos api.IPoint) {
+	ps.active = true
 	// Look for a dead particle to resurrect.
 	for _, p := range ps.particles {
 		if !p.IsActive() {
@@ -92,6 +93,7 @@ func (ps *ParticleSystem) TriggerAt(pos api.IPoint) {
 
 // TriggerExplosion activates the entire system at once
 func (ps *ParticleSystem) TriggerExplosion() {
+	ps.active = true
 	// Look for a dead particle to resurrect.
 	for _, p := range ps.particles {
 		ps.activator.Activate(p, ps.epiCenter)

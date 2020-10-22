@@ -46,6 +46,10 @@ func (d *draggableSquare) Build(world api.IWorld, parent api.INode) error {
 	return nil
 }
 
+func (d *draggableSquare) Position() api.IPoint {
+	return d.square.Position()
+}
+
 func (d *draggableSquare) EventHandle(event api.IEvent) bool {
 	if event.GetType() == api.IOTypeMouseMotion {
 		mx, my := event.GetMousePosition()

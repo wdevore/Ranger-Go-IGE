@@ -3,15 +3,14 @@ package main
 import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
-	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
 	"github.com/wdevore/Ranger-Go-IGE/extras/misc"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type draggableSquare struct {
-	square    api.INode
-	outSquare api.INode
+	square     api.INode
+	dragDetect *draggable
 
 	// Dragging
 	drag          api.IDragging
@@ -32,39 +31,24 @@ func (d *draggableSquare) Build(world api.IWorld, parent api.INode) error {
 	d.localPosition = geometry.NewPoint()
 
 	// ---------------------------------------------------------
-	scale := float32(50.0)
-	d.square, err = extras.NewStaticSquareNode("FilledSqr", true, true, world, parent)
+	d.square, err = shapes.NewMonoSquareNode("Square", api.FILLOUTLINED, true, world, parent)
 	if err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
-	d.square.SetScale(scale)
-	d.square.SetPosition(150.0, 50.0)
-	gsq := d.square.(*extras.StaticSquareNode)
-	gsq.SetColor(color.NewPaletteInt64WithAlpha(color.LightPurple, 0.75))
+	d.square.SetScale(100.0)
+	d.square.SetPosition(90.0, 80.0)
+	gsq := d.square.(*shapes.MonoSquareNode)
+	gsq.SetFilledColor(color.NewPaletteInt64(color.LightPurple))
+	gsq.SetOutlineColor(color.NewPaletteInt64(color.Black))
+	gsq.SetFilledAlpha(0.5)
 
-	d.outSquare, err = newCustomRectangleNode("OutlineSqr", true, false, world, parent)
-	if err != nil {
-		return err
-	}
-	d.outSquare.SetScale(scale)
-	d.outSquare.SetPosition(150.0, 50.0)
-	gosq := d.outSquare.(*customRectangleNode)
-	gosq.SetColor(color.NewPaletteInt64(color.White))
+	d.dragDetect = newDraggable(true)
 
 	return nil
 }
 
 func (d *draggableSquare) Position() api.IPoint {
 	return d.square.Position()
-}
-
-func (d *draggableSquare) PointInside(p api.IPoint) bool {
-	gsq := d.outSquare.(*customRectangleNode)
-	inside := gsq.PointInside()
-	return inside
 }
 
 func (d *draggableSquare) EventHandle(event api.IEvent) bool {
@@ -78,17 +62,23 @@ func (d *draggableSquare) EventHandle(event api.IEvent) bool {
 		// is SplashScene verses rectangle node's parent which is GameLayer.
 		// However, to be explicit I pass "g.square"
 		d.drag.SetMotionStateUsing(mx, my, event.GetState(), d.square)
-		// This gets the local-space coords of the rectangle node.
-		// Note: OpenGL's +Y axis is upward
-		nodes.MapDeviceToNode(mx, my, d.square, d.localPosition)
-		// fmt.Println("localPosition: ", d.localPosition)
 
-		if d.drag.IsDragging() && d.PointInside(d.localPosition) {
+		gsq := d.square.(*shapes.MonoSquareNode)
+
+		inside := d.dragDetect.PointInside()
+		if inside {
+			gsq.SetOutlineColor(color.NewPaletteInt64(color.White))
+		} else {
+			gsq.SetOutlineColor(color.NewPaletteInt64(color.Black))
+		}
+
+		d.dragDetect.Handle(d.square, event)
+
+		if d.drag.IsDragging() && inside {
 			pos := d.square.Position()
 			x := pos.X() + d.drag.Delta().X()
 			y := pos.Y() + d.drag.Delta().Y()
 			d.square.SetPosition(x, y)
-			d.outSquare.SetPosition(x, y)
 		}
 
 	} else if event.GetType() == api.IOTypeMouseButtonDown || event.GetType() == api.IOTypeMouseButtonUp {

@@ -86,7 +86,7 @@ var currentAtlas api.IAtlasX
 func Visit(node api.INode, transStack api.ITransformStack, interpolation float64) {
 	// fmt.Println("Node: visiting ", node)
 	if !node.IsVisible() {
-		fmt.Printf("Node.Visit: Visible: %v\n", node.IsVisible())
+		// fmt.Printf("Node.Visit %v: Visible: %v\n", node, node.IsVisible())
 		return
 	}
 

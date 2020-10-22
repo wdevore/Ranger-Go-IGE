@@ -165,7 +165,7 @@ func GenerateUnitCircleVectorShape(segments int, forFilling bool) (vertices []fl
 		mode = gl.LINE_LOOP
 	}
 
-	for i := 0.0; i < 2.0*math.Pi; i += step {
+	for i := 0.0; i < 2.0*math.Pi+step; i += step {
 		x := math.Cos(i) * radius
 		y := math.Sin(i) * radius
 		vertices = append(vertices, float32(x), float32(y), 0.0)

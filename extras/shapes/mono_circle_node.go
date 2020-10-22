@@ -98,6 +98,11 @@ func (b *MonoCircleNode) build(drawStyle, segments int, world api.IWorld) error 
 	return nil
 }
 
+// // SetVisible changes the visibility of the node
+// func (b *MonoCircleNode) SetVisible(visible bool) {
+// 	n.visible = visible
+// }
+
 // SetFilledColor sets the fill color
 func (b *MonoCircleNode) SetFilledColor(color api.IPalette) {
 	b.filledColor = color.Array()
