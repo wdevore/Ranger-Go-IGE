@@ -38,22 +38,6 @@ func (c *draggable) build(centered bool) error {
 func (c *draggable) populate(centered bool) {
 	vertices, _, _ := generators.GenerateUnitRectangleVectorShape(centered, true)
 
-	if centered {
-		vertices = []float32{
-			-0.5, -0.5, 0.0,
-			0.5, -0.5, 0.0,
-			0.5, 0.5, 0.0,
-			-0.5, 0.5, 0.0,
-		}
-	} else {
-		vertices = []float32{
-			0.0, 0.0, 0.0,
-			1.0, 0.0, 0.0,
-			1.0, 1.0, 0.0,
-			0.0, 1.0, 0.0,
-		}
-	}
-
 	// Populate polygon
 	c.polygon.AddVertex(vertices[0], vertices[1])
 	c.polygon.AddVertex(vertices[3], vertices[4])

@@ -7,11 +7,18 @@
       "Height": 900,
       "Width": 1600
     },
+    "BackgroundColor": {
+      "R": 0.25,
+      "G": 0.25,
+      "B": 0.25,
+      "A": 1.0
+    },
+    "ClearStyle": "SingleColor",
     "FullScreen": false,
     "Orientation": "Landscape",
     "Position": {
-      "X": 200,
-      "Y": 200
+      "X": 100,
+      "Y": 150
     },
     "Title": "Dragging"
   }
