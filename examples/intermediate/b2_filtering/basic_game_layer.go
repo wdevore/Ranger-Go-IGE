@@ -9,7 +9,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes/filters"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type gameLayer struct {
@@ -45,32 +45,24 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	var err error
 
 	// ---------------------------------------------------------
-	shline, err := extras.NewStaticHLineNode("HLine", world, g)
+	// Instead of using two node: vline and hline, I'm using one "+ node.
+	xyAxis, err := shapes.NewMonoPlusNode("XYAxis", world, world.Underlay())
 	if err != nil {
 		return err
 	}
-	shline.SetScale(float32(dvr.Width))
-	ghl := shline.(*extras.StaticHLineNode)
+	xyAxis.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+	ghl := xyAxis.(*shapes.MonoPlusNode)
 	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	// ---------------------------------------------------------
-	svline, err := extras.NewStaticVLineNode("VLine", world, g)
-	if err != nil {
-		return err
-	}
-	svline.SetScale(float32(dvr.Width))
-	gvl := svline.(*extras.StaticVLineNode)
-	gvl.SetColor(color.NewPaletteInt64(color.LightGray))
-
-	// ---------------------------------------------------------
-	g.orangeSqr, err = extras.NewStaticSquareNode("OrangeSqr", true, true, world, g)
+	g.orangeSqr, err = shapes.NewMonoSquareNode("OrangeSquare", api.FILLED, true, world, g)
 	if err != nil {
 		return err
 	}
 	g.orangeSqr.SetScale(100.0)
 	g.orangeSqr.SetPosition(100.0, 150.0)
-	gol2 := g.orangeSqr.(*extras.StaticSquareNode)
-	gol2.SetColor(color.NewPaletteInt64(color.Orange))
+	gsq := g.orangeSqr.(*shapes.MonoSquareNode)
+	gsq.SetFilledColor(color.NewPaletteInt64(color.Orange))
 
 	// ---------------------------------------------------------
 	// Add Filter to remove parent's (aka Square) Scale
@@ -82,26 +74,27 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	filter := filters.NewTransformFilter("TransformFilter", world, g.orangeSqr)
 
 	// ---------------------------------------------------------
-	g.greenSqr, err = extras.NewStaticSquareNode("GreenSqr", true, true, world, filter)
+	g.greenSqr, err = shapes.NewMonoSquareNode("GreenSquare", api.FILLED, true, world, filter)
 	if err != nil {
 		return err
 	}
 	g.greenSqr.SetScale(10.0)
 	g.greenSqr.SetPosition(75.0, 0.0)
-	gor := g.greenSqr.(*extras.StaticSquareNode)
-	gor.SetColor(color.NewPaletteInt64(color.Green))
+	gsq = g.greenSqr.(*shapes.MonoSquareNode)
+	gsq.SetFilledColor(color.NewPaletteInt64(color.Green))
+
 	g.dir = 3.0
 
 	// ---------------------------------------------------------
-	g.dynoTxt, err = extras.NewDynamicTextNode("Text", 500, world, g)
+	g.dynoTxt, err = shapes.NewDynamicPixelTextNode("MosPos", world, g)
 	if err != nil {
 		return err
 	}
 	g.dynoTxt.SetScale(2.0)
 	g.dynoTxt.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.dynoTxt.(*extras.DynamicPixelTextNode)
+	gd := g.dynoTxt.(*shapes.DynamicPixelPixelTextNode)
 	gd.SetText("(0,0)")
-	gd.SetColor(color.NewPaletteInt64(color.White).Array())
+	gd.SetColor(color.NewPaletteInt64(color.GoldYellow).Array())
 	gd.SetPixelSize(1.0)
 
 	g.viewPoint = geometry.NewPoint()
@@ -125,7 +118,7 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	g.greenSqr.SetPosition(posX, 0.0)
 
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.dynoTxt.(*extras.DynamicPixelTextNode)
+	gd := g.dynoTxt.(*shapes.DynamicPixelPixelTextNode)
 	gd.SetText(text)
 }
 
