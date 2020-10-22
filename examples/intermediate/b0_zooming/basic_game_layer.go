@@ -8,6 +8,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type gameLayer struct {
@@ -46,6 +47,16 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	var err error
 
+	// ---------------------------------------------------------
+	// Instead of using two node: vline and hline, I'm using one "+ node.
+	xyAxis, err := shapes.NewMonoPlusNode("XYAxis", world, g)
+	if err != nil {
+		return err
+	}
+	xyAxis.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+	ghl := xyAxis.(*shapes.MonoPlusNode)
+	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
+
 	g.zoom, err = extras.NewZoomNode("ZoomNode", world, g)
 
 	// Square ----------------------------------------------------
@@ -53,29 +64,30 @@ func (g *gameLayer) Build(world api.IWorld) error {
 	g.dragSquare.Build(world, g.zoom)
 
 	// ---------------------------------------------------------
-	tri, err := extras.NewStaticTriangleNode("FilledTri", true, true, world, g.zoom)
+	tri, err := shapes.NewMonoTriangleNode("Tri", api.FILLED, world, g.zoom)
 	if err != nil {
 		return err
 	}
-	tri.SetScale(100)
+	tri.SetScale(100.0)
 	tri.SetPosition(150.0, 0.0)
-	gtr := tri.(*extras.StaticTriangleNode)
-	gtr.SetColor(color.NewPaletteInt64WithAlpha(color.DeepPink, 0.5))
+	gsq := tri.(*shapes.MonoTriangleNode)
+	gsq.SetFilledColor(color.NewPaletteInt64(color.DeepPink))
+	gsq.SetFilledAlpha(0.5)
 
 	// ---------------------------------------------------------
-	g.viewCoords, err = extras.NewDynamicTextNode("ViewCoords", 500, world, g)
+	g.viewCoords, err = shapes.NewDynamicPixelTextNode("ViewCoords", world, g)
 	if err != nil {
 		return err
 	}
 	g.viewCoords.SetScale(2.0)
 	g.viewCoords.SetPosition(-float32(dvr.Width/2)+20.0, float32(dvr.Height/2-30.0))
-	gd := g.viewCoords.(*extras.DynamicPixelTextNode)
+	gd := g.viewCoords.(*shapes.DynamicPixelPixelTextNode)
 	gd.SetText("(0,0)")
 	gd.SetColor(color.NewPaletteInt64(color.GreenYellow).Array())
 	gd.SetPixelSize(1.0)
 
 	// ---------------------------------------------------------
-	g.plus, err = extras.NewStaticPlusNode("Plus", world, g)
+	g.plus, err = shapes.NewMonoPlusNode("Plus", world, g)
 	if err != nil {
 		return err
 	}
@@ -89,7 +101,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 // Update updates the time properties of a node.
 func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	text := fmt.Sprintf("(%d, %d)", int(g.viewPoint.X()), int(g.viewPoint.Y()))
-	gd := g.viewCoords.(*extras.DynamicPixelTextNode)
+	gd := g.viewCoords.(*shapes.DynamicPixelPixelTextNode)
 	gd.SetText(text)
 }
 

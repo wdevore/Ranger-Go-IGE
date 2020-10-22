@@ -24,18 +24,10 @@ func newBasicSplashScene(name string, world api.IWorld) (api.INode, error) {
 func (s *sceneSplash) build(world api.IWorld) error {
 	s.Node.Build(world)
 
-	dvr := world.Properties().Window.DeviceRes
-
-	bg := newBackgroundNode("Background", world, s)
-	bg.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
-
-	// newBasicGameLayer("Game Layer", world, s)
 	_, err := newBasicGameLayer("Game Layer", world, s)
 	if err != nil {
 		return err
 	}
-
-	newOverlayLayer("Overlay Layer", world, s)
 
 	return nil
 }
