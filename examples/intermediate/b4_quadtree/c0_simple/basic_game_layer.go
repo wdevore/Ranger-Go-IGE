@@ -55,7 +55,7 @@ func (g *gameLayer) buildQuadtree(world api.IWorld) error {
 
 	g.tree = quadtree.NewQuadTree()
 	g.tree.SetBoundaryByMinMax(-scale, -scale, scale, scale)
-	g.tree.SetMaxDepth(6)
+	g.tree.SetMaxDepth(7)
 
 	g.quadTreeNode, err = NewQTreeNode("Quadtree", world, g)
 	if err != nil {

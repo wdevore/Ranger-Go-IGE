@@ -63,7 +63,7 @@ func (g *gameLayer) build(world api.IWorld) error {
 	g.sqr, err = newCustomRectangleNode("CustomSqr", api.OUTLINED, true, world, g)
 
 	// ---------------------------------------------------------
-	g.mousePosTxt, err = shapes.NewDynamicPixelTextNode("MosPos", world, g)
+	g.mousePosTxt, err = shapes.NewDynamicPixelTextNode("MosPos", world, world.Overlay())
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func (g *gameLayer) build(world api.IWorld) error {
 	gd.SetColor(color.NewPaletteInt64(color.GoldYellow).Array())
 	gd.SetPixelSize(2.0)
 
-	g.localRecPosTxt, err = shapes.NewDynamicPixelTextNode("LocPos", world, g)
+	g.localRecPosTxt, err = shapes.NewDynamicPixelTextNode("LocPos", world, world.Overlay())
 	if err != nil {
 		return err
 	}
