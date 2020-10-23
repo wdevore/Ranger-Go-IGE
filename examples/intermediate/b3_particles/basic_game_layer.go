@@ -90,7 +90,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	// Square ----------------------------------------------------
 	g.dragSquare = newDraggableSquare()
-	g.dragSquare.Build(world, g)
+	g.dragSquare.Build(50.0, world, g)
 
 	g.particleSystem.SetPosition(g.dragSquare.Position().X(), g.dragSquare.Position().Y())
 

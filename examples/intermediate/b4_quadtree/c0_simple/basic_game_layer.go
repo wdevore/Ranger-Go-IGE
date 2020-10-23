@@ -4,8 +4,8 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
 	"github.com/wdevore/Ranger-Go-IGE/extras/quadtree"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type gameLayer struct {
@@ -13,7 +13,9 @@ type gameLayer struct {
 
 	dragSquare *draggableSquare
 
-	tree         api.IQuadTree
+	// Structual tree
+	tree api.IQuadTree
+
 	quadTreeNode api.INode
 }
 
@@ -35,7 +37,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	// Square ----------------------------------------------------
 	g.dragSquare = newDraggableSquare()
-	g.dragSquare.Build(world, g)
+	g.dragSquare.Build(10.0, world, g)
 
 	err := g.buildOriginAxies(world)
 	if err != nil {
@@ -55,7 +57,7 @@ func (g *gameLayer) buildQuadtree(world api.IWorld) error {
 	g.tree.SetBoundaryByMinMax(-scale, -scale, scale, scale)
 	g.tree.SetMaxDepth(6)
 
-	g.quadTreeNode, err = NewQTreeNode(0.0, 0.0, 1.0, 1.0, "Quadtree", false, world, g)
+	g.quadTreeNode, err = NewQTreeNode("Quadtree", world, g)
 	if err != nil {
 		return err
 	}
@@ -73,48 +75,16 @@ func (g *gameLayer) buildOriginAxies(world api.IWorld) error {
 	dvr := world.Properties().Window.DeviceRes
 
 	// ---------------------------------------------------------
-	shline, err := extras.NewStaticHLineNode("HLine", world, g)
+	// Instead of using two node: vline and hline, I'm using one "+ node.
+	xyAxis, err := shapes.NewMonoPlusNode("XYAxis", world, world.Underlay())
 	if err != nil {
 		return err
 	}
-	shline.SetScale(float32(dvr.Width))
-	ghl := shline.(*extras.StaticHLineNode)
-	ghl.SetColor(color.NewPaletteInt64(color.DarkBlue))
-	ghl.SetAlpha(0.25)
-
-	// ---------------------------------------------------------
-	svline, err := extras.NewStaticVLineNode("VLine", world, g)
-	if err != nil {
-		return err
-	}
-	svline.SetScale(float32(dvr.Width))
-	gvl := svline.(*extras.StaticVLineNode)
-	gvl.SetColor(color.NewPaletteInt64(color.DarkBlue))
-	gvl.SetAlpha(0.25)
+	xyAxis.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+	ghl := xyAxis.(*shapes.MonoPlusNode)
+	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	return nil
-}
-
-func (g *gameLayer) buildTriangle(world api.IWorld) {
-	// ---------------------------------------------------------
-	// tri, err := extras.NewStaticTriangleNode("FilledTri", true, true, world, g)
-	// if err != nil {
-	// 	return err
-	// }
-	// tri.SetScale(100)
-	// tri.SetPosition(150.0, 0.0)
-	// gtr := tri.(*extras.StaticTriangleNode)
-	// gtr.SetColor(color.NewPaletteInt64(color.DeepPink))
-
-	// ---------------------------------------------------------
-	// otri, err := extras.NewStaticTriangleNode("OutlineTri", true, false, world, g)
-	// if err != nil {
-	// 	return err
-	// }
-	// otri.SetScale(100)
-	// otri.SetPosition(150.0, 0.0)
-	// gotr := otri.(*extras.StaticTriangleNode)
-	// gotr.SetColor(color.NewPaletteInt64(color.White))
 }
 
 // -----------------------------------------------------
@@ -140,6 +110,7 @@ func (g *gameLayer) Handle(event api.IEvent) bool {
 	handled := g.dragSquare.EventHandle(event)
 
 	if handled {
+		// fmt.Println(g.dragSquare.BaseNode().Position())
 		g.tree.Remove(g.dragSquare.BaseNode())
 		// TODO Clean() should work better but it doesn't. Research it!
 		g.tree.Clear()

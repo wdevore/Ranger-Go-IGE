@@ -38,6 +38,7 @@ func (d *draggableSquare) Build(scale float32, world api.IWorld, parent api.INod
 	}
 	d.square.SetScale(scale)
 	d.square.SetPosition(90.0, 80.0)
+	d.updateBounds()
 	gsq := d.square.(*shapes.MonoSquareNode)
 	gsq.SetFilledColor(color.NewPaletteInt64(color.LightPurple))
 	gsq.SetOutlineColor(color.NewPaletteInt64(color.Black))
@@ -50,6 +51,16 @@ func (d *draggableSquare) Build(scale float32, world api.IWorld, parent api.INod
 
 func (d *draggableSquare) Position() api.IPoint {
 	return d.square.Position()
+}
+
+func (d *draggableSquare) updateBounds() {
+	scale := d.square.Scale()
+	d.square.SetBoundByMinMax(
+		d.square.Position().X()-scale/2.0,
+		d.square.Position().Y()-scale/2.0,
+		d.square.Position().X()+scale/2.0,
+		d.square.Position().Y()+scale/2.0,
+	)
 }
 
 func (d *draggableSquare) BaseNode() api.INode {
@@ -90,6 +101,7 @@ func (d *draggableSquare) EventHandle(event api.IEvent) bool {
 			x := pos.X() + d.drag.Delta().X()
 			y := pos.Y() + d.drag.Delta().Y()
 			d.square.SetPosition(x, y)
+			d.updateBounds()
 			handled = true
 		}
 	}

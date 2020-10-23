@@ -17,8 +17,8 @@
     "FullScreen": false,
     "Orientation": "Landscape",
     "Position": {
-      "X": 200,
-      "Y": 200
+      "X": 100,
+      "Y": 150
     },
     "Title": "Particles"
   }

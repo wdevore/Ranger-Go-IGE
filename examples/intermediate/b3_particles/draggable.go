@@ -60,23 +60,12 @@ func (c *draggable) PointInside() bool {
 // -----------------------------------------------------
 
 // Handle events from IO
-func (c *draggable) Handle(node api.INode, event api.IEvent) bool {
-	// fmt.Println(event)
-	if event.GetType() == api.IOTypeMouseMotion {
-		c.mx, c.my = event.GetMousePosition()
+func (c *draggable) Handle(mx, my int32, node api.INode, event api.IEvent) bool {
+	// This gets the local-space coords of the rectangle node.
+	// Note: OpenGL's +Y axis is upward
+	nodes.MapDeviceToNode(mx, my, node, c.localPosition)
 
-		// This gets the local-space coords of the rectangle node.
-		// Note: OpenGL's +Y axis is upward
-		nodes.MapDeviceToNode(c.mx, c.my, node, c.localPosition)
+	c.pointInside = c.polygon.PointInside(c.localPosition)
 
-		c.pointInside = c.polygon.PointInside(c.localPosition)
-
-		// if c.pointInside {
-		// 	fmt.Println("Inside: ", c.localPosition)
-		// } else {
-		// 	fmt.Println(c.localPosition)
-		// }
-	}
-
-	return false
+	return c.pointInside
 }

@@ -61,7 +61,7 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	// Square ----------------------------------------------------
 	g.dragSquare = newDraggableSquare()
-	g.dragSquare.Build(world, g.zoom)
+	g.dragSquare.Build(100.0, world, g.zoom)
 
 	// ---------------------------------------------------------
 	tri, err := shapes.NewMonoTriangleNode("Tri", api.FILLED, world, g.zoom)
