@@ -4,7 +4,7 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type fencePhysicsComponent struct {
@@ -56,7 +56,7 @@ func (p *fencePhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position a
 	// Bottom fixture
 	px = p.bottomLineNode.Position().X()
 	py = p.bottomLineNode.Position().Y()
-	tln := p.bottomLineNode.(*extras.StaticHLineNode)
+	tln := p.bottomLineNode.(*shapes.MonoHLineNode)
 	halfLength := float64(tln.HalfLength())
 
 	b2Shape := box2d.MakeB2EdgeShape()
@@ -107,41 +107,41 @@ func (p *fencePhysicsComponent) buildNodes(world api.IWorld, parent api.INode) e
 
 	scale := float32(75.0)
 
-	p.bottomLineNode, err = extras.NewStaticHLineNode("Bottom", world, parent)
+	p.bottomLineNode, err = shapes.NewMonoHLineNode("Bottom", world, parent)
 	if err != nil {
 		return err
 	}
 	p.bottomLineNode.SetScale(scale)
 	p.bottomLineNode.SetPosition(0.0, -scale/2)
-	glh := p.bottomLineNode.(*extras.StaticHLineNode)
-	glh.SetColor(color.NewPaletteInt64(color.Yellow))
+	ghl := p.bottomLineNode.(*shapes.MonoHLineNode)
+	ghl.SetColor(color.NewPaletteInt64(color.Yellow))
 
-	p.rightLineNode, err = extras.NewStaticVLineNode("Right", world, parent)
+	p.rightLineNode, err = shapes.NewMonoVLineNode("Right", world, parent)
 	if err != nil {
 		return err
 	}
 	p.rightLineNode.SetScale(scale)
 	p.rightLineNode.SetPosition(scale/2, 0.0)
-	glv := p.rightLineNode.(*extras.StaticVLineNode)
-	glv.SetColor(color.NewPaletteInt64(color.Yellow))
+	ghv := p.rightLineNode.(*shapes.MonoVLineNode)
+	ghv.SetColor(color.NewPaletteInt64(color.Yellow))
 
-	p.topLineNode, err = extras.NewStaticHLineNode("Top", world, parent)
+	p.topLineNode, err = shapes.NewMonoHLineNode("Top", world, parent)
 	if err != nil {
 		return err
 	}
 	p.topLineNode.SetScale(scale)
 	p.topLineNode.SetPosition(0.0, scale/2)
-	glh = p.topLineNode.(*extras.StaticHLineNode)
-	glh.SetColor(color.NewPaletteInt64(color.Yellow))
+	ghl = p.topLineNode.(*shapes.MonoHLineNode)
+	ghl.SetColor(color.NewPaletteInt64(color.Yellow))
 
-	p.leftLineNode, err = extras.NewStaticVLineNode("Left", world, parent)
+	p.leftLineNode, err = shapes.NewMonoVLineNode("Left", world, parent)
 	if err != nil {
 		return err
 	}
 	p.leftLineNode.SetScale(scale)
 	p.leftLineNode.SetPosition(-scale/2, 0.0)
-	glv = p.leftLineNode.(*extras.StaticVLineNode)
-	glv.SetColor(color.NewPaletteInt64(color.Yellow))
+	ghv = p.leftLineNode.(*shapes.MonoVLineNode)
+	ghv.SetColor(color.NewPaletteInt64(color.Yellow))
 
 	return nil
 }

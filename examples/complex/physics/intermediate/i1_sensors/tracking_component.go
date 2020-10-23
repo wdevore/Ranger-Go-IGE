@@ -10,6 +10,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 // TrackingComponent is a box
@@ -58,22 +59,20 @@ func (t *TrackingComponent) Configure(scale float64, categoryBits, maskBits uint
 	t.categoryBits = categoryBits
 	t.maskBits = maskBits
 
+	t.beginContactColor = color.NewPaletteInt64(color.White)
+	t.endContactColor = color.NewPaletteInt64(color.Pink)
+
 	var err error
 
-	t.visual, err = extras.NewStaticTriangleNode("Triangle", true, true, t.parent.World(), t.parent)
+	t.visual, err = shapes.NewMonoTriangleNode("Triangle", api.OUTLINED, t.parent.World(), t.parent)
 	if err != nil {
 		return err
 	}
 	t.visual.SetID(1001)
-
 	t.visual.SetScale(float32(t.scale))
 	t.visual.SetPosition(0.0, 0.0)
-	gol2 := t.visual.(*extras.StaticTriangleNode)
-
-	t.beginContactColor = color.NewPaletteInt64(color.White)
-	t.endContactColor = color.NewPaletteInt64(color.Pink)
-
-	gol2.SetColor(t.endContactColor)
+	gt := t.visual.(*shapes.MonoTriangleNode)
+	gt.SetOutlineColor(t.endContactColor)
 
 	buildComp(t, b2World)
 
@@ -337,14 +336,14 @@ func (t *TrackingComponent) Update() {
 
 // HandleBeginContact processes BeginContact events
 func (t *TrackingComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*extras.StaticTriangleNode)
+	n, ok := nodeA.(*shapes.MonoTriangleNode)
 
 	if !ok {
-		n, ok = nodeB.(*extras.StaticTriangleNode)
+		n, ok = nodeB.(*shapes.MonoTriangleNode)
 	}
 
 	if ok {
-		n.SetColor(t.beginContactColor)
+		n.SetOutlineColor(t.beginContactColor)
 	}
 
 	return false
@@ -352,14 +351,14 @@ func (t *TrackingComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
 
 // HandleEndContact processes EndContact events
 func (t *TrackingComponent) HandleEndContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*extras.StaticTriangleNode)
+	n, ok := nodeA.(*shapes.MonoTriangleNode)
 
 	if !ok {
-		n, ok = nodeB.(*extras.StaticTriangleNode)
+		n, ok = nodeB.(*shapes.MonoTriangleNode)
 	}
 
 	if ok {
-		n.SetColor(t.endContactColor)
+		n.SetOutlineColor(t.endContactColor)
 	}
 
 	return false
@@ -374,14 +373,14 @@ func buildComp(t *TrackingComponent, b2World *box2d.B2World) {
 	vertices := []box2d.B2Vec2{}
 
 	// Sync the visual's vertices to this physic object
-	tr := t.visual.(*extras.StaticTriangleNode)
+	tr := t.visual.(*shapes.MonoTriangleNode)
 	// Box2D expects polygon edges to be defined at full length, not
 	// half-side
 	scale := tr.SideLength()
 	verts := tr.Vertices()
 
-	for i := 0; i < len(verts); i += api.XYZComponentCount {
-		vertices = append(vertices, box2d.B2Vec2{X: float64(verts[i] * scale), Y: float64(verts[i+1] * scale)})
+	for i := 0; i < len(*verts); i += api.XYZComponentCount {
+		vertices = append(vertices, box2d.B2Vec2{X: float64((*verts)[i] * scale), Y: float64((*verts)[i+1] * scale)})
 	}
 
 	// An instance of a body to contain Fixture

@@ -4,7 +4,7 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type fencePhysicsComponent struct {
@@ -14,6 +14,9 @@ type fencePhysicsComponent struct {
 	rightLineNode  api.INode
 	topLineNode    api.INode
 	leftLineNode   api.INode
+
+	categoryBits uint16 // I am a...
+	maskBits     uint16 // I can collide with a...
 }
 
 func newFencePhysicsComponent() *fencePhysicsComponent {
@@ -46,12 +49,14 @@ func (p *fencePhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position a
 	p.b2Body = phyWorld.CreateBody(&bDef)
 
 	fd := box2d.MakeB2FixtureDef()
+	fd.Filter.CategoryBits = p.categoryBits
+	fd.Filter.MaskBits = p.maskBits
 
 	// ------------------------------------------------------------
 	// Bottom fixture
 	px = p.bottomLineNode.Position().X()
 	py = p.bottomLineNode.Position().Y()
-	tln := p.bottomLineNode.(*extras.StaticHLineNode)
+	tln := p.bottomLineNode.(*shapes.MonoHLineNode)
 	halfLength := float64(tln.HalfLength())
 
 	b2Shape := box2d.MakeB2EdgeShape()
@@ -100,41 +105,48 @@ func (p *fencePhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position a
 func (p *fencePhysicsComponent) buildNodes(world api.IWorld, parent api.INode) error {
 	var err error
 
-	p.bottomLineNode, err = extras.NewStaticHLineNode("Bottom", world, parent)
-	if err != nil {
-		return err
-	}
-	p.bottomLineNode.SetScale(25.0)
-	p.bottomLineNode.SetPosition(0.0, -12.5)
-	glh := p.bottomLineNode.(*extras.StaticHLineNode)
-	glh.SetColor(color.NewPaletteInt64(color.Yellow))
+	scale := float32(75.0)
 
-	p.rightLineNode, err = extras.NewStaticVLineNode("Right", world, parent)
+	p.bottomLineNode, err = shapes.NewMonoHLineNode("Bottom", world, parent)
 	if err != nil {
 		return err
 	}
-	p.rightLineNode.SetScale(25.0)
-	p.rightLineNode.SetPosition(12.5, 0.0)
-	glv := p.rightLineNode.(*extras.StaticVLineNode)
-	glv.SetColor(color.NewPaletteInt64(color.Yellow))
+	p.bottomLineNode.SetScale(scale)
+	p.bottomLineNode.SetPosition(0.0, -scale/2)
+	ghl := p.bottomLineNode.(*shapes.MonoHLineNode)
+	ghl.SetColor(color.NewPaletteInt64(color.Yellow))
 
-	p.topLineNode, err = extras.NewStaticHLineNode("Top", world, parent)
+	p.rightLineNode, err = shapes.NewMonoVLineNode("Right", world, parent)
 	if err != nil {
 		return err
 	}
-	p.topLineNode.SetScale(25.0)
-	p.topLineNode.SetPosition(0.0, 12.5)
-	glh = p.topLineNode.(*extras.StaticHLineNode)
-	glh.SetColor(color.NewPaletteInt64(color.Yellow))
+	p.rightLineNode.SetScale(scale)
+	p.rightLineNode.SetPosition(scale/2, 0.0)
+	ghv := p.rightLineNode.(*shapes.MonoVLineNode)
+	ghv.SetColor(color.NewPaletteInt64(color.Yellow))
 
-	p.leftLineNode, err = extras.NewStaticVLineNode("Left", world, parent)
+	p.topLineNode, err = shapes.NewMonoHLineNode("Top", world, parent)
 	if err != nil {
 		return err
 	}
-	p.leftLineNode.SetScale(25.0)
-	p.leftLineNode.SetPosition(-12.5, 0.0)
-	glv = p.leftLineNode.(*extras.StaticVLineNode)
-	glv.SetColor(color.NewPaletteInt64(color.Yellow))
+	p.topLineNode.SetScale(scale)
+	p.topLineNode.SetPosition(0.0, scale/2)
+	ghl = p.topLineNode.(*shapes.MonoHLineNode)
+	ghl.SetColor(color.NewPaletteInt64(color.Yellow))
+
+	p.leftLineNode, err = shapes.NewMonoVLineNode("Left", world, parent)
+	if err != nil {
+		return err
+	}
+	p.leftLineNode.SetScale(scale)
+	p.leftLineNode.SetPosition(-scale/2, 0.0)
+	ghv = p.leftLineNode.(*shapes.MonoVLineNode)
+	ghv.SetColor(color.NewPaletteInt64(color.Yellow))
 
 	return nil
+}
+
+func (p *fencePhysicsComponent) ConfigureFilter(categoryBits, maskBits uint16) {
+	p.categoryBits = categoryBits
+	p.maskBits = maskBits
 }

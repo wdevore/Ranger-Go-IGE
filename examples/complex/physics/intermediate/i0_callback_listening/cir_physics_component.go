@@ -5,6 +5,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type cirPhysicsComponent struct {
@@ -45,7 +46,7 @@ func (p *cirPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 	// Every Fixture has a shape
 	circleShape := box2d.MakeB2CircleShape()
 	circleShape.M_p.Set(0.0, 0.0) // Relative to body position
-	tcc := p.phyNode.(*extras.StaticCircleNode)
+	tcc := p.phyNode.(*shapes.MonoCircleNode)
 	radius := tcc.Radius()
 	circleShape.M_radius = float64(radius)
 

@@ -6,7 +6,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type gameLayer struct {
@@ -41,17 +41,29 @@ type gameLayer struct {
 
 func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
 	o := new(gameLayer)
+
 	o.Initialize(name)
 	o.SetParent(parent)
 	parent.AddChild(o)
-	if err := o.Build(world); err != nil {
+
+	if err := o.build(world); err != nil {
 		return nil, err
 	}
 	return o, nil
 }
 
-func (g *gameLayer) Build(world api.IWorld) error {
+func (g *gameLayer) build(world api.IWorld) error {
 	g.Node.Build(world)
+
+	// Instead of using two node: vline and hline, I'm using one "+ node.
+	xyAxis, err := shapes.NewMonoPlusNode("XYAxis", world, world.Underlay())
+	if err != nil {
+		return err
+	}
+	dvr := world.Properties().Window.DeviceRes
+	xyAxis.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+	ghl := xyAxis.(*shapes.MonoPlusNode)
+	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
 
 	setupPhysicsWorld(g)
 
@@ -109,14 +121,15 @@ func (g *gameLayer) addSquare() error {
 	var err error
 
 	fallingSqrPos := geometry.NewPointUsing(0.0, 5.0)
-	g.sqrNode, err = extras.NewStaticSquareNode("Square", true, true, g.World(), g)
+
+	g.sqrNode, err = shapes.NewMonoSquareNode("Square", api.FILLED, true, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.sqrNode.SetScale(3.0)
 	g.sqrNode.SetPosition(fallingSqrPos.X(), fallingSqrPos.Y())
-	gol2 := g.sqrNode.(*extras.StaticSquareNode)
-	gol2.SetColor(color.NewPaletteInt64(color.Aqua))
+	gsq := g.sqrNode.(*shapes.MonoSquareNode)
+	gsq.SetFilledColor(color.NewPaletteInt64(color.Aqua))
 
 	g.sqrPhyComp = newBoxPhysicsComponent()
 	g.sqrPhyComp.ConfigureFilter(entityRectangle, entityCircle|entityBoundary)
@@ -129,14 +142,15 @@ func (g *gameLayer) addCircle() error {
 	var err error
 
 	fallingCirPos := geometry.NewPointUsing(0.0, 15.0)
-	g.cirNode, err = extras.NewStaticCircleNode("Circle", true, g.World(), g)
+
+	g.cirNode, err = shapes.NewMonoCircleNode("Circle", api.FILLED, 12, g.World(), g)
 	if err != nil {
 		return err
 	}
 	g.cirNode.SetScale(5.0)
 	g.cirNode.SetPosition(fallingCirPos.X(), fallingCirPos.Y())
-	gol2 := g.cirNode.(*extras.StaticCircleNode)
-	gol2.SetColor(color.NewPaletteInt64(color.LightOrange))
+	gc := g.cirNode.(*shapes.MonoCircleNode)
+	gc.SetFilledColor(color.NewPaletteInt64(color.LightOrange))
 
 	g.cirPhyComp = newCirPhysicsComponent()
 	g.cirPhyComp.ConfigureFilter(entityCircle, entityRectangle|entityTriangle|entityBoundary)
@@ -148,12 +162,12 @@ func (g *gameLayer) addCircle() error {
 func (g *gameLayer) addRay() error {
 	var err error
 
-	g.rayNode, err = newDynamicLineNode("DynoLin", g.World(), g)
+	g.rayNode, err = shapes.NewDynamicMonoLineNode("DynoLine", g.World(), g)
 	if err != nil {
 		return err
 	}
-	glc := g.rayNode.(*DynamicLineNode)
-	glc.SetColor(color.NewPaletteInt64(color.White))
+	gl := g.rayNode.(*shapes.DynamicMonoLineNode)
+	gl.SetColor(color.NewPaletteInt64(color.White))
 
 	return nil
 }
@@ -182,12 +196,17 @@ func (g *gameLayer) Update(msPerUpdate, secPerUpdate float64) {
 	g.trackerComp.Update()
 
 	// Update Ray
-	ray := g.rayNode.(*DynamicLineNode)
+	ray := g.rayNode.(*shapes.DynamicMonoLineNode)
 	bodyPos := g.trackerComp.GetPosition()
-	ray.SetPoints(float32(bodyPos.X), float32(bodyPos.Y), g.gamePoint.X(), g.gamePoint.Y())
+	ray.SetVertex1(float32(bodyPos.X), float32(bodyPos.Y))
+	ray.SetVertex2(g.gamePoint.X(), g.gamePoint.Y())
+
 	// -----------------------------------------------------------
 	g.sqrPhyComp.Update(msPerUpdate, secPerUpdate)
 	g.cirPhyComp.Update(msPerUpdate, secPerUpdate)
+
+	dynoAtlas := g.World().GetAtlas(api.DynamicMonoAtlasName)
+	dynoAtlas.(api.IDynamicAtlasX).Update()
 }
 
 // -----------------------------------------------------

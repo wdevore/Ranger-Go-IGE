@@ -29,8 +29,7 @@ func (s *sceneSplash) build(world api.IWorld) error {
 		return err
 	}
 
-	game.SetScale(15.0)
-	newOverlayLayer("Overlay Layer", world, game, s)
+	game.SetScale(10.0)
 
 	return nil
 }

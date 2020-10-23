@@ -18,6 +18,8 @@ type MonoArcNode struct {
 
 	filledColor   []float32
 	outlinedColor []float32
+
+	vertices []float32
 }
 
 // NewMonoArcNode creates a basic static Arc.
@@ -54,6 +56,8 @@ func (b *MonoArcNode) build(drawStyle, segments int, startAngle, endAngle float6
 	b.SetAtlas(atl)
 
 	atlas := atl.(api.IStaticAtlasX)
+	var indices []uint32
+	var mode int
 
 	if drawStyle == api.FILLED {
 		name := api.FilledArcShapeName
@@ -61,8 +65,8 @@ func (b *MonoArcNode) build(drawStyle, segments int, startAngle, endAngle float6
 		b.filledShapeID = atlas.GetShapeByName(name)
 		if b.filledShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitArcVectorShape(startAngle, endAngle, segments, true)
-			b.filledShapeID = atlas.AddShape(name, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitArcVectorShape(startAngle, endAngle, segments, true)
+			b.filledShapeID = atlas.AddShape(name, b.vertices, indices, mode)
 		}
 	} else if drawStyle == api.OUTLINED {
 		name := api.OutlinedArcShapeName
@@ -70,8 +74,8 @@ func (b *MonoArcNode) build(drawStyle, segments int, startAngle, endAngle float6
 		b.outlinedShapeID = atlas.GetShapeByName(name)
 		if b.outlinedShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitArcVectorShape(startAngle, endAngle, segments, false)
-			b.outlinedShapeID = atlas.AddShape(name, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitArcVectorShape(startAngle, endAngle, segments, false)
+			b.outlinedShapeID = atlas.AddShape(name, b.vertices, indices, mode)
 		}
 	} else {
 		nameF := api.FilledArcShapeName
@@ -80,14 +84,14 @@ func (b *MonoArcNode) build(drawStyle, segments int, startAngle, endAngle float6
 		b.filledShapeID = atlas.GetShapeByName(nameF)
 		if b.filledShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitArcVectorShape(startAngle, endAngle, segments, true)
-			b.filledShapeID = atlas.AddShape(nameF, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitArcVectorShape(startAngle, endAngle, segments, true)
+			b.filledShapeID = atlas.AddShape(nameF, b.vertices, indices, mode)
 		}
 		b.outlinedShapeID = atlas.GetShapeByName(nameO)
 		if b.outlinedShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitArcVectorShape(startAngle, endAngle, segments, false)
-			b.outlinedShapeID = atlas.AddShape(nameO, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitArcVectorShape(startAngle, endAngle, segments, false)
+			b.outlinedShapeID = atlas.AddShape(nameO, b.vertices, indices, mode)
 		}
 	}
 
@@ -96,6 +100,11 @@ func (b *MonoArcNode) build(drawStyle, segments int, startAngle, endAngle float6
 	b.outlinedColor = color.NewPaletteInt64(color.White).Array()
 
 	return nil
+}
+
+// Vertices returns shape's vertices
+func (b *MonoArcNode) Vertices() *[]float32 {
+	return &b.vertices
 }
 
 // SetFilledColor sets the fill color

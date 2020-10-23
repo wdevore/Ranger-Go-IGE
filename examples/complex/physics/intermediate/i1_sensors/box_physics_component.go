@@ -4,7 +4,7 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type boxPhysicsComponent struct {
@@ -75,7 +75,7 @@ func (p *boxPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 	// Box2D assumes the same is defined in unit-space which
 	// means if the object is defined otherwise we need the object
 	// to return the correct value
-	tcc := p.phyNode.(*extras.StaticSquareNode)
+	tcc := p.phyNode.(*shapes.MonoSquareNode)
 	b2Shape.SetAsBoxFromCenterAndAngle(
 		float64(tcc.HalfSide()), float64(tcc.HalfSide()),
 		box2d.B2Vec2{X: 0.0, Y: 0.0}, 0.0)
@@ -101,14 +101,14 @@ func (p *boxPhysicsComponent) ConfigureFilter(categoryBits, maskBits uint16) {
 
 // HandleBeginContact processes BeginContact events
 func (p *boxPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*extras.StaticSquareNode)
+	n, ok := nodeA.(*shapes.MonoSquareNode)
 
 	if !ok {
-		n, ok = nodeB.(*extras.StaticSquareNode)
+		n, ok = nodeB.(*shapes.MonoSquareNode)
 	}
 
 	if ok {
-		n.SetColor(p.beginContactColor)
+		n.SetFilledColor(p.beginContactColor)
 	}
 
 	return false
@@ -116,14 +116,14 @@ func (p *boxPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
 
 // HandleEndContact processes EndContact events
 func (p *boxPhysicsComponent) HandleEndContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*extras.StaticSquareNode)
+	n, ok := nodeA.(*shapes.MonoSquareNode)
 
 	if !ok {
-		n, ok = nodeB.(*extras.StaticSquareNode)
+		n, ok = nodeB.(*shapes.MonoSquareNode)
 	}
 
 	if ok {
-		n.SetColor(p.endContactColor)
+		n.SetFilledColor(p.endContactColor)
 	}
 
 	return false

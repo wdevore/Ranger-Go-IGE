@@ -6,6 +6,7 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
 	"github.com/wdevore/Ranger-Go-IGE/extras"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 type arcPhysicsComponent struct {
@@ -46,7 +47,7 @@ func (p *arcPhysicsComponent) Build(phyWorld *box2d.B2World, node api.INode, pos
 
 	p.b2Body.SetAngularVelocity(45.0 * maths.DegreeToRadians)
 
-	tcc := p.phyNode.(*extras.StaticArcNode)
+	tcc := p.phyNode.(*shapes.MonoArcNode)
 	scale := p.phyNode.Scale()
 	verts := tcc.Vertices()
 
