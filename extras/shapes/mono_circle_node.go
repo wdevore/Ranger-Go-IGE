@@ -13,6 +13,8 @@ import (
 type MonoCircleNode struct {
 	nodes.Node
 
+	radius float64
+
 	filledShapeID   int
 	outlinedShapeID int
 
@@ -44,6 +46,8 @@ func NewMonoCircleNode(name string, drawStyle, segments int, world api.IWorld, p
 
 func (b *MonoCircleNode) build(drawStyle, segments int, world api.IWorld) error {
 	b.Node.Build(world)
+
+	b.radius = 0.5
 
 	atl := world.GetAtlas(api.MonoAtlasName)
 
@@ -98,10 +102,10 @@ func (b *MonoCircleNode) build(drawStyle, segments int, world api.IWorld) error 
 	return nil
 }
 
-// // SetVisible changes the visibility of the node
-// func (b *MonoCircleNode) SetVisible(visible bool) {
-// 	n.visible = visible
-// }
+// Radius gets scaled radius, typically used by box2d.
+func (b *MonoCircleNode) Radius() float32 {
+	return float32(b.radius) * b.Scale()
+}
 
 // SetFilledColor sets the fill color
 func (b *MonoCircleNode) SetFilledColor(color api.IPalette) {

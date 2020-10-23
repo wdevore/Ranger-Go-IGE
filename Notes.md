@@ -1,8 +1,8 @@
 # Ranger-Go-IGE
 
 ## Working task
-When switching between rendergraphics we need to consider both the shader and Vao. Some nodes only need switch one or the other or maybe both.
-Each RG should know what to "use" prior to rendering. It should also know if it is already in use and not re-use redundantly.
+*-- Working --* Add the concept of parent visibility and children visibility.
+If parent is invisible then the children are too.
 
 ## Notes
 The are two config files: one for the engine itself and the other for each game.

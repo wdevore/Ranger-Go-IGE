@@ -15,6 +15,8 @@ type MonoTriangleNode struct {
 
 	vertices []float32
 
+	halfSide float32
+
 	filledShapeID   int
 	outlinedShapeID int
 
@@ -46,6 +48,8 @@ func NewMonoTriangleNode(name string, drawStyle int, world api.IWorld, parent ap
 
 func (b *MonoTriangleNode) build(drawStyle int, world api.IWorld) error {
 	b.Node.Build(world)
+
+	b.halfSide = 0.5
 
 	atl := world.GetAtlas(api.MonoAtlasName)
 
@@ -105,6 +109,16 @@ func (b *MonoTriangleNode) build(drawStyle int, world api.IWorld) error {
 // Vertices returns local-space vertices
 func (b *MonoTriangleNode) Vertices() *[]float32 {
 	return &b.vertices
+}
+
+// SideLength returns the scale length
+func (b *MonoTriangleNode) SideLength() float32 {
+	return b.halfSide * b.Scale() * 2
+}
+
+// HalfSide returns the scaled half side length.
+func (b *MonoTriangleNode) HalfSide() float32 {
+	return b.halfSide * b.Scale()
 }
 
 // SetFilledColor sets the fill color

@@ -13,6 +13,8 @@ import (
 type MonoSquareNode struct {
 	nodes.Node
 
+	halfSide float32
+
 	filledShapeID   int
 	outlinedShapeID int
 
@@ -44,6 +46,8 @@ func NewMonoSquareNode(name string, drawStyle int, centered bool, world api.IWor
 
 func (b *MonoSquareNode) build(drawStyle int, centered bool, world api.IWorld) error {
 	b.Node.Build(world)
+
+	b.halfSide = 0.5
 
 	atl := world.GetAtlas(api.MonoAtlasName)
 
@@ -112,6 +116,11 @@ func (b *MonoSquareNode) build(drawStyle int, centered bool, world api.IWorld) e
 	b.outlinedColor = color.NewPaletteInt64(color.White).Array()
 
 	return nil
+}
+
+// HalfSide returns the scaled half side length.
+func (b *MonoSquareNode) HalfSide() float32 {
+	return b.halfSide * b.Scale()
 }
 
 // SetFilledColor sets the fill color

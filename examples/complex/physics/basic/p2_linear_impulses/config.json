@@ -1,0 +1,25 @@
+{
+  "Engine": {
+    "ShowTimingInfo": true
+  },
+  "Window": {
+    "DeviceRes": {
+      "Height": 900,
+      "Width": 1600
+    },
+    "BackgroundColor": {
+      "R": 0.25,
+      "G": 0.25,
+      "B": 0.25,
+      "A": 1.0
+    },
+    "ClearStyle": "SingleColor",
+    "FullScreen": false,
+    "Orientation": "Landscape",
+    "Position": {
+      "X": 100,
+      "Y": 100
+    },
+    "Title": "Linear And Impulses"
+  }
+}

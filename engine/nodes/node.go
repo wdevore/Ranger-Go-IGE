@@ -84,7 +84,8 @@ var currentAtlas api.IAtlasX
 
 // Visit traverses "down" the heirarchy while space-mappings traverses upward.
 func Visit(node api.INode, transStack api.ITransformStack, interpolation float64) {
-	// fmt.Println("Node: visiting ", node)
+	// Checking visibility here would cause any children that are visible
+	// to not be rendered.
 	if !node.IsVisible() {
 		// fmt.Printf("Node.Visit %v: Visible: %v\n", node, node.IsVisible())
 		return
@@ -100,6 +101,8 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 
 	model := transStack.ApplyAffine(aft)
 
+	// If the node is visible then do what is needed to render.
+	// if node.IsVisible() {
 	nodeRender, isRenderType := node.(api.IRender)
 	if isRenderType {
 		// we need to ask INode what Atlas it is using. If it is
@@ -118,12 +121,15 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 			}
 			nodeRender.Draw(model)
 		}
-
 		// nodeRender.Draw(model)
 	} else {
 		log.Fatalf("Node: oops, %s doesn't implement IRender.Draw method", node)
 	}
+	// }
 
+	// Some of the children may still be visible.
+	// Note: if you want the parent AND children to be invisible then you
+	// need to bubble visibility to parent and children.
 	children := node.Children()
 
 	if len(children) > 0 {

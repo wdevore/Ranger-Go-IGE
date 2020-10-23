@@ -3,43 +3,47 @@ package shapes
 import (
 	"errors"
 
+	"github.com/go-gl/gl/v4.5-core/gl"
+
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras/generators"
 )
 
-// MonoHLineNode is a basic static HLine
-type MonoHLineNode struct {
+// MonoPolygonNode is a basic static polygon
+type MonoPolygonNode struct {
 	nodes.Node
 
 	shapeID    int
 	halfLength float32
 
 	color []float32
+
+	vertices *[]float32
 }
 
-// NewMonoHLineNode creates a basic static HLine.
+// NewMonoPolygonNode creates a basic static polygon.
 // It comes with default colors, and will Add a shape to the MonoStatic
 // Atlas IF its not present.
-func NewMonoHLineNode(name string, world api.IWorld, parent api.INode) (api.INode, error) {
-	o := new(MonoHLineNode)
+func NewMonoPolygonNode(name string, vertices *[]float32, indices *[]uint32, drawStyle int, world api.IWorld, parent api.INode) (api.INode, error) {
+	o := new(MonoPolygonNode)
 
 	o.Initialize(name)
 	o.SetParent(parent)
+	o.vertices = vertices
 
 	o.shapeID = -1
 
 	parent.AddChild(o)
 
-	if err := o.build(world); err != nil {
+	if err := o.build(vertices, indices, drawStyle, world); err != nil {
 		return nil, err
 	}
 
 	return o, nil
 }
 
-func (b *MonoHLineNode) build(world api.IWorld) error {
+func (b *MonoPolygonNode) build(vertices *[]float32, indices *[]uint32, drawStyle int, world api.IWorld) error {
 	b.Node.Build(world)
 
 	b.halfLength = 0.5
@@ -52,15 +56,18 @@ func (b *MonoHLineNode) build(world api.IWorld) error {
 
 	b.SetAtlas(atl)
 
-	name := api.HLineShapeName
+	name := api.PolygonShapeName + "_" + b.Name()
 
 	atlas := atl.(api.IStaticAtlasX)
 
+	mode := gl.TRIANGLES
+	if drawStyle == api.OUTLINED {
+		mode = gl.LINE_LOOP
+	}
 	b.shapeID = atlas.GetShapeByName(name)
 	if b.shapeID < 0 {
 		// Add shape
-		vertices, indices, mode := generators.GenerateUnitHLineVectorShape()
-		b.shapeID = atlas.AddShape(name, vertices, indices, mode)
+		b.shapeID = atlas.AddShape(name, *vertices, *indices, mode)
 	}
 
 	// Default colors
@@ -69,23 +76,23 @@ func (b *MonoHLineNode) build(world api.IWorld) error {
 	return nil
 }
 
-// HalfLength returns the scaled half length.
-func (b *MonoHLineNode) HalfLength() float32 {
-	return b.halfLength * b.Scale()
+// Vertices returns shape's vertices
+func (b *MonoPolygonNode) Vertices() *[]float32 {
+	return b.vertices
 }
 
 // SetColor sets the color
-func (b *MonoHLineNode) SetColor(color api.IPalette) {
+func (b *MonoPolygonNode) SetColor(color api.IPalette) {
 	b.color = color.Array()
 }
 
 // SetAlpha overwrites the alpha value 0->1
-func (b *MonoHLineNode) SetAlpha(alpha float32) {
+func (b *MonoPolygonNode) SetAlpha(alpha float32) {
 	b.color[3] = alpha
 }
 
 // Draw renders shape
-func (b *MonoHLineNode) Draw(model api.IMatrix4) {
+func (b *MonoPolygonNode) Draw(model api.IMatrix4) {
 	// Note: We don't need to call the Atlas's Use() method
 	// because the node.Visit() will do that for us.
 	atlas := b.Atlas()

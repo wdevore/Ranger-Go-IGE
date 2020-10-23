@@ -38,9 +38,10 @@ const (
 	FilledZBarShapeName   = "FilledZBarShape"
 	OutlinedZBarShapeName = "OutlinedZBarShape"
 
-	HLineShapeName = "HLineShape"
-	VLineShapeName = "VLineShape"
-	PlusShapeName  = "PlusShape"
+	HLineShapeName   = "HLineShape"
+	VLineShapeName   = "VLineShape"
+	PlusShapeName    = "PlusShape"
+	PolygonShapeName = "PolygonShape"
 
 	PointsShapeName = "PointShape"
 
