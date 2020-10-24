@@ -56,8 +56,10 @@ const (
 	FILLED = 0
 	// OUTLINED polygon
 	OUTLINED = 1
+	// OPENOUTLINED line strip
+	OPENOUTLINED = 2
 	// FILLOUTLINED both fill and outlined
-	FILLOUTLINED = 2
+	FILLOUTLINED = 3
 
 	// CLOSED indicates a polygon should be rendered closed
 	CLOSED = 0

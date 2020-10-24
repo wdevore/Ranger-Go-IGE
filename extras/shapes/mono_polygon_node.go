@@ -61,9 +61,14 @@ func (b *MonoPolygonNode) build(vertices *[]float32, indices *[]uint32, drawStyl
 	atlas := atl.(api.IStaticAtlasX)
 
 	mode := gl.TRIANGLES
-	if drawStyle == api.OUTLINED {
+
+	switch drawStyle {
+	case api.OUTLINED:
 		mode = gl.LINE_LOOP
+	case api.OPENOUTLINED:
+		mode = gl.LINE_STRIP
 	}
+
 	b.shapeID = atlas.GetShapeByName(name)
 	if b.shapeID < 0 {
 		// Add shape

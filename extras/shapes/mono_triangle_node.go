@@ -71,6 +71,8 @@ func (b *MonoTriangleNode) build(drawStyle int, world api.IWorld) error {
 			// Add shape
 			b.vertices, indices, mode = generators.GenerateUnitTriangleVectorShape(true)
 			b.filledShapeID = atlas.AddShape(name, b.vertices, indices, mode)
+		} else {
+			b.vertices = *atlas.FetchVerticesByName(name)
 		}
 	} else if drawStyle == api.OUTLINED {
 		name := api.OutlinedTriangleShapeName
@@ -80,6 +82,8 @@ func (b *MonoTriangleNode) build(drawStyle int, world api.IWorld) error {
 			// Add shape
 			b.vertices, indices, mode = generators.GenerateUnitTriangleVectorShape(false)
 			b.outlinedShapeID = atlas.AddShape(name, b.vertices, indices, mode)
+		} else {
+			b.vertices = *atlas.FetchVerticesByName(name)
 		}
 	} else {
 		nameF := api.FilledTriangleShapeName
@@ -90,6 +94,8 @@ func (b *MonoTriangleNode) build(drawStyle int, world api.IWorld) error {
 			// Add shape
 			b.vertices, indices, mode = generators.GenerateUnitTriangleVectorShape(true)
 			b.filledShapeID = atlas.AddShape(nameF, b.vertices, indices, mode)
+		} else {
+			b.vertices = *atlas.FetchVerticesByName(nameF)
 		}
 		b.outlinedShapeID = atlas.GetShapeByName(nameO)
 		if b.outlinedShapeID < 0 {

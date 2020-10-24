@@ -4,6 +4,7 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
+	"github.com/wdevore/Ranger-Go-IGE/extras"
 	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
@@ -50,7 +51,7 @@ func (p *boxPhysicsComponent) MoveDown() {
 // EnableGravity enables/disables gravity for this component
 func (p *boxPhysicsComponent) EnableGravity(enable bool) {
 	if enable {
-		p.b2Body.SetGravityScale(1.0)
+		p.b2Body.SetGravityScale(0.01)
 	} else {
 		p.b2Body.SetGravityScale(0.0)
 	}
@@ -110,14 +111,14 @@ func (p *boxPhysicsComponent) ConfigureFilter(categoryBits, maskBits uint16) {
 
 // HandleBeginContact processes BeginContact events
 func (p *boxPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*shapes.MonoSquareNode)
+	n, ok := nodeA.(*extras.StaticSquareNode)
 
 	if !ok {
-		n, ok = nodeB.(*shapes.MonoSquareNode)
+		n, ok = nodeB.(*extras.StaticSquareNode)
 	}
 
 	if ok {
-		n.SetFilledColor(p.beginContactColor)
+		n.SetColor(p.beginContactColor)
 	}
 
 	return false
@@ -125,14 +126,14 @@ func (p *boxPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
 
 // HandleEndContact processes EndContact events
 func (p *boxPhysicsComponent) HandleEndContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*shapes.MonoSquareNode)
+	n, ok := nodeA.(*extras.StaticSquareNode)
 
 	if !ok {
-		n, ok = nodeB.(*shapes.MonoSquareNode)
+		n, ok = nodeB.(*extras.StaticSquareNode)
 	}
 
 	if ok {
-		n.SetFilledColor(p.endContactColor)
+		n.SetColor(p.endContactColor)
 	}
 
 	return false
