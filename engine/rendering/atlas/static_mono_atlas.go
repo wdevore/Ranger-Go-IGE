@@ -82,6 +82,16 @@ func (s *staticMonoAtlas) GetShapeByName(shapeName string) int {
 	return -1
 }
 
+func (s *staticMonoAtlas) FetchVerticesByName(shapeName string) *[]float32 {
+	for _, shape := range s.shapes {
+		if shape.shapeName == shapeName {
+			return &shape.vertices
+		}
+	}
+
+	return nil
+}
+
 func (s *staticMonoAtlas) Burnt() bool {
 	return s.burnt
 }

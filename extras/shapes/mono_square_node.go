@@ -13,6 +13,8 @@ import (
 type MonoSquareNode struct {
 	nodes.Node
 
+	vertices []float32
+
 	halfSide float32
 
 	filledShapeID   int
@@ -58,6 +60,9 @@ func (b *MonoSquareNode) build(drawStyle int, centered bool, world api.IWorld) e
 	b.SetAtlas(atl)
 	atlas := atl.(api.IStaticAtlasX)
 
+	var indices []uint32
+	var mode int
+
 	if drawStyle == api.FILLED {
 		name := ""
 		if centered {
@@ -69,8 +74,10 @@ func (b *MonoSquareNode) build(drawStyle int, centered bool, world api.IWorld) e
 		b.filledShapeID = atlas.GetShapeByName(name)
 		if b.filledShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitRectangleVectorShape(centered, true)
-			b.filledShapeID = atlas.AddShape(name, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitRectangleVectorShape(centered, true)
+			b.filledShapeID = atlas.AddShape(name, b.vertices, indices, mode)
+		} else {
+			b.vertices = *atlas.FetchVerticesByName(name)
 		}
 	} else if drawStyle == api.OUTLINED {
 		name := ""
@@ -83,8 +90,10 @@ func (b *MonoSquareNode) build(drawStyle int, centered bool, world api.IWorld) e
 		b.outlinedShapeID = atlas.GetShapeByName(name)
 		if b.outlinedShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitRectangleVectorShape(centered, false)
-			b.outlinedShapeID = atlas.AddShape(name, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitRectangleVectorShape(centered, false)
+			b.outlinedShapeID = atlas.AddShape(name, b.vertices, indices, mode)
+		} else {
+			b.vertices = *atlas.FetchVerticesByName(name)
 		}
 	} else {
 		nameF := ""
@@ -100,14 +109,16 @@ func (b *MonoSquareNode) build(drawStyle int, centered bool, world api.IWorld) e
 		b.filledShapeID = atlas.GetShapeByName(nameF)
 		if b.filledShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitRectangleVectorShape(centered, true)
-			b.filledShapeID = atlas.AddShape(nameF, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitRectangleVectorShape(centered, true)
+			b.filledShapeID = atlas.AddShape(nameF, b.vertices, indices, mode)
+		} else {
+			b.vertices = *atlas.FetchVerticesByName(nameF)
 		}
 		b.outlinedShapeID = atlas.GetShapeByName(nameO)
 		if b.outlinedShapeID < 0 {
 			// Add shape
-			vertices, indices, mode := generators.GenerateUnitRectangleVectorShape(centered, false)
-			b.outlinedShapeID = atlas.AddShape(nameO, vertices, indices, mode)
+			b.vertices, indices, mode = generators.GenerateUnitRectangleVectorShape(centered, false)
+			b.outlinedShapeID = atlas.AddShape(nameO, b.vertices, indices, mode)
 		}
 	}
 
@@ -116,6 +127,11 @@ func (b *MonoSquareNode) build(drawStyle int, centered bool, world api.IWorld) e
 	b.outlinedColor = color.NewPaletteInt64(color.White).Array()
 
 	return nil
+}
+
+// Vertices returns the shape's vertices
+func (b *MonoSquareNode) Vertices() *[]float32 {
+	return &b.vertices
 }
 
 // HalfSide returns the scaled half side length.
