@@ -5,8 +5,8 @@ import (
 	"github.com/tanema/gween/ease"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
 	"github.com/wdevore/Ranger-Go-IGE/extras/misc"
+	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
 // ZoneCircle is a basic vector circle shape.
@@ -47,27 +47,28 @@ func NewZoneCircle(name string, id int, zoneMan *zoneManager) *ZoneCircle {
 }
 
 // Build configures the node
-func (z *ZoneCircle) Build(innerRadius, outerRadius float32, position api.IPoint, world api.IWorld, parent api.INode) {
+func (z *ZoneCircle) Build(innerRadius, outerRadius float32, position api.IPoint, world api.IWorld, parent api.INode) error {
 	z.subscribers = []api.IZoneListener{}
 
 	z.innerColor = color.NewPaletteInt64(color.PanSkin)
-	z.outerColor = color.NewPaletteInt64(color.Silver)
+	z.outerColor = color.NewPaletteInt64(color.BrPuffYellow)
 	z.enteredColor = color.NewPaletteInt64(color.LightPurple)
 
 	var err error
-	z.innerCircle, err = extras.NewStaticCircleNode("InnerCircle", false, world, parent)
-	if err != nil {
-		panic(err)
-	}
-	gol2 := z.innerCircle.(*extras.StaticCircleNode)
-	gol2.SetColor(z.innerColor)
 
-	z.outerCircle, err = extras.NewStaticCircleNode("OuterCircle", false, world, parent)
+	z.innerCircle, err = shapes.NewMonoCircleNode("InnerCircle", api.OUTLINED, 12, world, parent)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	gol2 = z.outerCircle.(*extras.StaticCircleNode)
-	gol2.SetColor(z.outerColor)
+	gc := z.innerCircle.(*shapes.MonoCircleNode)
+	gc.SetOutlineColor(z.innerColor)
+
+	z.outerCircle, err = shapes.NewMonoCircleNode("OuterCircle", api.OUTLINED, 12, world, parent)
+	if err != nil {
+		return err
+	}
+	gc = z.outerCircle.(*shapes.MonoCircleNode)
+	gc.SetOutlineColor(z.outerColor)
 
 	z.zone = misc.NewCircleZone()
 
@@ -75,6 +76,8 @@ func (z *ZoneCircle) Build(innerRadius, outerRadius float32, position api.IPoint
 	z.SetPosition(position.X(), position.Y())
 
 	z.isFinished = true
+
+	return nil
 }
 
 // ID returns the zone's unique id
@@ -119,10 +122,10 @@ func (z *ZoneCircle) SetRadi(innerRadius, outerRadius float32) {
 	zo := z.zone.(*misc.CircleZone)
 	zo.SetRadi(float64(innerRadius/2), float64(outerRadius/2))
 
-	cr := z.innerCircle.(*extras.StaticCircleNode)
+	cr := z.innerCircle.(*shapes.MonoCircleNode)
 	cr.SetScale(innerRadius)
 
-	cr = z.outerCircle.(*extras.StaticCircleNode)
+	cr = z.outerCircle.(*shapes.MonoCircleNode)
 	cr.SetScale(outerRadius)
 }
 
