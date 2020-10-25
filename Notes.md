@@ -1,5 +1,20 @@
 # Ranger-Go-IGE
 
+## Merging
+
+### From branch to Master
+* First push your Branch to Github
+* Switch to Master locally
+* Merge and select Branch
+* Local master now has the branch.
+* Now push your updated/Merge Master to Github
+
+### Creating a Branch
+* Simply create a local branch
+* Upon the first commit to Github the branch will exist remotely
+* Continue to push (with your branch active)
+* Once done you can switch to local-master and follow above.
+
 ## Working task
 *-- Working --* Add the concept of parent visibility and children visibility.
 If parent is invisible then the children are too.
