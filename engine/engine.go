@@ -170,7 +170,7 @@ func (e *engine) configureBackgroundForgrounds() error {
 	return nil
 }
 
-// Begin is called after Construct() and as the last thing the game
+// Begin is called after Construct() and as the last thing the engine
 // does to start the game.
 func (e *engine) Begin() error {
 	e.running = true
