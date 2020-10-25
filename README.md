@@ -5,6 +5,14 @@ As was RangerGo, so is IGE, a variation of the [Ranger Dart](https://github.com/
 
 This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
+# Games
+* Port Spout
+* Port StarCastle
+* Port Bosconian
+* Port Omega Race
+* Port 2048
+* Create New Game. A blend of **Lunar Lander** (Sky and Landings), **Moon Patrol** (Ground), **Atari Pitfall** (Obstacles), **Defender** (Rescue). Multi-planet and Moons.
+
 # Current Tasks and Goals
 * **Done** OpenGL 4.x Core
 * **Done** Pixel Font (Slow version)
@@ -30,13 +38,13 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Audio (SFXR 8bit sound: https://sfxr.me/) (However, 16bit stills needs completion)
   * built GUI using imGui: https://github.com/inkyblackness/imgui-go
   * build using: https://github.com/faiface/beep
-* <b style="color:red">*working*</b> QuadTrees
+* <b style="color:orange">Partial Completion</b> QuadTrees
   * Example 1: Random spread of points/particles into tree (with capacity)
   * Example 2: Random spread of squares
   * Example 3: Insert squares at Mouse
   * Example 4: Triangle ship moving through tree
-  * Example 5: Query and highlight tree according to obj-obj intersecting
-* Simple Widget GUI framework
+  * **Done** Example 5: Query and highlight tree according to obj-obj intersecting
+* <b style="color:red">*working*</b> Simple Widget GUI framework
   * Buttons
   * Checkboxes
   * ListBox and Combo dropdowns
@@ -45,9 +53,9 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
   * Dialogs (OK, Yes/No, etc.)
   * Grouping (i.e. Radio buttons)
 * Batch rendering
+* OpenGL ES (https://github.com/golang/go/wiki/Mobile)
 * Physics with Textures
 * Joysticks and Gamepads
-* OpenGL ES (https://github.com/golang/go/wiki/Mobile)
 * Shaders with interleved vertex/color, for example, checkboards
 * Stippling with OpenGL patterns (aka advanced shaders)
 * Custom vector font (needs lower case completion)
