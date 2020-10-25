@@ -68,7 +68,7 @@ func NewStarShipComponent(name string, parent api.INode) (*StarShipComponent, er
 
 	var err error
 
-	o.hullVisual, err = shapes.NewMonoCircleNode("MainHull", api.FILLED, 16, parent.World(), parent)
+	o.hullVisual, err = shapes.NewMonoCircleNode("MainHull", api.FILLOUTLINED, 16, parent.World(), parent)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func NewStarShipComponent(name string, parent api.INode) (*StarShipComponent, er
 	// scenegraph handle the relationship, however that would be incorrect
 	// because Box2D will handle the relationship via Joints. So visually it appears
 	// as if the nacels are children of the hull but technically they are not.
-	o.rightNacelVisual, err = shapes.NewMonoSquareNode("RightNacel", api.FILLED, true, parent.World(), parent)
+	o.rightNacelVisual, err = shapes.NewMonoSquareNode("RightNacel", api.FILLOUTLINED, true, parent.World(), parent)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func NewStarShipComponent(name string, parent api.INode) (*StarShipComponent, er
 	gsq.SetFilledColor(color.NewPaletteInt64(color.LightNavyBlue))
 	gsq.SetFilledAlpha(0.5)
 
-	o.leftNacelVisual, err = shapes.NewMonoSquareNode("LeftNacel", api.FILLED, true, parent.World(), parent)
+	o.leftNacelVisual, err = shapes.NewMonoSquareNode("LeftNacel", api.FILLOUTLINED, true, parent.World(), parent)
 	if err != nil {
 		return nil, err
 	}
