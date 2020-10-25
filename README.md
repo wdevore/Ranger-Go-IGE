@@ -7,7 +7,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
 # Games
 * Port Spout
-* Port StarCastle
+* Port StarCastle / Star Barriers
 * Port Bosconian
 * Port Omega Race
 * Port 2048
