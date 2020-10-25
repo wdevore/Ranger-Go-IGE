@@ -174,7 +174,7 @@ func (g *gameLayer) addLava(parent api.INode) error {
 		entityTriangle|entityStarShip|entityStarShipLeft|entityStarShipRight)
 
 	position := geometry.NewPointUsing(10.0, -28.0)
-	g.lavaPhyComp.Build(&g.b2World, parent, position, 7.0, 1.5, 10)
+	g.lavaPhyComp.Build(&g.b2World, parent, position, 7.0, 1.5, 30)
 
 	return nil
 }

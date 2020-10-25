@@ -24,7 +24,7 @@ type ActivatorCone struct {
 func NewActivatorCone() api.IParticleActivator {
 	o := new(ActivatorCone)
 	o.minLife = 2000.0
-	o.maxLife = 5000.0
+	o.maxLife = 15000.0
 	o.minAngularVelocity = 5.0
 	o.maxAngularVelocity = 15.0
 	o.minForce = 15.0

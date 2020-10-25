@@ -49,9 +49,9 @@ func (p *lavaPhysicsComponent) Build(phyWorld *box2d.B2World, parent api.INode,
 	p.buildMountain(phyWorld, parent, position, mountainScale)
 
 	p.delayCnt = 0.0
-	p.delayTime = 2000.0
+	p.delayTime = 1000.0
 	p.minDelay = 500.0
-	p.maxDelay = 2000.0
+	p.maxDelay = 1000.0
 }
 
 func (p *lavaPhysicsComponent) buildLava(
