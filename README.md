@@ -7,7 +7,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
 # Games
 * Port Spout
-* Port StarCastle
+* Port StarCastle / Star Barriers
 * Port Bosconian
 * Port Omega Race
 * Port 2048
@@ -44,6 +44,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
   * Example 3: Insert squares at Mouse
   * Example 4: Triangle ship moving through tree
   * **Done** Example 5: Query and highlight tree according to obj-obj intersecting
+* Scripting via https://wren.io/ or make custom language using via http://craftinginterpreters.com/
 * <b style="color:red">*working*</b> Simple Widget GUI framework
   * Buttons
   * Checkboxes
