@@ -18,8 +18,6 @@ type sceneBoot struct {
 	nodes.Node
 	nodes.Scene
 
-	fontTextureRenderer api.ITextureRenderer
-
 	pretendWorkCnt  float64
 	pretendWorkSpan float64
 

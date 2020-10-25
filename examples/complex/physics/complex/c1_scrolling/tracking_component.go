@@ -9,7 +9,6 @@ import (
 	"github.com/wdevore/Ranger-Go-IGE/engine/geometry"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
 	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
@@ -81,8 +80,8 @@ func (t *TrackingComponent) Configure(scale float64, categoryBits, maskBits uint
 
 // SetColor sets the visual's color
 func (t *TrackingComponent) SetColor(color api.IPalette) {
-	gr := t.visual.(*extras.StaticTriangleNode)
-	gr.SetColor(color)
+	gr := t.visual.(*shapes.MonoTriangleNode)
+	gr.SetOutlineColor(color)
 }
 
 // SetTargetPosition sets the target position. The position is in

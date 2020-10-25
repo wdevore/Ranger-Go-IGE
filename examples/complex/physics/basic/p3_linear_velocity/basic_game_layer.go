@@ -46,6 +46,16 @@ func (g *gameLayer) Build(world api.IWorld) error {
 
 	setupPhysicsWorld(g)
 
+	// Instead of using two node: vline and hline, I'm using one "+ node.
+	xyAxis, err := shapes.NewMonoPlusNode("XYAxis", world, world.Underlay())
+	if err != nil {
+		return err
+	}
+	dvr := world.Properties().Window.DeviceRes
+	xyAxis.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+	ghl := xyAxis.(*shapes.MonoPlusNode)
+	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
+
 	if err := g.addSquare(); err != nil {
 		return err
 	}

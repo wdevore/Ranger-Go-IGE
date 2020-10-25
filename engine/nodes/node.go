@@ -86,6 +86,7 @@ var currentAtlas api.IAtlasX
 func Visit(node api.INode, transStack api.ITransformStack, interpolation float64) {
 	// Checking visibility here would cause any children that are visible
 	// to not be rendered.
+	// TODO Add parent and children flags for individual control.
 	if !node.IsVisible() {
 		// fmt.Printf("Node.Visit %v: Visible: %v\n", node, node.IsVisible())
 		return
@@ -121,7 +122,6 @@ func Visit(node api.INode, transStack api.ITransformStack, interpolation float64
 			}
 			nodeRender.Draw(model)
 		}
-		// nodeRender.Draw(model)
 	} else {
 		log.Fatalf("Node: oops, %s doesn't implement IRender.Draw method", node)
 	}

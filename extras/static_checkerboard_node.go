@@ -1,8 +1,6 @@
 package extras
 
 import (
-	"github.com/go-gl/gl/v4.5-core/gl"
-
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/maths"
 	"github.com/wdevore/Ranger-Go-IGE/engine/nodes"
@@ -19,7 +17,7 @@ type StaticCheckerboardNode struct {
 	oddColor  []float32
 	size      float32
 
-	shape api.IAtlasShape
+	// shape api.IAtlasShape
 
 	m4 api.IMatrix4
 }
@@ -47,8 +45,8 @@ func (r *StaticCheckerboardNode) Build(world api.IWorld) error {
 	r.m4 = maths.NewMatrix4()
 	r.size = 250
 
-	name := "Checkerboard"
-	r.shape = world.Atlas().GenerateShape(name, gl.TRIANGLES)
+	// name := "Checkerboard"
+	// r.shape = world.Atlas().GenerateShape(name, gl.TRIANGLES)
 
 	// The shape has been added to the atlas but is hasn't been
 	// populated with this node's backing data.
@@ -58,27 +56,27 @@ func (r *StaticCheckerboardNode) Build(world api.IWorld) error {
 }
 
 func (r *StaticCheckerboardNode) populate() {
-	var vertices []float32
+	// var vertices []float32
 
-	vertices = []float32{
-		0.0, 0.0, 0.0,
-		1.0, 0.0, 0.0,
-		1.0, 1.0, 0.0,
-		0.0, 1.0, 0.0,
-	}
+	// vertices = []float32{
+	// 	0.0, 0.0, 0.0,
+	// 	1.0, 0.0, 0.0,
+	// 	1.0, 1.0, 0.0,
+	// 	0.0, 1.0, 0.0,
+	// }
 
-	r.shape.SetVertices(vertices)
+	// r.shape.SetVertices(vertices)
 
-	var indices []uint32
+	// var indices []uint32
 
-	indices = []uint32{
-		0, 1, 2,
-		0, 2, 3,
-	}
+	// indices = []uint32{
+	// 	0, 1, 2,
+	// 	0, 2, 3,
+	// }
 
-	r.shape.SetElementCount(len(indices))
+	// r.shape.SetElementCount(len(indices))
 
-	r.shape.SetIndices(indices)
+	// r.shape.SetIndices(indices)
 }
 
 // SetEvenColor sets even color
@@ -108,95 +106,95 @@ func (r *StaticCheckerboardNode) SetSize(size float32) {
 
 // Draw renders shape
 func (r *StaticCheckerboardNode) Draw(model api.IMatrix4) {
-	renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
+	// renG := r.World().UseRenderGraphic(api.StaticRenderGraphic)
 
-	xflip := false
-	yFlip := true
+	// xflip := false
+	// yFlip := true
 
-	// Re-render the same square at different positions.
-	dvr := r.World().Properties().Window.DeviceRes
-	hw := float32(dvr.Width) / 2
-	hh := float32(dvr.Height) / 2
+	// // Re-render the same square at different positions.
+	// dvr := r.World().Properties().Window.DeviceRes
+	// hw := float32(dvr.Width) / 2
+	// hh := float32(dvr.Height) / 2
 
-	// Top-Right quadrant +,+
-	for y := float32(0); y < hh; y += r.size {
-		for x := float32(0); x < hw; x += r.size {
-			r.m4.SetTranslate3Comp(x, y, 0.0)
-			r.m4.ScaleByComp(r.size, r.size, 1.0)
+	// // Top-Right quadrant +,+
+	// for y := float32(0); y < hh; y += r.size {
+	// 	for x := float32(0); x < hw; x += r.size {
+	// 		r.m4.SetTranslate3Comp(x, y, 0.0)
+	// 		r.m4.ScaleByComp(r.size, r.size, 1.0)
 
-			if xflip {
-				renG.SetColor(r.evenColor) // lighter
-			} else {
-				renG.SetColor(r.oddColor) // darker
-			}
+	// 		if xflip {
+	// 			renG.SetColor(r.evenColor) // lighter
+	// 		} else {
+	// 			renG.SetColor(r.oddColor) // darker
+	// 		}
 
-			renG.Render(r.shape, r.m4)
-			xflip = !xflip
-		}
-		xflip = yFlip
-		yFlip = !yFlip
-	}
+	// 		renG.Render(r.shape, r.m4)
+	// 		xflip = !xflip
+	// 	}
+	// 	xflip = yFlip
+	// 	yFlip = !yFlip
+	// }
 
-	xflip = true
-	yFlip = false
-	// Bottom-Right quadrant +,-
-	for y := float32(-r.size); y > -hh-r.size; y -= r.size {
-		for x := float32(0); x < hw; x += r.size {
-			r.m4.SetTranslate3Comp(x, y, 0.0)
-			r.m4.ScaleByComp(r.size, r.size, 1.0)
+	// xflip = true
+	// yFlip = false
+	// // Bottom-Right quadrant +,-
+	// for y := float32(-r.size); y > -hh-r.size; y -= r.size {
+	// 	for x := float32(0); x < hw; x += r.size {
+	// 		r.m4.SetTranslate3Comp(x, y, 0.0)
+	// 		r.m4.ScaleByComp(r.size, r.size, 1.0)
 
-			if xflip {
-				renG.SetColor(r.evenColor)
-			} else {
-				renG.SetColor(r.oddColor)
-			}
+	// 		if xflip {
+	// 			renG.SetColor(r.evenColor)
+	// 		} else {
+	// 			renG.SetColor(r.oddColor)
+	// 		}
 
-			renG.Render(r.shape, r.m4)
-			xflip = !xflip
-		}
-		xflip = yFlip
-		yFlip = !yFlip
-	}
+	// 		renG.Render(r.shape, r.m4)
+	// 		xflip = !xflip
+	// 	}
+	// 	xflip = yFlip
+	// 	yFlip = !yFlip
+	// }
 
-	xflip = true
-	yFlip = false
-	// Top-Left quadrant -,+
-	for y := float32(0); y < hh; y += r.size {
-		for x := float32(-r.size); x > -hw-r.size; x -= r.size {
-			r.m4.SetTranslate3Comp(x, y, 0.0)
-			r.m4.ScaleByComp(r.size, r.size, 1.0)
+	// xflip = true
+	// yFlip = false
+	// // Top-Left quadrant -,+
+	// for y := float32(0); y < hh; y += r.size {
+	// 	for x := float32(-r.size); x > -hw-r.size; x -= r.size {
+	// 		r.m4.SetTranslate3Comp(x, y, 0.0)
+	// 		r.m4.ScaleByComp(r.size, r.size, 1.0)
 
-			if xflip {
-				renG.SetColor(r.evenColor) // lightest
-			} else {
-				renG.SetColor(r.oddColor) // lighter (darker)
-			}
+	// 		if xflip {
+	// 			renG.SetColor(r.evenColor) // lightest
+	// 		} else {
+	// 			renG.SetColor(r.oddColor) // lighter (darker)
+	// 		}
 
-			renG.Render(r.shape, r.m4)
-			xflip = !xflip
-		}
-		xflip = yFlip
-		yFlip = !yFlip
-	}
+	// 		renG.Render(r.shape, r.m4)
+	// 		xflip = !xflip
+	// 	}
+	// 	xflip = yFlip
+	// 	yFlip = !yFlip
+	// }
 
-	xflip = false
-	yFlip = true
-	// Bottom-Left quadrant -,-
-	for y := float32(-r.size); y > -hh-r.size; y -= r.size {
-		for x := float32(-r.size); x > -hw-r.size; x -= r.size {
-			r.m4.SetTranslate3Comp(x, y, 0.0)
-			r.m4.ScaleByComp(r.size, r.size, 1.0)
+	// xflip = false
+	// yFlip = true
+	// // Bottom-Left quadrant -,-
+	// for y := float32(-r.size); y > -hh-r.size; y -= r.size {
+	// 	for x := float32(-r.size); x > -hw-r.size; x -= r.size {
+	// 		r.m4.SetTranslate3Comp(x, y, 0.0)
+	// 		r.m4.ScaleByComp(r.size, r.size, 1.0)
 
-			if xflip {
-				renG.SetColor(r.evenColor)
-			} else {
-				renG.SetColor(r.oddColor)
-			}
+	// 		if xflip {
+	// 			renG.SetColor(r.evenColor)
+	// 		} else {
+	// 			renG.SetColor(r.oddColor)
+	// 		}
 
-			renG.Render(r.shape, r.m4)
-			xflip = !xflip
-		}
-		xflip = yFlip
-		yFlip = !yFlip
-	}
+	// 		renG.Render(r.shape, r.m4)
+	// 		xflip = !xflip
+	// 	}
+	// 	xflip = yFlip
+	// 	yFlip = !yFlip
+	// }
 }

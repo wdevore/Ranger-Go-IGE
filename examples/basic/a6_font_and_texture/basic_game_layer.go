@@ -25,8 +25,7 @@ type gameLayer struct {
 	textureNode api.INode
 	textureIdx  int
 
-	shipTextureRenderer api.ITextureRenderer
-	textureShipIdx      int
+	textureShipIdx int
 }
 
 func newBasicGameLayer(name string, world api.IWorld, parent api.INode) (api.INode, error) {
@@ -48,7 +47,17 @@ func (g *gameLayer) build(world api.IWorld) error {
 
 	g.timeSpan = 1000.0
 
-	err := g.addShip(world)
+	// Instead of using two node: vline and hline, I'm using one "+ node.
+	xyAxis, err := shapes.NewMonoPlusNode("XYAxis", world, world.Underlay())
+	if err != nil {
+		return err
+	}
+	dvr := world.Properties().Window.DeviceRes
+	xyAxis.SetScaleComps(float32(dvr.Width), float32(dvr.Height))
+	ghl := xyAxis.(*shapes.MonoPlusNode)
+	ghl.SetColor(color.NewPaletteInt64(color.LightGray))
+
+	err = g.addShip(world)
 	if err != nil {
 		return err
 	}

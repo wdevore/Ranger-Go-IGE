@@ -4,7 +4,6 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
 	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
@@ -71,14 +70,14 @@ func (p *cirPhysicsComponent) ConfigureFilter(categoryBits, maskBits uint16) {
 
 // HandleBeginContact processes BeginContact events
 func (p *cirPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*extras.StaticCircleNode)
+	n, ok := nodeA.(*shapes.MonoCircleNode)
 
 	if !ok {
-		n, ok = nodeB.(*extras.StaticCircleNode)
+		n, ok = nodeB.(*shapes.MonoCircleNode)
 	}
 
 	if ok {
-		n.SetColor(p.beginContactColor)
+		n.SetFilledColor(p.beginContactColor)
 	}
 
 	return false
@@ -86,14 +85,14 @@ func (p *cirPhysicsComponent) HandleBeginContact(nodeA, nodeB api.INode) bool {
 
 // HandleEndContact processes EndContact events
 func (p *cirPhysicsComponent) HandleEndContact(nodeA, nodeB api.INode) bool {
-	n, ok := nodeA.(*extras.StaticCircleNode)
+	n, ok := nodeA.(*shapes.MonoCircleNode)
 
 	if !ok {
-		n, ok = nodeB.(*extras.StaticCircleNode)
+		n, ok = nodeB.(*shapes.MonoCircleNode)
 	}
 
 	if ok {
-		n.SetColor(p.endContactColor)
+		n.SetFilledColor(p.endContactColor)
 	}
 
 	return false

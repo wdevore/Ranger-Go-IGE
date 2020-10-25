@@ -4,7 +4,6 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/wdevore/Ranger-Go-IGE/api"
 	"github.com/wdevore/Ranger-Go-IGE/engine/rendering/color"
-	"github.com/wdevore/Ranger-Go-IGE/extras"
 	"github.com/wdevore/Ranger-Go-IGE/extras/shapes"
 )
 
@@ -85,7 +84,7 @@ func (p *seesawPhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position 
 	// Box2D assumes the same is defined in unit-space which
 	// means if the object is defined otherwise we need the object
 	// to return the correct value
-	tcc := p.phyNode.(*extras.StaticPolygonNode)
+	tcc := p.phyNode.(*shapes.MonoPolygonNode)
 
 	vertices := []box2d.B2Vec2{}
 	verts := tcc.Vertices()
@@ -138,16 +137,6 @@ func (p *seesawPhysicsComponent) buildPhysics(phyWorld *box2d.B2World, position 
 func (p *seesawPhysicsComponent) buildPolygon(world api.IWorld, parent api.INode) error {
 	var err error
 
-	// --------------------------------------------------------------
-	p.phyNode, err = extras.NewStaticPolygonNode("Polygon", false, world, parent)
-	if err != nil {
-		return err
-	}
-	p.phyNode.SetScale(3.0)
-	p.phyNode.SetPosition(p.position.X(), p.position.Y())
-	gpol := p.phyNode.(*extras.StaticPolygonNode)
-	gpol.SetColor(color.NewPaletteInt64(color.LightOrange))
-
 	vertices := []float32{
 		-1.0, 2.0, 0.0,
 		-1.0, 0.0, 0.0,
@@ -160,7 +149,15 @@ func (p *seesawPhysicsComponent) buildPolygon(world api.IWorld, parent api.INode
 		0, 1, 2, 3, 4,
 	}
 
-	gpol.Populate(vertices, indices)
+	// --------------------------------------------------------------
+	p.phyNode, err = shapes.NewMonoPolygonNode("Polygon", &vertices, &indices, api.OUTLINED, world, parent)
+	if err != nil {
+		return err
+	}
+	p.phyNode.SetScale(3.0)
+	p.phyNode.SetPosition(p.position.X(), p.position.Y())
+	gpol := p.phyNode.(*shapes.MonoPolygonNode)
+	gpol.SetColor(color.NewPaletteInt64(color.LightOrange))
 
 	return nil
 }
