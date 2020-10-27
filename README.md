@@ -13,6 +13,9 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * Port 2048
 * Create New Game. A blend of **Lunar Lander** (Sky and Landings), **Moon Patrol** (Ground), **Atari Pitfall** (Obstacles), **Defender** (Rescue). Multi-planet and Moons.
 
+# Demos
+* Combine vector fonts with tweening and physics. The text rotates and then randomly falls to the ground. Then the text moves back inline using tweening.
+
 # Current Tasks and Goals
 * **Done** OpenGL 4.x Core
 * **Done** Pixel Font (Slow version)
