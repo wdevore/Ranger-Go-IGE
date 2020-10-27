@@ -22,6 +22,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * A qix like demo where lines move around the view. Each end point bounces off the walls.
 * Particle system demo(s)
 * Infinite side-scrolling demo. A UFO can move left/right forever. The terrain is procedurally generated using One-Lone-Coder's algorithm.
+  * https://www.youtube.com/watch?v=ZZY9YE7rZJw
 * Infinite scrolling demo using a top-down view. Again using OLC's algorithm. In this demo you can "drive" over a terrain and encounter different objects.
 * 2D Light shadows.
 
@@ -29,6 +30,9 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * Sfxr
 * Sprite editor
 * SVG to Vector font converter
+  * https://github.com/JoshVarga/svgparser
+  * https://github.com/rustyoz/svg
+  * https://play.golang.org/p/kyfff6Kg1c  implements parser xml interface (Nice)
 * Vector Editor
 
 # Current Tasks and Goals
