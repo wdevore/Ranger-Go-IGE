@@ -44,8 +44,11 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
   * Example 3: Insert squares at Mouse
   * Example 4: Triangle ship moving through tree
   * **Done** Example 5: Query and highlight tree according to obj-obj intersecting
+* <b style="color:red">*working*</b> Custom vector font (needs lower case completion)
+  * Vector Fonts via SVG import
+* Improve Bitmap fonts. Rename current bitmap font object to "CharacterBitmapFont" and add new one called "StringBitmapFont". The new one creates a buffer of quads.
 * Scripting via https://wren.io/ or make custom language using via http://craftinginterpreters.com/
-* <b style="color:red">*working*</b> Simple Widget GUI framework
+* Simple Widget GUI framework
   * Buttons
   * Checkboxes
   * ListBox and Combo dropdowns
@@ -59,5 +62,3 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * Joysticks and Gamepads
 * Shaders with interleved vertex/color, for example, checkboards
 * Stippling with OpenGL patterns (aka advanced shaders)
-* Custom vector font (needs lower case completion)
-* Vector Fonts via SVG import
