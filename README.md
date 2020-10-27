@@ -6,15 +6,30 @@ As was RangerGo, so is IGE, a variation of the [Ranger Dart](https://github.com/
 This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
 # Games
-* Port Spout
+* Port Spout (standard)
+* Spout custom. In this verion instead of particles for the obstacles the obstacles are outlined with a polygon. The poly is updated when part of the obstacle is destroyed.
 * Port StarCastle / Star Barriers
 * Port Bosconian
 * Port Omega Race
 * Port 2048
 * Create New Game. A blend of **Lunar Lander** (Sky and Landings), **Moon Patrol** (Ground), **Atari Pitfall** (Obstacles), **Defender** (Rescue). Multi-planet and Moons.
+* Create a 1946 shooter like clone.
+* Create a BurgerTime like clone.
 
 # Demos
 * Combine vector fonts with tweening and physics. The text rotates and then randomly falls to the ground. Then the text moves back inline using tweening.
+* A triangle spaceship (with particle exhaust) that can fly around and shoot characters. The chars bounce off walls like asteroids.
+* A qix like demo where lines move around the view. Each end point bounces off the walls.
+* Particle system demo(s)
+* Infinite side-scrolling demo. A UFO can move left/right forever. The terrain is procedurally generated using One-Lone-Coder's algorithm.
+* Infinite scrolling demo using a top-down view. Again using OLC's algorithm. In this demo you can "drive" over a terrain and encounter different objects.
+* 2D Light shadows.
+
+# Tools/Apps
+* Sfxr
+* Sprite editor
+* SVG to Vector font converter
+* Vector Editor
 
 # Current Tasks and Goals
 * **Done** OpenGL 4.x Core
