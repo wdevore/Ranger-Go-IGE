@@ -261,13 +261,7 @@ Root {0} [500.000, 500.000] Div: true
 A small draggle square is moved through the tree
 
 # Render refactor
-* skip -- rewrite static nodes as a single builder
-* rewrite and simplify render graphics to remove vao, vbo abstractions etc.
-* static object are separate
-* dynamic objects are separate
-* texture are separate
 * cleanup shaders down to 2: default and texture
-* cleanup the Elementcount system. it is old and confusing.
 * We should be able to unload and re-upload atlases. This allows
 * each Node/Scene/Layer to control what resources are loaded.
 
@@ -279,7 +273,6 @@ Your game preloads any shapes it will use. The "extras" provide generators for c
 Dynamic objects are almost identical to Static except that the buffer can be updated. Each dyno object has its own buffer, for example, a Line and Rectangle each have their own buffers.
 
 ## Rendering
-We should be able to render object on demand as well as via the scenegraph.
 
 ## Misc
 * *done* NodeManager shouldn't have projection and view stuff in it.
