@@ -53,6 +53,26 @@ func (r *Rectangle) Set(x, y, w, h float32) {
 	r.height = h
 }
 
+// SetByRectangle by rectangle
+func (r *Rectangle) SetByRectangle(rect api.IRectangle) {
+	r.left = rect.Left()
+	r.bottom = rect.Bottom()
+	r.top = rect.Top()
+	r.right = rect.Right()
+	r.width = rect.Width()
+	r.height = rect.Height()
+}
+
+// SetBySize sets the bottom-left to origin and top-right to w/h.
+func (r *Rectangle) SetBySize(width, height float32) {
+	r.bottom = 0.0
+	r.left = 0.0
+	r.top = height
+	r.right = width
+	r.width = width
+	r.height = height
+}
+
 // SetMinMax sets the top/left and bottom/right corners
 func (r *Rectangle) SetMinMax(minX, minY, maxX, maxY float32) {
 	r.left = minX
@@ -107,6 +127,28 @@ func (r *Rectangle) SetBounds3D(vertices []float32) {
 
 	r.SetMinMax(float32(minX), float32(minY), float32(maxX), float32(maxY))
 	r.SetCenter(r.left+r.width/2.0, r.bottom+r.height/2.0)
+}
+
+// Expand resizes bounds based on x,y
+func (r *Rectangle) Expand(x, y float32) {
+	minX := float64(r.left)
+	minY := float64(r.bottom)
+	maxX := float64(r.right)
+	maxY := float64(r.top)
+
+	minX = math.Min(minX, float64(x))
+	minY = math.Min(minY, float64(y))
+
+	maxX = math.Max(maxX, float64(x))
+	maxY = math.Max(maxY, float64(y))
+
+	r.SetMinMax(float32(minX), float32(minY), float32(maxX), float32(maxY))
+	r.SetCenter(r.left+r.width/2.0, r.bottom+r.height/2.0)
+}
+
+// Area return bounds area
+func (r *Rectangle) Area() float32 {
+	return r.width * r.height
 }
 
 // SetSize sets just the width/height
@@ -185,7 +227,7 @@ func (r *Rectangle) Contains(o api.IRectangle) bool {
 
 func (r Rectangle) String() string {
 	return fmt.Sprintf(
-		"BL(%0.3f,%0.3f) - TR(%0.3f,%0.3f) - Width: %0.3f x Height: %0.3f | At: (%0.3f,%0.3f)",
+		"BL(%0.3f,%0.3f) - TR(%0.3f,%0.3f) - Size: %0.3f x %0.3f | At: (%0.3f,%0.3f)",
 		r.left, r.bottom, r.right, r.top, r.width, r.height,
 		r.center.X(), r.center.Y(),
 	)

@@ -38,6 +38,8 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * **Done** Audio (SFXR 8bit sound: https://sfxr.me/) (However, 16bit stills needs completion)
   * built GUI using imGui: https://github.com/inkyblackness/imgui-go
   * build using: https://github.com/faiface/beep
+* <b style="color:red">*working*</b> Custom vector font (needs lower case completion)
+* Vector Fonts via SVG import
 * <b style="color:orange">Partial Completion</b> QuadTrees
   * Example 1: Random spread of points/particles into tree (with capacity)
   * Example 2: Random spread of squares
@@ -45,7 +47,7 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
   * Example 4: Triangle ship moving through tree
   * **Done** Example 5: Query and highlight tree according to obj-obj intersecting
 * Scripting via https://wren.io/ or make custom language using via http://craftinginterpreters.com/
-* <b style="color:red">*working*</b> Simple Widget GUI framework
+* Simple Widget GUI framework
   * Buttons
   * Checkboxes
   * ListBox and Combo dropdowns
@@ -59,5 +61,3 @@ This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 * Joysticks and Gamepads
 * Shaders with interleved vertex/color, for example, checkboards
 * Stippling with OpenGL patterns (aka advanced shaders)
-* Custom vector font (needs lower case completion)
-* Vector Fonts via SVG import
