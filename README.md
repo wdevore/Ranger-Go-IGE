@@ -5,6 +5,10 @@ As was RangerGo, so is IGE, a variation of the [Ranger Dart](https://github.com/
 
 This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
+# Video demos
+Gif of c4_lava example ![Gif_c4_lava](docs/c4_lava.gif)
+mkv version of video is in *docs* folder.
+
 # Games
 * Port Spout (standard)
 * Spout custom. In this verion instead of particles for the obstacles the obstacles are outlined with a polygon. The poly is updated when part of the obstacle is destroyed.
