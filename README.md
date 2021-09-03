@@ -6,11 +6,17 @@ As was RangerGo, so is IGE, a variation of the [Ranger Dart](https://github.com/
 This version is the great merging of RangerGo, RangerGo-GLFW and Ranger-Alpha.
 
 # Video demos
-Gif of c4_lava example ![Gif_c4_lava](docs/c4_lava.gif)
+Gif of c4_lava example
+
+![Gif_c4_lava](docs/c4_lava.gif)
 
 Gif was made using ```ffmpeg -i c4_lava.mkv -r 30 -vf scale=512:-1 c4_lava.gif```
 
 mkv version of video is in *docs* folder.
+
+# Audio
+
+![Sfxr](tools/sfxr/Go-Sfxr.png)
 
 # Games
 * Port Spout (standard)
