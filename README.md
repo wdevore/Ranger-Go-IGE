@@ -49,7 +49,7 @@ mkv version of video is in *docs* folder.
 * Vector Editor
 
 # Current Tasks and Goals
-* **Done** OpenGL 4.x Core
+* [x] OpenGL 4.x Core
 * **Done** Pixel Font (Slow version)
 * **Done** Pixel Font (Faster version)
 * **Done** Static shapes: Circle
