@@ -57,8 +57,8 @@ mkv version of video is in *docs* folder.
 * [x] Space mappings
 * [x] add Outline shapes
 * [x] Alpha coloring / transparency
-* [x]* Node Dragging
-* [x]* Zoom Node
+* [x] Node Dragging
+* [x] Zoom Node
 * [x] Filters: transform and translate
 * [x] Particles
 * [x] Animation (tweening) *Using tanema's library*: https://github.com/tanema/gween
