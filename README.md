@@ -62,8 +62,7 @@ mkv version of video is in *docs* folder.
 * [x] Filters: transform and translate
 * [x] Particles
 * [x] Animation (tweening) *Using tanema's library*: https://github.com/tanema/gween
-* [x] Box2D physics (with space ship)
-  * Uses: https://github.com/ByteArena/box2d
+* [x] Box2D physics (with space ship). Uses: https://github.com/ByteArena/box2d
 * [x] Zones combined with Zoom
 * [x] Interpolation
 * [x] Sprite Textures (quads)
@@ -81,8 +80,6 @@ mkv version of video is in *docs* folder.
   * [ ] Example 3: Insert squares at Mouse
   * [ ] Example 4: Triangle ship moving through tree
   * [x] Example 5: Query and highlight tree according to obj-obj intersecting
-* [ ] <b style="color:red">*working*</b> Custom vector font (needs lower case completion)
-  * [ ] Vector Fonts via SVG import
 * [ ] Improve Bitmap fonts. Rename current bitmap font object to "CharacterBitmapFont" and add new one called "StringBitmapFont". The new one creates a buffer of quads.
 * [ ] Scripting via https://wren.io/ or make custom language using via http://craftinginterpreters.com/
 * [ ] Simple Widget GUI framework
