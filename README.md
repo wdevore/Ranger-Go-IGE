@@ -50,52 +50,52 @@ mkv version of video is in *docs* folder.
 
 # Current Tasks and Goals
 * [x] OpenGL 4.x Core
-* **Done** Pixel Font (Slow version)
-* **Done** Pixel Font (Faster version)
-* **Done** Static shapes: Circle
-* **Done** Dynamic shapes: Line
-* **Done** Space mappings
-* **Done** add Outline shapes
-* **Done** Alpha coloring / transparency
-* **Done** Node Dragging
-* **Done** Zoom Node
-* **Done** Filters: transform and translate
-* **Done** Particles
-* **Done** Animation (tweening) *Using tanema's library*: https://github.com/tanema/gween
-* **Done** Box2D physics (with space ship)
+* [x] Pixel Font (Slow version)
+* [x] Pixel Font (Faster version)
+* [x] Static shapes: Circle
+* [x] Dynamic shapes: Line
+* [x] Space mappings
+* [x] add Outline shapes
+* [x] Alpha coloring / transparency
+* [x]* Node Dragging
+* [x]* Zoom Node
+* [x] Filters: transform and translate
+* [x] Particles
+* [x] Animation (tweening) *Using tanema's library*: https://github.com/tanema/gween
+* [x] Box2D physics (with space ship)
   * Uses: https://github.com/ByteArena/box2d
-* **Done** Zones combined with Zoom
-* **Done** Interpolation
-* **Done** Sprite Textures (quads)
-* **Done** Scene Transitioning
-* **Done** Bitmap fonts
-* **Done** Simple motion animations
-* **Done** Audio (SFXR 8bit sound: https://sfxr.me/) (However, 16bit stills needs completion)
+* [x] Zones combined with Zoom
+* [x] Interpolation
+* [x] Sprite Textures (quads)
+* [x] Scene Transitioning
+* [x] Bitmap fonts
+* [x] Simple motion animations
+* [x] Audio (SFXR 8bit sound: https://sfxr.me/) (However, 16bit stills needs completion)
   * built GUI using imGui: https://github.com/inkyblackness/imgui-go
   * build using: https://github.com/faiface/beep
-* <b style="color:red">*working*</b> Custom vector font (needs lower case completion)
-* Vector Fonts via SVG import
-* <b style="color:orange">Partial Completion</b> QuadTrees
-  * Example 1: Random spread of points/particles into tree (with capacity)
-  * Example 2: Random spread of squares
-  * Example 3: Insert squares at Mouse
-  * Example 4: Triangle ship moving through tree
-  * **Done** Example 5: Query and highlight tree according to obj-obj intersecting
-* <b style="color:red">*working*</b> Custom vector font (needs lower case completion)
-  * Vector Fonts via SVG import
-* Improve Bitmap fonts. Rename current bitmap font object to "CharacterBitmapFont" and add new one called "StringBitmapFont". The new one creates a buffer of quads.
-* Scripting via https://wren.io/ or make custom language using via http://craftinginterpreters.com/
-* Simple Widget GUI framework
-  * Buttons
-  * Checkboxes
-  * ListBox and Combo dropdowns
-  * Inputs (text, float, int, bool)
-  * Text
-  * Dialogs (OK, Yes/No, etc.)
-  * Grouping (i.e. Radio buttons)
-* Batch rendering
-* OpenGL ES (https://github.com/golang/go/wiki/Mobile)
-* Physics with Textures
-* Joysticks and Gamepads
-* Shaders with interleved vertex/color, for example, checkboards
-* Stippling with OpenGL patterns (aka advanced shaders)
+* [ ] <b style="color:red">*working*</b> Custom vector font (needs lower case completion)
+* [ ] Vector Fonts via SVG import
+* [ ] <b style="color:orange">Partial Completion</b> QuadTrees
+  * [ ] Example 1: Random spread of points/particles into tree (with capacity)
+  * [ ] Example 2: Random spread of squares
+  * [ ] Example 3: Insert squares at Mouse
+  * [ ] Example 4: Triangle ship moving through tree
+  * [x] Example 5: Query and highlight tree according to obj-obj intersecting
+* [ ] <b style="color:red">*working*</b> Custom vector font (needs lower case completion)
+  * [ ] Vector Fonts via SVG import
+* [ ] Improve Bitmap fonts. Rename current bitmap font object to "CharacterBitmapFont" and add new one called "StringBitmapFont". The new one creates a buffer of quads.
+* [ ] Scripting via https://wren.io/ or make custom language using via http://craftinginterpreters.com/
+* [ ] Simple Widget GUI framework
+  * [ ] Buttons
+  * [ ] Checkboxes
+  * [ ] ListBox and Combo dropdowns
+  * [ ] Inputs (text, float, int, bool)
+  * [ ] Text
+  * [ ] Dialogs (OK, Yes/No, etc.)
+  * [ ] Grouping (i.e. Radio buttons)
+* [ ] Batch rendering
+* [ ] OpenGL ES (https://github.com/golang/go/wiki/Mobile)
+* [ ] Physics with Textures
+* [ ] Joysticks and Gamepads
+* [ ] Shaders with interleved vertex/color, for example, checkboards
+* [ ] Stippling with OpenGL patterns (aka advanced shaders)
