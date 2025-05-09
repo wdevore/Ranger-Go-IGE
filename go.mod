@@ -14,5 +14,5 @@ require (
 	github.com/rustyoz/genericlexer v0.0.0-20190224115003-eb82fd2987bd // indirect
 	github.com/rustyoz/svg v0.0.0-20200324092435-1ce6eba67a99
 	github.com/tanema/gween v0.0.0-20200427131925-c89ae23cc63c
-	golang.org/x/image v0.0.0-20200801110659-972c09e46d76
+	golang.org/x/image v0.5.0
 )
